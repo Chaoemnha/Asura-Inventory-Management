@@ -8,7 +8,7 @@ interface Category{
   id: string,
   name: string
 }
-
+ 
 @Component({
   selector: 'app-category',
   imports: [CommonModule, FormsModule],
