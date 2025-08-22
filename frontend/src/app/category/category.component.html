@@ -1,0 +1,54 @@
+<div class="x_panel">
+	<div class="x_title">
+		<div class="page-title row">
+			<div class="col-sm-6 col-12 text-left">
+				<h1>Category List</h1>
+			</div>
+		</div>
+		<div class="clearfix"></div>
+		<div class="add-cat">
+			<h6>Name:</h6>
+			<input type="text" [(ngModel)]="categoryName" placeholder="Category name" class="form-control" />
+			<br>
+			<div class="form-group">
+				<div class="row">
+					<div class="col-md-9 col-sm-9 col-12 col-md-offset-3">
+						<button *ngIf="!isEditing" (click)="addCategory()" class="btn btn-success mr-1">Add
+							Category</button>
+						<button *ngIf="isEditing" (click)="editCategory()" class="btn btn-success mr-1">Edit
+							Category</button>
+						<button (click)="cancel()" class="btn btn-primary">Cancel Editing</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="x_content">
+		<div class="table-responsive">
+			<table class="table table-striped jambo_table bulk_action" *ngIf="categories.length > 0">
+				<thead>
+					<tr class="headings">
+						<th class="column-title">#</th>
+						<th class="column-title">ID</th>
+						<th class="column-title">Name</th>
+						<th class="column-title no-link last text-center" colspan="2"><span class="nobr">Action</span>
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let category of categories; let i = index" [class.even]="i % 2 === 0"
+						[class.odd]="i % 2 !== 0" class="pointer">
+						<td class=" ">{{i + 1}}</td>
+						<td class=" ">{{category.id}}</td>
+						<td class=" ">{{category.name}}</td>
+						<td><button (click)="handleEditCategory(category)"
+								class="btn btn-round btn-primary">Edit</button></td>
+						<td><button (click)="handleDeleteCategory(category.id)"
+								class="btn btn-round btn-danger">Delete</button></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

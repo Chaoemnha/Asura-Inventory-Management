@@ -1,0 +1,57 @@
+<div class="x_panel">
+  <div class="dashboard-container">
+    <div class="row x_title align-items-center">
+      <div class="col">
+        <h3>Transaction Dashboard</h3>
+      </div>
+      <div class="col">
+    <!-- Transaction Selection -->
+    <div class="pull-right">
+      <label class="mr-1">Select Month:</label>
+      <select class="mr-1" [(ngModel)]="selectedMonth">
+        <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+      </select>
+
+      <label class="mr-1">Select Year:</label>
+      <select class="mr-1" [(ngModel)]="selectedYear">
+        <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+      </select>
+
+      <button class="btn btn-light btn-sm" (click)="loadMonthlyData()">Show Monthly Data</button>
+    </div>
+      </div>
+    </div>
+
+
+
+<div class="row x_title"><div class="col-12"><!-- Transaction Type Count Bar Chart -->
+    <div style="margin-bottom: 30px;">
+      <h5>Transaction Counts by Type</h5>
+      <ngx-charts-bar-vertical [view]="view" [scheme]="'vivid'" [results]="transactionTypeData" [gradient]="false"
+        [xAxis]="true" [yAxis]="true" [legend]="showLegend" [showXAxisLabel]="true" [showYAxisLabel]="true"
+        xAxisLabel="Transaction Type" yAxisLabel="Count" [animations]="animations">
+      </ngx-charts-bar-vertical>
+    </div></div><div class="col-12"><!-- Transaction Amount by Type Pie Chart -->
+    <div style="margin-bottom: 30px;" class="tiles">
+      <h5>Total Transaction Amount by Type</h5>
+      <ngx-charts-pie-chart [view]="view" [scheme]="'cool'" [results]="transactionAmountData" [legend]="showLegend"
+        [labels]="showLabels" [doughnut]="false" [animations]="animations">
+      </ngx-charts-pie-chart>
+    </div></div><div class="col-12"><!-- Monthly Transaction Bar Chart -->
+    <h5 style="margin-bottom: 50px;" class="tiles">Monthly Transaction Chart</h5>
+
+    <div *ngIf="monthlyTransactionData.length">
+      <ngx-charts-bar-vertical [view]="view" [scheme]="'flame'" [results]="monthlyTransactionData" [gradient]="false"
+        [xAxis]="true" [yAxis]="true" [legend]="showLegend" [showXAxisLabel]="true" [showYAxisLabel]="true"
+        xAxisLabel="Day of Month" yAxisLabel="Total Price" [animations]="animations">
+      </ngx-charts-bar-vertical>
+    </div></div></div>
+    
+
+    
+
+
+
+    
+  </div>
+</div>

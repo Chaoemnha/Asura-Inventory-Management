@@ -1,0 +1,68 @@
+<div class="page-title">
+  <div class="title_left">
+    <h1>{{ isEditing ? "Edit Supplier" : "Add Supplier" }}</h1>
+  </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+  <div class="col-md-12 col-sm-12 col-12">
+    <div class="x_panel">
+      <div class="x_content">
+        <br />
+        <form (ngSubmit)="handleSubmit()" css="form-horizontal form-label-left">
+          <div class="form-group">
+            <div class="row">
+              <label class="control-label col-md-3 col-sm-3 col-12" for="">Name <span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-12">
+                <input type="text" [(ngModel)]="formData.name" name="name" placeholder="Enter supplier name"
+                  class="form-control" />
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="row">
+              <label class="control-label col-md-3 col-sm-3 col-12" for="">Email
+              </label>
+              <div class="col-md-6 col-sm-6 col-12">
+                <input type="email" [(ngModel)]="formData.email" name="email" placeholder="Supplier email"
+                  class="form-control" />
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="row">
+              <label for="" class="control-label col-md-3 col-sm-3 col-12">Phone<span class="required">*</span></label>
+              <div class="col-md-6 col-sm-6 col-12">
+                <input type="text" [(ngModel)]="formData.phone" name="phone" placeholder="Supplier phone"
+                  class="form-control" />
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="row">
+              <label for="" class="control-label col-md-3 col-sm-3 col-12">Address<span
+                  class="required">*</span></label>
+              <div class="col-md-6 col-sm-6 col-12">
+                <textarea [(ngModel)]="formData.address" placeholder="Supplier address" name="address"
+                  class="form-control" rows="3"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="ln_solid"></div>
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-6 col-sm-6 col-12 col-md-offset-3">
+                <button class="btn btn-primary mr-1" type="button" (click)="cancel()">Cancel
+                </button>
+                <button class="btn btn-primary mr-1" type="reset">Reset</button>
+                <button type="submit" class="btn btn-success">Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
