@@ -1,0 +1,42 @@
+<div class="x_panel">
+  <div class="x_title">
+    <h1>Suppliers List</h1>
+    <div class="clearfix"></div>
+    <button class="btn btn-app" (click)="navigateToAddSupplierPage()"><i class="fa fa-plus"></i>
+      Add Product
+    </button>
+  </div>
+
+  <div class="x_content">
+    <div class="table-responsive">
+      <table class="table table-striped jambo_table bulk_action" *ngIf="suppliers.length > 0">
+        <thead>
+          <tr class="headings">
+            <th class="column-title">#</th>
+            <th class="column-title">ID</th>
+            <th class="column-title">Name</th>
+            <th class="column-title">Email</th>
+            <th class="column-title">Phone</th>
+            <th class="column-title">Address</th>
+            <th class="column-title no-link last text-center" colspan="2"><span class="nobr">Action</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let supplier of suppliers; let i = index" [class.even]="i % 2 === 0" [class.odd]="i % 2 !== 0"
+            class="pointer">
+            <td class=" ">{{i + 1}}</td>
+            <td class=" ">{{supplier.id}}</td>
+            <td class=" ">{{supplier.name}}</td>
+            <td class=" ">{{supplier.email}}</td>
+            <td class=" ">{{supplier.phone}}</td>
+            <td class=" ">{{supplier.address}}</td>
+            <td><button (click)="navigateToEditSupplierPage(supplier.id)"
+                class="btn btn-round btn-primary">Edit</button></td>
+            <td><button (click)="handleDeleteSupplier(supplier.id)" class="btn btn-round btn-danger">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
