@@ -28,8 +28,8 @@
                         <th>Total Products</th>
                         <th>Description</th>
                         <th>Total Price</th>
-                        <th *ngIf="!transaction.updatedAt">Created At</th>
-                        <th *ngIf="transaction.updatedAt">Updated At</th>
+                        <th *ngIf="transaction?.updatedAt!=null">Created At</th>
+                        <th *ngIf="transaction?.updatedAt">Updated At</th>
                      </tr>
                   </thead>
                   <tbody>
@@ -39,8 +39,8 @@
                         <td>{{transaction.totalProducts}}</td>
                         <td>{{transaction.description}}</td>
                         <td>{{transaction.totalPrice | currency}}</td>
-                        <td *ngIf="!transaction.updatedAt">{{transaction.createdAt | date:'shortDate'}}</td>
-                        <td *ngIf="transaction.updatedAt">{{transaction.updatedAt | date:'shortDate'}}</td>
+                        <td *ngIf="!transaction?.updatedAt">{{transaction?.createdAt | date:'shortDate'}}</td>
+                        <td *ngIf="transaction?.updatedAt">{{transaction?.updatedAt | date:'shortDate'}}</td>
                      </tr>
                   </tbody>
                </table>
@@ -123,9 +123,9 @@
             </div>
             <!-- /.col -->
             <div class="col-md-6">
-               <p class="lead" *ngIf="!transaction.updatedAt">Amount Due 7 days form {{transaction.createdAt |
+               <p class="lead" *ngIf="!transaction?.updatedAt">Amount Due 7 days form {{transaction?.createdAt |
                   date:'shortDate'}}</p>
-               <p class="lead" *ngIf="transaction.updatedAt">Amount Due 7 days form {{transaction.updatedAt |
+               <p class="lead" *ngIf="transaction?.updatedAt">Amount Due 7 days form {{transaction?.updatedAt |
                   date:'shortDate'}}</p>
                <div class="table-responsive">
                   <table class="table">

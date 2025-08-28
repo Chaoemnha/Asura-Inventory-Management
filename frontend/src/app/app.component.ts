@@ -9,11 +9,12 @@ import {
 import { ApiService } from './service/api.service';
 import { filter } from 'rxjs';
 import { sha256 } from 'js-sha256';
+import { ChatAssistantComponent } from './chat-assistant/chat-assistant.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, CommonModule],
+  imports: [RouterOutlet, RouterLink, CommonModule, ChatAssistantComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
