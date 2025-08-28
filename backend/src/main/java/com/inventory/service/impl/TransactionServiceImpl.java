@@ -1,5 +1,7 @@
 package com.inventory.service.impl;
 
+import com.inventory.config.TransactionMapperConfig;
+import com.inventory.dto.CategoryDTO;
 import com.inventory.dto.Response;
 import com.inventory.dto.TransactionDTO;
 import com.inventory.dto.TransactionRequest;
@@ -20,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,12 +42,15 @@ import java.util.stream.Collectors;
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
+    @Autowired
+    @Qualifier("modelMapper")
     private final ModelMapper modelMapper;
     private final SupplierRepository supplierRepository;
     private final UserService userService;
     private final ProductRepository productRepository;
-
-
+    @Autowired
+    @Qualifier("transactionMapper")
+    private final ModelMapper transactionMapper;
 
     @Override
     public Response restockInventory(TransactionRequest transactionRequest) {
@@ -167,16 +174,13 @@ public class TransactionServiceImpl implements TransactionService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Transaction> transactionPage = transactionRepository.searchTransactions(searchText, pageable);
-
         List<TransactionDTO> transactionDTOS = modelMapper
                 .map(transactionPage.getContent(), new TypeToken<List<TransactionDTO>>() {}.getType());
-
         transactionDTOS.forEach(transactionDTOItem -> {
             transactionDTOItem.setUser(null);
             transactionDTOItem.setProduct(null);
             transactionDTOItem.setSupplier(null);
         });
-
         return Response.builder()
                 .status(200)
                 .message("success")
@@ -190,9 +194,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .orElseThrow(()-> new NotFoundException("Transaction Not Found"));
 
         TransactionDTO transactionDTO = modelMapper.map(transaction, TransactionDTO.class);
-
-        transactionDTO.getUser().setTransactions(null); //removing the user transaction list
-
+        transactionDTO.getUser().setTransactions(null);
         return Response.builder()
                 .status(200)
                 .message("success")
@@ -217,13 +219,11 @@ public class TransactionServiceImpl implements TransactionService {
 
         List<TransactionDTO> transactionDTOS = modelMapper
                 .map(transactions, new TypeToken<List<TransactionDTO>>() {}.getType());
-
         transactionDTOS.forEach(transactionDTOItem -> {
             transactionDTOItem.setUser(null);
             transactionDTOItem.setProduct(null);
             transactionDTOItem.setSupplier(null);
         });
-
 
         return Response.builder()
                 .status(200)
@@ -251,7 +251,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<String> extractTextForEmbedding() {
-        List<Transaction> categories = transactionRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-        return categories.stream().map(Transaction::getTextForEmbedding).collect(Collectors.toList());
+        List<Transaction> transactions = transactionRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        List<TransactionDTO> transactionDTOS = transactionMapper.map(transactions, new TypeToken<List<TransactionDTO>>() {}.getType());
+        return transactionDTOS.stream().map(TransactionDTO::getTextForEmbedding).collect(Collectors.toList());
     }
 }

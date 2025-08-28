@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,8 +33,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    @Autowired
+    @Qualifier("modelMapper")
     private final ModelMapper modelMapper;
     private final JwtUtils jwtUtils;
+    @Autowired
+    @Qualifier("userMapper")
+    private ModelMapper userMapper;
 
 
     @Override
@@ -84,9 +91,7 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
 
         List<UserDTO> userDTOS = modelMapper.map(users, new TypeToken<List<UserDTO>>() {}.getType());
-
         userDTOS.forEach(userDTO -> userDTO.setTransactions(null));
-
         return Response.builder()
                 .status(200)
                 .message("success")
@@ -150,12 +155,10 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(()-> new NotFoundException("User Not Found"));
 
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-
         userDTO.getTransactions().forEach(transactionDTO -> {
             transactionDTO.setUser(null);
             transactionDTO.setSupplier(null);
         });
-
         return Response.builder()
                 .status(200)
                 .message("success")
@@ -166,7 +169,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<String> extractTextForEmbedding() {
         List<User> users = userRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-        return users.stream().map(User::getTextForEmbedding).collect(Collectors.toList());
+        List<UserDTO> userDTOS = userMapper.map(users, new TypeToken<List<UserDTO>>() {}.getType());
+        return userDTOS.stream().map(UserDTO::getTextForEmbedding).collect(Collectors.toList());
     }
 
 
