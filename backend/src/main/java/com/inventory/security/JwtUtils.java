@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
+import io.github.cdimascio.dotenv.Dotenv;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
@@ -20,14 +20,13 @@ public class JwtUtils {
 
     private static final long EXPIRATION_TIME_IN_MILLISEC = 100L * 60L * 60L * 24L * 30L * 6L; //expires in 6 months
     private SecretKey key;
+    Dotenv dotenv = Dotenv.configure().load();
 
-    @Value("${secretJwtString}")
-    private String secreteJwtString ;
+    private final String jwtSecret=dotenv.get("SECRET_JWT_STRING");
 
     @PostConstruct
     private void init(){
-        byte[] keyByte = secreteJwtString.getBytes(StandardCharsets.UTF_8);
-        this.key = new SecretKeySpec(keyByte, "HmacSHA256");
+        this.key = new SecretKeySpec(jwtSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
     }
 
     public String generateToken(String email){

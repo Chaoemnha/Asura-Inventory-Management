@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Table(name = "transactions")
-public class Transaction implements EmbeddableText {
+public class Transaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,10 +66,4 @@ public class Transaction implements EmbeddableText {
                 '}';
     }
 
-
-    @Override
-    public String getTextForEmbedding() {
-        return String.format("Transaction: %s, TotalProducts: %s, TotalPrice: %s, TransactionType: %s, Status: %s, UpdatedAt: %s, CreatedAt: %s, UserName: %s, ProductName: %s, SupplierName: %s",
-                this.getId(), this.getTotalProducts(), this.getTotalPrice().toPlainString(), this.getTransactionType().toString(), this.getStatus(), this.getUpdatedAt(), this.getCreatedAt(), this.getUser().getName() != null ? this.getUser().getName() : "NULL", this.getProduct().getName() != null ? this.getProduct().getName() : "NULL", this.getSupplier().getName() != null ? this.getSupplier().getName() : "NULL");
-    }
 }
