@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @Table(name = "suppliers")
-public class Supplier implements EmbeddableText {
+public class Supplier {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +29,4 @@ public class Supplier implements EmbeddableText {
 
     private String address;
 
-
-    @Override
-    public String getTextForEmbedding() {
-        return String.format("Supplier: %s, Email: %s, Phone: %s, Address: %s", this.getName(),
-                this.getEmail(), this.getPhone(), this.getAddress());
-    }
 }

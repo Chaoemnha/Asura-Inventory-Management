@@ -2,10 +2,12 @@ package com.inventory.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.inventory.service.EmbeddableText;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -14,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProductDTO {
+public class ProductDTO implements EmbeddableText {
 
     private Long id;
 
@@ -40,6 +42,10 @@ public class ProductDTO {
 
     private LocalDateTime createdAt;
 
-
+    @Override
+    public String getTextForEmbedding() {
+        return String.format("Product: %s, Description: %s,  Price: %s, StockQuantity: %d", this.getName(),
+                this.getDescription() != null ? this.getDescription() : "", price != null ? price.toPlainString() : "N/A", this.getStockQuantity());
+    }
 
 }

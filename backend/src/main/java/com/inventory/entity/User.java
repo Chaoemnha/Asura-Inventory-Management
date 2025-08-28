@@ -19,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Table(name = "users")
-public class User implements EmbeddableText {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,11 +65,5 @@ public class User implements EmbeddableText {
                 ", role=" + role +
                 ", createdAt=" + createdAt +
                 '}';
-    }
-
-    @Override
-    public String getTextForEmbedding() {
-        return String.format("User: %s, Email: %s, PhoneNumber: %s, Role: %s", this.getName(),
-                this.getEmail(), this.getPhoneNumber(), this.getRole().toString());
     }
 }

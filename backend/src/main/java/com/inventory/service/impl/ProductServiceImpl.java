@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +30,8 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    @Autowired
+    @Qualifier("modelMapper")
     private final ModelMapper modelMapper;
     private final CategoryRepository categoryRepository;
 
@@ -161,7 +165,8 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<String> extractTextForEmbedding() {
         List<Product> products = productRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-        return products.stream().map(Product::getTextForEmbedding).collect(Collectors.toList());
+        List<ProductDTO> productDTOS = modelMapper.map(products, new TypeToken<List<ProductDTO>>() {}.getType());
+        return productDTOS.stream().map(ProductDTO::getTextForEmbedding).collect(Collectors.toList());
     }
 
     private String saveImageToFrontendPublicFolder(MultipartFile imageFile){
