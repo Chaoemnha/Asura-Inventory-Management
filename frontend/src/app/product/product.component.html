@@ -1,0 +1,66 @@
+<div class="x_panel">
+  <div class="x_title">
+    <div class="page-title row">
+      <div class="col-sm-6 col-12 text-left">
+        <h1>Product List</h1>
+      </div>
+
+      <div class="col-sm-6 col-12 text-right">
+        <div class="row">
+          <div class="offset-xl-7 col-xl-5 col-lg-12 col-md-12 col-sm-5 col-12 form-group pull-right top_search mt-3">
+            <div class="input-group">
+              <input type="text" [(ngModel)]="searchInput" placeholder="Search.." class="form-control" />
+              <span class="input-group-btn">
+                <button class="btn btn-light" (click)="handleSearch()">Go!</button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <button class="btn btn-app" (click)="navigateToAddProductPage()">
+      <i class="fa fa-plus"></i>
+      Add Product
+    </button>
+  </div>
+
+  <div class="x_content">
+    <div class="table-responsive">
+      <table class="table table-striped jambo_table bulk_action" *ngIf="products.length > 0">
+        <thead>
+          <tr class="headings">
+            <th class="column-title">#</th>
+            <th class="column-title">Image</th>
+            <th class="column-title">Name</th>
+            <th class="column-title">SKU</th>
+            <th class="column-title">Price</th>
+            <th class="column-title">Stock</th>
+            <th class="column-title no-link last text-center" colspan="2"><span class="nobr">Action</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let product of products; let i = index" [class.even]="i % 2 === 0" [class.odd]="i % 2 !== 0"
+            class="pointer">
+            <td class=" ">{{i + 1}}</td>
+            <td class=" ">
+              <img [src]='product.imageUrl' [alt]="product.name" class="product-image"
+                style="width: 50px; height: 50px; object-fit: cover;" />
+            </td>
+            <td class=" ">{{product.name}}</td>
+            <td class=" ">{{product.sku}}</td>
+            <td class=" ">${{product.price}}</td>
+            <td class=" ">{{product.stockQuantity}}</td>
+            <td><button (click)="navigateToEditProductPage(product.id)" class="btn btn-round btn-primary">Edit</button>
+            </td>
+            <td><button (click)="handleProductDelete(product.id)" class="btn btn-round btn-danger">Delete</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Custom Pagination -->
+    <app-custom-pagination [currentPage]="currentPage" [totalPages]="totalPages"
+      (pageChange)="onPageChange($event)"></app-custom-pagination>
+  </div>
+</div>

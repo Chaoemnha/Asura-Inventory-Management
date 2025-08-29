@@ -1,0 +1,186 @@
+<div class="x_panel">
+   <div class="x_title">
+         <!-- title row -->
+         <div class="row">
+            <div class="col-12 col-lg-12 invoice-header">
+               <h1 class="row">
+                  <div class="col-lg-6 text-left col-6">
+                     <i class="fa fa-exchange"></i> Transaction.
+                  </div>
+               </h1>
+            </div>
+            <!-- /.col -->
+         </div>
+      <div class="clearfix"></div>
+   </div>
+   <div class="x_content">
+
+      <section class="content invoice">
+         <!-- Table row -->
+         <div class="row">
+            <div class="col-12 table">
+               <p class="lead">Transaction Information</p>
+               <table class="table table-striped">
+                  <thead>
+                     <tr>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Total Products</th>
+                        <th>Description</th>
+                        <th>Total Price</th>
+                        <th *ngIf="!transaction.updatedAt">Created At</th>
+                        <th *ngIf="transaction.updatedAt">Updated At</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     <tr>
+                        <td>{{transaction.transactionType}}</td>
+                        <td>{{transaction.status}}</td>
+                        <td>{{transaction.totalProducts}}</td>
+                        <td>{{transaction.description}}</td>
+                        <td>{{transaction.totalPrice | currency}}</td>
+                        <td *ngIf="!transaction.updatedAt">{{transaction.createdAt | date:'shortDate'}}</td>
+                        <td *ngIf="transaction.updatedAt">{{transaction.updatedAt | date:'shortDate'}}</td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+            <!-- /.col -->
+         </div>
+         <!-- /.row -->
+         <!-- info row -->
+         <div class="row invoice-info">
+            <div class="col-sm-4 invoice-col">
+               <p class="lead">Product Information</p>
+               <b>Name:</b> {{transaction.product.name}}
+               <br>
+               <b>SKU:</b> {{transaction.product.sku}}
+               <br>
+               <b>Price:</b> {{transaction.product.price | currency}}
+               <br>
+               <b>Stock Quantity:</b> {{transaction.product.stockQuantity}}
+               <br>
+               <b>Description:</b> {{transaction.product.description}}
+               <div *ngIf="transaction.product.imageUrl">
+                  <img [src]='transaction.product.imageUrl' [alt]="transaction.product.name" class="product-image"
+                style="width: 5rem; height: 5rem; object-fit: cover;" />
+               </div>
+            </div>
+            <!-- /.col -->
+            <div class="col-sm-4 invoice-col">
+               <p class="lead" *ngIf="transaction.transactionType=='PURCHASE'">Supplier Information</p>
+               <p class="lead" *ngIf="transaction.transactionType=='SALE'">Inventory Information</p>
+               <address *ngIf="transaction.transactionType=='PURCHASE'">
+                  <strong>{{transaction.supplier.name}}</strong>
+                  <br>{{transaction.supplier.address}}
+                  <br>{{transaction.supplier.phone}}
+                  <br>{{transaction.supplier.email}}
+               </address>
+               <address *ngIf="transaction.transactionType=='SALE'">
+                  <strong>Asura Inventory, Inc.</strong>
+                  <br>No.18 Cau Dien Street, Minh Khai ward, Bac Tu Liem district
+                  <br>Phone: 025 8667 2866
+                  <br>Email: 2021608641&#64;st.haui.edu.vn
+               </address>
+            </div>
+            <!-- /.col -->
+            <div class="col-sm-4 invoice-col">
+              <p class="lead">User Information</p>
+               <address *ngIf="transaction.transactionType=='PURCHASE'">
+                  <strong>Asura Inventory, Inc.</strong>
+                  <br>No.18 Cau Dien Street, Minh Khai ward, Bac Tu Liem district
+                  <br>Phone: 025 8667 2866
+                  <br>Email: 2021608641&#64;st.haui.edu.vn
+               </address>
+               <address *ngIf="transaction.transactionType=='SALE'">
+                  <strong>{{transaction.user.name}}</strong>
+                  <br>{{transaction.user.role}}
+                  <br>{{transaction.user.phoneNumber}}
+                  <br>{{transaction.user.email}}
+               </address>
+            </div>
+            <!-- /.col -->
+         </div>
+         <!-- /.row -->
+
+         <hr>
+         <hr>
+         <div class="row">
+            <!-- accepted payments column -->
+            <div class="col-md-6">
+               <p class="lead">Payment Methods:</p>
+               <img [src]="'/images/visa.png'" alt="Visa">
+               <img [src]="'/images/mastercard.png'" alt="Mastercard">
+               <img [src]="'/images/american-express.png'" alt="American Express">
+               <img [src]="'/images/paypal.png'" alt="Paypal">
+               <p class="text-hmuted card no-shadow" style="margin-top: 10px;">
+                  <span class="card-body bg-light">
+                     We accept the following payment methods: Credit Card (Visa, MasterCard, AMEX), PayPal, Bank
+                     Transfer, and Cash on Delivery. Please ensure payment is completed by the due date to avoid delays
+                     in processing.
+                  </span>
+               </p>
+            </div>
+            <!-- /.col -->
+            <div class="col-md-6">
+               <p class="lead" *ngIf="!transaction.updatedAt">Amount Due 7 days form {{transaction.createdAt |
+                  date:'shortDate'}}</p>
+               <p class="lead" *ngIf="transaction.updatedAt">Amount Due 7 days form {{transaction.updatedAt |
+                  date:'shortDate'}}</p>
+               <div class="table-responsive">
+                  <table class="table">
+                     <tbody>
+                        <tr>
+                           <th style="width:50%">Subtotal:</th>
+                           <td>{{transaction.totalPrice | currency}}</td>
+                        </tr>
+                        <tr>
+                           <th>Tax (9%)</th>
+                           <td>{{transaction.totalPrice*9/100 | currency}}</td>
+                        </tr>
+                        <tr>
+                           <th>Shipping:</th>
+                           <td>50000₫</td>
+                        </tr>
+                        <tr>
+                           <th>Total:</th>
+                           <td>{{transaction.totalPrice+transaction.totalPrice*9/100+50000}}₫</td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+            <!-- /.col -->
+         </div>
+         <!-- /.row -->
+
+         <!-- this row will not appear when printing -->
+         <div class="row no-print">
+            <div class="col-12">
+               <button class="btn btn-light mr-2" onclick="window.print();"><i class="fa fa-print"></i> Print
+               </button>
+               <span class="lead"><b>Status: </b></span>
+               <select [(ngModel)]="status" id="" class="">
+                  <option value="PENDING">PENDING</option>
+                  <option value="PROCESSING">PROCESSING</option>
+                  <option value="COMPLETED">COMPLETED</option>
+                  <option value="CANCELED">CANCELED</option>
+               </select>
+               <button class="btn btn-success pull-right mr-2" *ngIf="status=='PENDING'"
+                  (click)="confirmPayment()"><i class="fa fa-credit-card"></i> Confirm Payment
+               </button>
+               <button class="btn btn-success pull-right mr-2" *ngIf="status=='PENDING'"
+                  (click)="cancelPayment()"><i class="fa fa-times-circle-o"></i> Cancel Payment
+               </button>
+               <button class="btn btn-success pull-right mr-2" *ngIf="status=='CANCELED'||status=='COMPLETED'"
+                  (click)="rerequestPayment()"><i class="fa fa-times-circle-o"></i> Re-request Payment
+               </button>
+               <button class="btn btn-primary pull-right mr-2" style="margin-right: 5px;" 
+                       (click)="generatePDF()"><i class="fa fa-download"></i>
+                  Generate PDF
+               </button>
+            </div>
+         </div>
+      </section>
+   </div>
+</div>

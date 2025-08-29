@@ -1,0 +1,77 @@
+<div class="x_panel">
+  <div class="x_title">
+    <div class="page-title row">
+      <div class="col-sm-6 col-12 text-left">
+        <h1>Transactions List</h1>
+      </div>
+
+      <div class="col-sm-6 col-12 text-right">
+        <div class="row">
+          <div class="offset-xl-7 col-xl-5 col-lg-12 col-md-12 col-sm-5 col-12 form-group pull-right top_search mt-3">
+            <div class="input-group">
+              <input type="text" [(ngModel)]="searchInput" placeholder="Search.." class="form-control" />
+              <span class="input-group-btn">
+                <button class="btn btn-light" (click)="handleSearch()">Go!</button>
+
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+				<button class="btn btn-app" (click)="exportTransactions('purchase')">
+					<i class="fa fa-cloud-download d-inline"></i><i class="fa fa-shopping-cart d-inline"></i><p> Receipt (Purchase)</p>
+				</button>
+				<button class="btn btn-app" (click)="exportTransactions('sale')">
+					<i class="fa fa-cloud-download d-inline"></i><i class="fa fa-money d-inline"></i><p>Export Issue (Sale)</p>
+				</button>
+				<button class="btn btn-app" (click)="exportTransactions('all')">
+					<i class="fa fa-cloud-download d-inline"></i><i class="fa fa-exchange d-inline"></i><p>Export All Transactions</p>
+				</button>
+    <div class="clearfix"></div>
+  </div>
+
+  <div class="x_content">
+    <div class="table-responsive">
+      <table class="table table-striped jambo_table bulk_action" *ngIf="transactions.length > 0">
+        <thead>
+          <tr class="headings">
+            <th class="column-title">#</th>
+            <th class="column-title">TYPE</th>
+            <th class="column-title">STATUS</th>
+            <th class="column-title">TOTAL PRICE</th>
+            <th class="column-title">TOTAL PRODUCTS</th>
+            <th class="column-title">DATE</th>
+            <th class="column-title no-link last text-center"><span class="nobr">ACTION</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let transaction of transactions; let i = index" [class.even]="i % 2 === 0"
+            [class.odd]="i % 2 !== 0" class="pointer">
+            <td class=" ">{{i + 1}}</td>
+            <td>{{ transaction.transactionType }}</td>
+            <td>
+              <span class="badge" [class.badge-success]="transaction.status === 'COMPLETED'"
+                [class.badge-warning]="transaction.status === 'PENDING'"
+                [class.badge-danger]="transaction.status === 'CANCELLED'">
+                {{ transaction.status }}
+              </span>
+            </td>
+            <td>{{ formatCurrency(transaction.totalPrice) }}</td>
+            <td>{{ transaction.totalProducts }}</td>
+            <td>{{ transaction.createdAt | date : "short" }}</td>
+            <td class="text-center">
+              <button (click)="navigateTOTransactionsDetailsPage(transaction.id)" class="btn btn-round btn-info">View
+                Details</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Custom Pagination -->
+    <app-custom-pagination [currentPage]="currentPage" [totalPages]="totalPages"
+      (pageChange)="onPageChange($event)"></app-custom-pagination>
+  </div>
+</div>

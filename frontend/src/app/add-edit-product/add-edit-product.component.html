@@ -1,0 +1,111 @@
+<div class="page-title">
+    <div class="title_left">
+        <h1>{{ isEditing ? "Edit Product" : "Add Product" }}</h1>
+    </div>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-12">
+        <div class="x_panel">
+            <div class="x_content">
+                <br />
+                <form (ngSubmit)="handleSubmit($event)" class="form-horizontal form-label-left">
+                    <div class="form-group">
+                        <div class="row">
+                            <label class="control-label col-md-3 col-sm-3 col-12" for="">Product Name <span
+                                    class="required">*</span>
+                            </label>
+                            <div class="col-md-6 col-sm-6 col-12">
+                                <input type="text" [(ngModel)]="name" name="name" placeholder="Enter product name"
+                                    class="form-control" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <label class="control-label col-md-3 col-sm-3 col-12" for="">SKU <span
+                                    class="required">*</span>
+                            </label>
+                            <div class="col-md-6 col-sm-6 col-12">
+                                <input type="text" [(ngModel)]="sku" name="sku" placeholder="Product SKU"
+                                    class="form-control" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <label for="" class="control-label col-md-3 col-sm-3 col-12">Price <span
+                                    class="required">*</span></label>
+                            <div class="col-md-6 col-sm-6 col-12">
+                                <input type="number" [(ngModel)]="price" name="price" placeholder="Product price"
+                                    class="form-control" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <label for="" class="control-label col-md-3 col-sm-3 col-12">Stock Quantity <span
+                                    class="required">*</span></label>
+                            <div class="col-md-6 col-sm-6 col-12">
+                                <input type="number" [(ngModel)]="stockQuantity" name="stockQuantity"
+                                    placeholder="Stock quantity" class="form-control" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <label for="" class="control-label col-md-3 col-sm-3 col-12">Category <span
+                                    class="required">*</span></label>
+                            <div class="col-md-6 col-sm-6 col-12">
+                                <select [(ngModel)]="categoryId" name="categoryId" class="form-control" required>
+                                    <option value="">Select a category</option>
+                                    <option *ngFor="let category of categories" [value]="category.id"
+                                        [selected]="category.id === categoryId">{{category.name}}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <label for="" class="control-label col-md-3 col-sm-3 col-12">Description</label>
+                            <div class="col-md-6 col-sm-6 col-12">
+                                <textarea [(ngModel)]="description" name="description" placeholder="Product description"
+                                    class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="row">
+                            <label for="" class="control-label col-md-3 col-sm-3 col-12">Product Image</label>
+                            <div class="col-md-6 col-sm-6 col-12">
+                                <input type="file" (change)="handleImageChange($event)" class="form-control"
+                                    accept="image/*">
+                                <div *ngIf="imageUrl" class="mt-2">
+                                    <img [src]="imageUrl" alt="preview" class="img-thumbnail"
+                                        style="max-width: 200px; max-height: 200px;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ln_solid"></div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6 col-sm-6 col-12 col-md-offset-3">
+                                <button class="btn btn-primary mr-1" type="button" (click)="cancel()">Cancel</button>
+                                <button class="btn btn-primary mr-1" type="reset">Reset</button>
+                                <button type="submit" class="btn btn-success">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
