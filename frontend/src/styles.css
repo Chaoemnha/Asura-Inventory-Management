@@ -1,0 +1,318 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Basic Gentella-like styles */
+.body {
+  background: #f5f5f5;
+  font-family: "Helvetica Neue", Roboto, Arial, "Droid Sans", sans-serif;
+}
+
+.main_container {
+  background: #ededed;
+  height: 100vh;
+}
+
+.left_col {
+  background: #2A3F54;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 230px;
+  height: 100vh;
+  z-index: 1000;
+}
+
+.nav_title {
+  background: #2A3F54;
+  border-radius: 0;
+  height: 57px;
+  display: flex;
+  align-items: center;
+}
+
+.site_title {
+  color: #ECF0F1 !important;
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 22px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.site_title i {
+  border: 1px solid #EAEAEA;
+  padding: 5px 6px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.profile {
+  background: url(https://colorlib.com/polygon/gentelella/images/img.jpg);
+  padding: 10px;
+}
+
+.profile_pic {
+  float: left;
+  width: 35%;
+}
+
+.profile_info {
+  padding: 25px 10px 10px;
+  color: #fff;
+}
+
+.profile_info h2 {
+  font-size: 15px;
+  color: #ECF0F1;
+  margin: 0;
+  font-weight: 300;
+}
+
+.profile_info span {
+  font-size: 13px;
+  line-height: 30px;
+  color: #BAB8B8;
+}
+
+.img-circle {
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+}
+
+.sidebar-footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px 0;
+  background: #172D44;
+  text-align: center;
+}
+
+.sidebar-footer a {
+  color: #728E9B;
+  text-decoration: none;
+  padding: 5px 10px;
+}
+
+.sidebar-footer a:hover {
+  color: #fff;
+}
+
+.right_col_wrapper {
+  margin-left: 230px;
+  min-height: 100vh;
+}
+
+.top_nav {
+  display: block;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 230px;
+  background: #EDEDED;
+  border-bottom: 1px solid #D9DEE4;
+  padding: 10px 20px;
+  z-index: 999;
+}
+
+.nav_menu {
+  float: right;
+}
+
+.navbar-nav {
+  margin: 0;
+  float: right;
+}
+
+.navbar-nav > li > a {
+  color: #5A738E;
+  text-decoration: none;
+  padding: 10px 15px;
+}
+
+.main_content {
+  margin-top: 60px;
+  padding: 20px;
+}
+
+.right_col {
+  margin-top: 60px;
+  padding: 25px 30px;
+  min-height: calc(100vh - 60px);
+}
+
+.x_panel {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+  padding: 10px 17px;
+  display: inline-block;
+  background: #fff;
+  border: 1px solid #E6E9ED;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.x_title {
+  border-bottom: 2px solid #E6E9ED;
+  padding: 1px 5px 6px;
+  margin-bottom: 10px;
+}
+
+.x_title h4 {
+  margin: 5px 0 6px;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.x_content {
+  padding: 0 5px 6px;
+  position: relative;
+  width: 100%;
+  float: left;
+  clear: both;
+  margin-top: 5px;
+}
+
+.x_content2 {
+  padding: 0 5px 6px;
+  position: relative;
+  width: 100%;
+  float: left;
+  clear: both;
+  margin-top: 5px;
+  height: 200px;
+  background: #f9f9f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Sidebar Menu Styles */
+#sidebar-menu {
+  margin-top: 20px;
+}
+
+.main_menu_side ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.main_menu_side .nav li {
+  position: relative;
+}
+
+.main_menu_side .nav li a {
+  color: #C4CFDA;
+  display: block;
+  padding: 13px 15px 12px 15px;
+  text-decoration: none;
+  border-top: 1px solid #436a7e;
+}
+
+.main_menu_side .nav li a:hover {
+  background: #425567;
+  color: #fff;
+}
+
+.main_menu_side .nav li a i {
+  width: 26px;
+  font-size: 15px;
+  text-align: center;
+  margin-right: 6px;
+}
+
+.main_menu_side .nav .child_menu {
+  display: none;
+  background: #3E5367;
+}
+
+.main_menu_side .nav li:hover .child_menu {
+  display: block;
+}
+
+.main_menu_side .nav .child_menu li a {
+  color: #C4CFDA;
+  font-size: 12px;
+  padding: 9px 17px 9px 45px;
+  border-top: 1px solid #485663;
+}
+
+.main_menu_side .nav .child_menu li a:hover {
+  background: #394E63;
+  color: #fff;
+}
+
+footer {
+  background: #fff;
+  padding: 17px 0;
+  border-top: 1px solid #E7E7E7;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 230px;
+}
+
+.pull-right {
+  float: right;
+}
+
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Weather and stats styles */
+.temperature {
+  font-size: 14px;
+  color: #73879C;
+  margin-bottom: 10px;
+}
+
+.degrees {
+  font-size: 36px;
+  font-weight: 400;
+  color: #73879C;
+  margin: 0;
+}
+
+.weather-text {
+  padding: 15px 0;
+}
+
+.weather-text h4 {
+  color: #73879C;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.tile_info {
+  width: 100%;
+}
+
+.tile_info tr td {
+  padding: 5px 0;
+  font-size: 12px;
+}
+
+.tile_info tr td:first-child {
+  color: #73879C;
+}
+
+.tile_info tr td:last-child {
+  text-align: right;
+  font-weight: bold;
+}
+
+.page-title {
+  margin-bottom: 25px;
+}
+
+.page-title h3 {
+  margin: 0;
+  color: #73879C;
+  font-weight: 400;
+}

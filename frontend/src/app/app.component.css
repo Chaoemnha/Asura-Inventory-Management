@@ -1,0 +1,22 @@
+/* Active menu styles */
+.main_menu_side .nav li.active > a {
+  background-color: #1ABB9C !important;
+  color: #fff !important;
+  border-radius: 0;
+}
+
+.main_menu_side .nav li.active > a i {
+  color: #fff !important;
+}
+
+/* Hover effect */
+.main_menu_side .nav li a:hover {
+  background-color: #425567 !important;
+  color: #fff !important;
+}
+
+/* Angular router active class override */
+.main_menu_side .nav li a.active {
+  background-color: #1ABB9C !important;
+  color: #fff !important;
+}
