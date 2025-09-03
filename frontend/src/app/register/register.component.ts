@@ -13,7 +13,7 @@ import { firstValueFrom } from 'rxjs';
   imports: [FormsModule, CommonModule, RouterLink],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
-})
+}) 
 export class RegisterComponent {
   constructor(
     private apiService: ApiService, 
