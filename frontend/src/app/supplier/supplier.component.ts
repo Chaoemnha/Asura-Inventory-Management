@@ -12,7 +12,7 @@ interface Supplier {
   phone: string;
   address: string;
 }
-
+ 
 @Component({
   selector: 'app-supplier',
   standalone: true,

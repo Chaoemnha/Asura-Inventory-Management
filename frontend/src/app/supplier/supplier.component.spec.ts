@@ -5,7 +5,7 @@ import { SupplierComponent } from './supplier.component';
 describe('SupplierComponent', () => {
   let component: SupplierComponent;
   let fixture: ComponentFixture<SupplierComponent>;
-
+ 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SupplierComponent]
