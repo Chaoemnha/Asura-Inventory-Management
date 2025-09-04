@@ -38,7 +38,7 @@ public class ProductServiceImpl implements ProductService {
     private static final String IMAGE_DIRECTORY = System.getProperty("user.dir") + "/product-image/";
 
     //AFTER YOUR FROTEND IS SET UP WROTE THIS SO THE IMAGE IS SAVED IN YOUR FRONTEND PUBLIC FOLDER
-    private static final String IMAGE_DIRECTOR_FRONTEND = "D:\\GitHub\\InventoryManagement\\frontend\\angular\\public\\images\\";
+    private static final String IMAGE_DIRECTOR_FRONTEND = "D:\\GitHub\\InventoryManagement\\frontend\\public\\images\\";
 
 
     @Override
@@ -73,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Response updateProduct(ProductDTO productDTO, MultipartFile imageFile) {
 
-        Product existingProduct = productRepository.findById(productDTO.getProductId())
+        Product existingProduct = productRepository.findById(productDTO.getId())
                 .orElseThrow(()-> new NotFoundException("Product Not Found"));
 
         //check if image is associated with the update request
@@ -191,7 +191,7 @@ public class ProductServiceImpl implements ProductService {
             imageFile.transferTo(desctinationFile); //we are transfering(writing to this folder)
 
         }catch (Exception e){
-            throw new IllegalArgumentException("Error occurend while saving image" + e.getMessage());
+            throw new IllegalArgumentException("Error occurend while saving image " + e.getMessage());
         }
 
         return "/images/"+uniqueFileName;

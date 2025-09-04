@@ -5,6 +5,7 @@ import com.inventory.dto.RegisterRequest;
 import com.inventory.dto.Response;
 import com.inventory.dto.UserDTO;
 import com.inventory.entity.User;
+import com.inventory.entity.User;
 import com.inventory.enums.UserRole;
 import com.inventory.exceptions.InvalidCredentialsException;
 import com.inventory.exceptions.NotFoundException;
@@ -24,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +46,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response registerUser(RegisterRequest registerRequest) {
+        Optional<User> user1 = userRepository.findByName(registerRequest.getName());
+        Optional<User> user2 = userRepository.findByPhoneNumber(registerRequest.getPhoneNumber());
+        Optional<User> user3 = userRepository.findByEmail(registerRequest.getEmail());
+        if (user1.isPresent()||user2.isPresent()||user3.isPresent()) {
+            throw new InvalidCredentialsException("This user already exists");
+        }
 
         UserRole role = UserRole.MANAGER;
 
@@ -156,8 +164,8 @@ public class UserServiceImpl implements UserService {
 
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         userDTO.getTransactions().forEach(transactionDTO -> {
-            transactionDTO.setUser(null);
             transactionDTO.setSupplier(null);
+            transactionDTO.setUser(null);
         });
         return Response.builder()
                 .status(200)
