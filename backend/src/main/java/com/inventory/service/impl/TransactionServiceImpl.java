@@ -76,7 +76,7 @@ public class TransactionServiceImpl implements TransactionService {
         //create a transaction
         Transaction transaction = Transaction.builder()
                 .transactionType(TransactionType.PURCHASE)
-                .status(TransactionStatus.COMPLETED)
+                .status(TransactionStatus.PENDING)
                 .product(product)
                 .user(user)
                 .supplier(supplier)

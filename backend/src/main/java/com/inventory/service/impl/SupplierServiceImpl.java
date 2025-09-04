@@ -4,6 +4,7 @@ package com.inventory.service.impl;
 import com.inventory.dto.Response;
 import com.inventory.dto.SupplierDTO;
 import com.inventory.entity.Supplier;
+import com.inventory.exceptions.InvalidCredentialsException;
 import com.inventory.exceptions.NotFoundException;
 import com.inventory.repository.SupplierRepository;
 import com.inventory.service.SupplierService;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +33,12 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     public Response addSupplier(SupplierDTO supplierDTO) {
+        Optional<Supplier> supplier1 = supplierRepository.findByName(supplierDTO.getName());
+        Optional<Supplier> supplier2 = supplierRepository.findByPhone(supplierDTO.getPhone());
+        Optional<Supplier> supplier3 = supplierRepository.findByEmail(supplierDTO.getEmail());
+        if (supplier1.isPresent()||supplier2.isPresent()||supplier3.isPresent()) {
+            throw new InvalidCredentialsException("Supplier already exists");
+        }
         Supplier supplierToSave = modelMapper.map(supplierDTO, Supplier.class);
         supplierRepository.save(supplierToSave);
 

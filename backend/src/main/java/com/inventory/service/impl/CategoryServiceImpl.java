@@ -4,6 +4,7 @@ package com.inventory.service.impl;
 import com.inventory.dto.CategoryDTO;
 import com.inventory.dto.Response;
 import com.inventory.entity.Category;
+import com.inventory.exceptions.InvalidCredentialsException;
 import com.inventory.exceptions.NotFoundException;
 import com.inventory.repository.CategoryRepository;
 import com.inventory.service.CategoryService;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +33,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Response createCategory(CategoryDTO categoryDTO) {
+        Optional<Category> category = categoryRepository.findByName(categoryDTO.getName());
+        if (category.isPresent()) {
+            throw new InvalidCredentialsException("Category already exists");
+        }
         Category categoryToSave = modelMapper.map(categoryDTO, Category.class);
         categoryRepository.save(categoryToSave);
 
