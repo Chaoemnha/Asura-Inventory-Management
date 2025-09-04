@@ -1,9 +1,6 @@
 package com.inventory.config;
 
-
-import com.inventory.dto.TransactionDTO;
 import com.inventory.dto.UserDTO;
-import com.inventory.entity.Transaction;
 import com.inventory.entity.User;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -12,15 +9,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-class ModelMapperConfig {
+public class UserMapperConfig {
 
-    @Bean(name = "modelMapper")
-    public ModelMapper modelMapper(){
+    @Bean(name = "userMapper")
+    public ModelMapper userMapper(){
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration()
                 .setFieldMatchingEnabled(true)
                 .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE)
                 .setMatchingStrategy(MatchingStrategies.STANDARD);
+        modelMapper.addMappings(new PropertyMap<User, UserDTO>() {
+            @Override
+            protected void configure() {
+                skip(destination.getTransactions());
+            }
+        });
         return modelMapper;
     }
 }

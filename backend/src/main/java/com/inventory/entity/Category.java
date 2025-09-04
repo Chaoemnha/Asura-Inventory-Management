@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Table(name = "categories")
-public class Category implements EmbeddableText {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,10 +36,5 @@ public class Category implements EmbeddableText {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';
-    }
-
-    @Override
-    public String getTextForEmbedding() {
-        return String.format("Category: %s", this.getName());
     }
 }

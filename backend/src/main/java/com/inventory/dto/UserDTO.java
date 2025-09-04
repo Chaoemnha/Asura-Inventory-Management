@@ -3,6 +3,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.inventory.enums.UserRole;
+import com.inventory.service.EmbeddableText;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserDTO {
+public class UserDTO implements EmbeddableText {
 
     private Long id;
 
@@ -30,9 +31,14 @@ public class UserDTO {
 
     private UserRole role;
 
-    private List<TransactionDTO> transactions;
-
     private LocalDateTime createdAt;
 
+    private List<TransactionDTO> transactions;
+
+    @Override
+    public String getTextForEmbedding() {
+        return String.format("User: %s, Email: %s, PhoneNumber: %s, Role: %s", this.getName(),
+                this.getEmail(), this.getPhoneNumber(), this.getRole().toString());
+    }
 
 }

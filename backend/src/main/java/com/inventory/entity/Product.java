@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Table(name = "products")
-public class Product implements EmbeddableText {
+public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -65,11 +65,5 @@ public class Product implements EmbeddableText {
                 ", updatedAt=" + updatedAt +
                 ", createdAt=" + createdAt +
                 '}';
-    }
-
-    @Override
-    public String getTextForEmbedding() {
-        return String.format("Product: %s, Description: %s, Category: %s, Price: %s, StockQuantity: %d", this.getName(),
-            this.getDescription() != null ? this.getDescription() : "", this.getCategory().getName(), price != null ? price.toPlainString() : "N/A", this.getStockQuantity());
     }
 }

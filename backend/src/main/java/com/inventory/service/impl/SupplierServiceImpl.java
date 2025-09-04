@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,8 @@ import java.util.stream.Collectors;
 public class SupplierServiceImpl implements SupplierService {
 
     private final SupplierRepository supplierRepository;
+    @Autowired
+    @Qualifier("modelMapper")
     private final ModelMapper modelMapper;
 
     @Override
@@ -99,6 +103,7 @@ public class SupplierServiceImpl implements SupplierService {
     @Override
     public List<String> extractTextForEmbedding() {
         List<Supplier> suppliers = supplierRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-        return suppliers.stream().map(Supplier::getTextForEmbedding).collect(Collectors.toList());
+        List<SupplierDTO> supplierDTOS = modelMapper.map(suppliers, new TypeToken<List<SupplierDTO>>() {}.getType());
+        return supplierDTOS.stream().map(SupplierDTO::getTextForEmbedding).collect(Collectors.toList());
     }
 }

@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,8 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    @Autowired
+    @Qualifier("modelMapper")
     private final ModelMapper modelMapper;
 
     @Override
@@ -97,6 +101,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<String> extractTextForEmbedding() {
         List<Category> categories = categoryRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-        return categories.stream().map(Category::getTextForEmbedding).collect(Collectors.toList());
+        List<CategoryDTO> categoryDTOS = modelMapper.map(categories, new TypeToken<List<CategoryDTO>>() {}.getType());
+        return categoryDTOS.stream().map(CategoryDTO::getTextForEmbedding).collect(Collectors.toList());
     }
 }
