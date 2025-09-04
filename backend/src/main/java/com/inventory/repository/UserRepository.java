@@ -9,7 +9,8 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
-
+    Optional<User> findByPhoneNumber(String phoneNumber);
+    Optional<User> findByName(String name);
     @Query("SELECT u FROM User u WHERE u.resetPasswordToken = :token")
     User findByResetPasswordToken(@Param("token") String token);
 }
