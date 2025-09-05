@@ -6,6 +6,7 @@ import com.inventory.enums.TransactionStatus;
 import com.inventory.enums.TransactionType;
 import com.inventory.service.EmbeddableText;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
 public class TransactionDTO implements EmbeddableText {
 
     private Long id;

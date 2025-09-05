@@ -64,7 +64,7 @@ public class ProductController {
         productDTO.setPrice(price);
         productDTO.setStockQuantity(stockQuantity);
         productDTO.setCategoryId(categoryId);
-        productDTO.setProductId(productId);
+        productDTO.setId(productId);
         productDTO.setDescription(description);
 
         return ResponseEntity.ok(productService.updateProduct(productDTO, imageFile));
