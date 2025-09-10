@@ -1,0 +1,73 @@
+<div class="qr-scanner-container">
+  <div class="scanner-header">
+    <h3>Quét mã QR để xác nhận</h3>
+    <button class="close-btn" (click)="close()">
+      <i class="fa fa-times"></i>
+    </button>
+  </div>
+
+  <div class="scanner-content">
+    <!-- Camera Selection -->
+    <div class="camera-controls" *ngIf="hasDevices && availableDevices.length > 1">
+      <label for="camera-select">Chọn camera:</label>
+      <select id="camera-select" #cameraSelect (change)="onDeviceSelectChange(cameraSelect.value)">
+        <option *ngFor="let device of availableDevices" [value]="device.deviceId">
+          {{ device.label || 'Camera ' + device.deviceId }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Scanner Component -->
+    <div class="scanner-wrapper" *ngIf="hasPermission">
+      <zxing-scanner
+        #scanner
+        [device]="currentDevice"
+        [torch]="torchEnabled"
+        [tryHarder]="tryHarder"
+        (camerasFound)="onCamerasFound($event)"
+        (codeResult)="onCodeResult($event)"
+        (permissionResponse)="hasPermission = $event"
+        (hasDevices)="hasDevices = $event"
+        (torchCompatible)="onTorchCompatible($event)"
+        (scanError)="onError($event)"
+        [style.width]="'100%'"
+        [style.height]="'300px'">
+      </zxing-scanner>
+    </div>
+
+    <!-- Permission Request -->
+    <div class="permission-request" *ngIf="!hasPermission">
+      <p>Cần quyền truy cập camera để quét mã QR</p>
+      <button class="btn btn-primary" (click)="requestCameraPermission()">
+        Cho phép truy cập camera
+      </button>
+    </div>
+
+    <!-- No Devices Message -->
+    <div class="no-devices" *ngIf="!hasDevices && hasPermission">
+      <p>Không tìm thấy camera nào</p>
+    </div>
+
+    <!-- Scanner Controls -->
+    <div class="scanner-controls" *ngIf="hasPermission && hasDevices">
+      <button class="btn btn-secondary" (click)="toggleTorch()">
+        <i class="fa fa-flash"></i> Flash
+      </button>
+      <button class="btn btn-secondary" (click)="toggleTryHarder()">
+        <i class="fa fa-search"></i> Quét chính xác hơn
+      </button>
+    </div>
+
+    <!-- Result Display -->
+    <div class="scan-result" *ngIf="qrResultString">
+      <h4>Kết quả quét:</h4>
+      <p class="result-text">{{ qrResultString }}</p>
+    </div>
+
+    <!-- Instructions -->
+    <div class="instructions">
+      <p>Đưa camera gần mã QR để quét</p>
+      <p class="small-text">Mã QR sẽ được quét tự động khi phát hiện</p>
+    </div>
+  </div>
+</div>
