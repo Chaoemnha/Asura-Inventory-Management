@@ -1,0 +1,54 @@
+<div class="qr-scanner-container">
+  <div class="scanner-header">
+    <h3>Quét mã QR để xác nhận</h3>
+    <button class="close-btn" (click)="close()">
+      <i class="fa fa-times"></i>
+    </button>
+  </div>
+
+  <div class="scanner-content">
+    <div class="camera-controls" *ngIf="availableDevices.length > 1">
+      <label for="camera-select">Chọn camera:</label>
+      <select id="camera-select" #cameraSelect (change)="onDeviceSelectChange(cameraSelect.value)">
+        <option *ngFor="let device of availableDevices" [value]="device.deviceId">
+          {{ device.label || 'Camera ' + device.deviceId }}
+        </option>
+      </select>
+    </div>
+
+<!-- Barcode scanner component -->
+<zxing-scanner
+  [formats]="allowedFormats"
+  [autostart]="true"
+  [device]="selectedDevice"
+  (scanSuccess)="onCodeResult($event)"
+  (camerasFound)="onDevicesFound($event)"
+  (camerasNotFound)="onHasDevices(false)"
+  (scanError)="onError($event)"
+></zxing-scanner>
+
+<!-- Display scanned result -->
+<p *ngIf="scannedResult">
+  <strong>Scanned Code:</strong> {{ scannedResult }}
+</p>
+
+    <!-- Permission Request -->
+    <div class="permission-request" *ngIf="!hasPermission">
+      <p>Cần quyền truy cập camera để quét mã QR</p>
+      <button class="btn btn-primary" (click)="requestCameraPermission()">
+        Cho phép truy cập camera
+      </button>
+    </div>
+
+    <!-- Display scanned result -->
+<p *ngIf="scannedResult">
+  <strong>Scanned Code:</strong> {{ scannedResult }}
+</p>
+    
+
+    <!-- Instructions -->
+    <div class="instructions">
+      <p>Đưa camera gần mã QR để nhận diện</p>
+    </div>
+  </div>
+</div>
