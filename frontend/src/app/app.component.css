@@ -1,6 +1,5 @@
 /* Active menu styles */
 .main_menu_side .nav li.active > a {
-  background-color: #1ABB9C !important;
   color: #fff !important;
   border-radius: 0;
 }
