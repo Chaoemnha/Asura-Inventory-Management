@@ -13,4 +13,5 @@ public interface ProductService {
     Response getProductById(Long id);
     Response deleteProduct(Long id);
     List<String> extractTextForEmbedding();
+    Response getAllProductsByCategoryName(String categoryName);
 }

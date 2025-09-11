@@ -1,5 +1,6 @@
 package com.inventory.service.impl;
 
+import com.inventory.dto.CategoryDTO;
 import com.inventory.dto.ProductDTO;
 import com.inventory.dto.Response;
 import com.inventory.entity.Category;
@@ -167,6 +168,19 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         List<ProductDTO> productDTOS = modelMapper.map(products, new TypeToken<List<ProductDTO>>() {}.getType());
         return productDTOS.stream().map(ProductDTO::getTextForEmbedding).collect(Collectors.toList());
+    }
+
+    @Override
+    public Response getAllProductsByCategoryName(String categoryName) {
+        Category category = categoryRepository.findByName(categoryName).orElseThrow(()-> new NotFoundException("Category Not Found"));
+        List<Product> products = productRepository.findAllByCategory_Name(categoryName, Sort.by(Sort.Direction.DESC, "id"));
+        List<ProductDTO> productDTOS = modelMapper.map(products, new TypeToken<List<ProductDTO>>() {}.getType());
+
+        return Response.builder()
+                .status(200)
+                .category(modelMapper.map(category, CategoryDTO.class))
+                .products(productDTOS)
+                .build();
     }
 
     private String saveImageToFrontendPublicFolder(MultipartFile imageFile){
