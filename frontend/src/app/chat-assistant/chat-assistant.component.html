@@ -1,0 +1,32 @@
+<input type="checkbox" id="check">
+    <label class="chat-btn" for="check">
+        <i class="fa fa-android comment"></i>
+        <i class="fa fa-close close"></i>
+    </label>
+    
+    <div class="wrapper">
+        <div class="header">
+            <h6><i class="fa fa-android"></i>AI Assistant</h6>
+            <div class="chat-status">Online - Ready to help</div>
+        </div>
+        <div class="p-2 chat-messages" id="chatMessages">
+        <p class="text-center">
+            <i class="fa fa-android" style="font-size: 24px; margin-bottom: 10px;"></i><br>
+                Hello! I am AI Assistant. Ask me anything you want to know.</p>
+        </div>
+        <div class="typing-indicator" id="typingIndicator" style="display: none;">
+            <i class="fa fa-robot"></i> AI thinking<span class="typing-dots">...</span>
+        </div>
+        <div class="chat-form">
+            <div class="input-group">
+                <input type="text" 
+                       class="form-control message-input" 
+                       id="messageInput" 
+                       placeholder="Type you question..."
+                       autocomplete="off">
+                <button class="send-btn" id="sendBtn" type="button">
+                    <i class="fa fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
