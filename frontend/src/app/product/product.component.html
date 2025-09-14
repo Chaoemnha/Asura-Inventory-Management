@@ -2,7 +2,10 @@
   <div class="x_title">
     <div class="page-title row">
       <div class="col-sm-6 col-12 text-left">
-        <h1>Product List</h1>
+        <h1>Product List 
+          <small *ngIf="selectedCategory" class="text-muted"> - {{selectedCategory}}</small>
+          <small *ngIf="!selectedCategory" class="text-muted"> - All Categories</small>
+        </h1>
       </div>
 
       <div class="col-sm-6 col-12 text-right">

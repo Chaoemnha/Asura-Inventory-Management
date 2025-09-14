@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CustomPaginationComponent } from '../custom-pagination/custom-pagination.component';
 import { ApiService } from '../service/api.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { NotificationService } from '../service/notification.service';
 
 @Component({
@@ -17,6 +17,7 @@ export class ProductComponent implements OnInit {
   constructor(
     private apiService: ApiService, 
     private router: Router,
+    private route: ActivatedRoute,
     private notificationService: NotificationService
   ) {}
   products: any[] = [];
@@ -25,21 +26,62 @@ export class ProductComponent implements OnInit {
   currentPage: number = 1;
   totalPages: number = 0;
   itemsPerPage: number = 10;
+  selectedCategory: string = '';
+  allProducts: any[] = []; // Store all products for filtering
 
   ngOnInit(): void {
-    this.fetchProducts();
+    // Listen to query params changes
+    this.route.queryParams.subscribe(params => {
+      this.selectedCategory = params['category'] || '';
+      this.currentPage = 1; // Reset to first page when category changes
+      this.fetchProducts();
+    });
   }
 
   //FETCH PRODUCTS
   fetchProducts(): void {
+    if(this.selectedCategory!=''){
+      this.apiService.getAllProductsByCategoryName(this.selectedCategory).subscribe({
+      next: (res: any) => {
+        this.allProducts = res.products || [];
+        if (this.valueToSearch) {
+          this.allProducts = this.allProducts.filter(product =>
+            product.name.toLowerCase().includes(this.valueToSearch.toLowerCase()) ||
+            product.sku.toLowerCase().includes(this.valueToSearch.toLowerCase())
+          );
+        }
+
+        this.totalPages = Math.ceil(this.allProducts.length / this.itemsPerPage);
+
+        this.products = this.allProducts.slice(
+          (this.currentPage - 1) * this.itemsPerPage,
+          this.currentPage * this.itemsPerPage
+        );
+        
+      },
+      error: (error:any) => {
+        this.notificationService.showError('Error',
+          error?.error?.message ||
+            error?.message ||
+            'Unable to fetch products: ' + error
+        );
+      },
+    });
+    }
+    else
     this.apiService.getAllProducts().subscribe({
       next: (res: any) => {
-        const products = res.products || [];
-        console.log(products[0].imageUrl)
+        this.allProducts = res.products || [];
+        if (this.valueToSearch) {
+          this.allProducts = this.allProducts.filter(product =>
+            product.name.toLowerCase().includes(this.valueToSearch.toLowerCase()) ||
+            product.sku.toLowerCase().includes(this.valueToSearch.toLowerCase())
+          );
+        }
 
-        this.totalPages = Math.ceil(products.length / this.itemsPerPage);
+        this.totalPages = Math.ceil(this.allProducts.length / this.itemsPerPage);
 
-        this.products = products.slice(
+        this.products = this.allProducts.slice(
           (this.currentPage - 1) * this.itemsPerPage,
           this.currentPage * this.itemsPerPage
         );

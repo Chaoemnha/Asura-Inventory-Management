@@ -41,7 +41,7 @@ public class UserController {
 
 
     @GetMapping("/current")
-    public ResponseEntity<User> getCurrentUser(){
-        return ResponseEntity.ok(userService.getCurrentLoggedInUser());
+    public ResponseEntity<UserDTO> getCurrentUser(@RequestParam(value = "onSession", required = false, defaultValue = "false") boolean onSession){
+        return ResponseEntity.ok(userService.getCurrentLoggedInUser(onSession));
     }
 }

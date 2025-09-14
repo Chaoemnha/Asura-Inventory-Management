@@ -1,21 +1,25 @@
 package com.inventory.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.inventory.dto.Response;
 import com.inventory.dto.TransactionDTO;
 import com.inventory.dto.TransactionRequest;
 import com.inventory.enums.TransactionStatus;
 import com.inventory.enums.TransactionType;
 
+import java.io.File;
 import java.util.List;
 
 public interface TransactionService {
-    Response restockInventory(TransactionRequest transactionRequest);
-    Response sell(TransactionRequest transactionRequest);
-    Response returnToSupplier(TransactionRequest transactionRequest);
+    Response restockInventory(TransactionRequest transactionRequest) throws JsonProcessingException;
+    Response sell(TransactionRequest transactionRequest) throws JsonProcessingException;
+    Response returnToSupplier(TransactionRequest transactionRequest) throws JsonProcessingException;
     Response getAllTransactions(int page, int size, String searchText);
     Response getTransactionById(Long id);
     List<TransactionDTO> getAllTransactionByType(List<TransactionType> transactionTypes);
     Response getAllTransactionByMonthAndYear(int month, int year);
-    Response updateTransactionStatus(Long transactionId, TransactionStatus transactionStatus);
+    Response updateTransactionStatus(Long transactionId, TransactionStatus transactionStatus) throws JsonProcessingException;
     List<String> extractTextForEmbedding();
+    Response updateTransactionStatusViaQR(Long transactionId, TransactionStatus status) throws JsonProcessingException;
+    File generateInvoicePdfWithQR(Long transactionId, TransactionStatus transactionStatus) throws Exception;
 }

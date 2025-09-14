@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../service/api.service';
 import { Router } from '@angular/router';
 import { NotificationService } from '../service/notification.service';
+import { WebSocketService } from '../service/websocket.service';
+import { Subscription } from 'rxjs';
 
 interface Supplier {
   id: string;
@@ -20,7 +22,7 @@ interface Supplier {
   templateUrl: './supplier.component.html',
   styleUrl: './supplier.component.css',
 })
-export class SupplierComponent implements OnInit {
+export class SupplierComponent implements OnInit, OnDestroy {
   suppliers: Supplier[] = [];
   supplierName: string = '';
   supplierEmail: string = '';
@@ -28,15 +30,50 @@ export class SupplierComponent implements OnInit {
   supplierAddress: string = '';
   isEditing: boolean = false;
   editingSupplierId: string | null = null;
-
+  private wsSubscription!: Subscription;
   constructor(
     private apiService: ApiService, 
     private router: Router,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private webSocketService: WebSocketService
   ) {}
 
   ngOnInit(): void {
     this.getSuppliers();
+    this.wsSubscription = this.webSocketService.getMessages().subscribe({
+      next: (message: any) => {
+        this.handleWebSocketMessage(message);
+      },
+      error: (error: any) => {
+        console.error('WebSocket error in SupplierComponent:', error);
+      }
+    });
+  }
+
+  private handleWebSocketMessage(message: any): void {    
+    switch (message.type) {
+      case "SUPPLIER_UPDATED_RENDER":
+        this.updateSupplierInList(message.data);
+        break;
+        
+      case 'SUPPLIER_ADDED_RENDER':
+        this.addSupplierToList(message.data);
+        break;
+        
+      case 'SUPPLIER_DELETED_RENDER':
+        this.removeSupplierFromList(message.supplierId);
+        if (this.editingSupplierId === message.supplierId) {
+          this.cancel();
+        }
+        break;
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.wsSubscription) {
+      this.wsSubscription.unsubscribe();
+    }
+    this.webSocketService.disconnect();
   }
 
   getSuppliers(): void {
@@ -56,6 +93,24 @@ export class SupplierComponent implements OnInit {
         );
       },
     });
+  }
+
+  private updateSupplierInList(updatedSupplier: Supplier): void{
+    const index = this.suppliers.findIndex(cat=>cat.id===updatedSupplier.id)
+    if(index!=-1){
+      this.suppliers[index] = updatedSupplier;
+    }
+  }
+  
+  private addSupplierToList(newSupplier: Supplier): void {
+    const exists = this.suppliers.some(cat => cat.id === newSupplier.id);
+    if (!exists) {
+      this.suppliers.push(newSupplier);
+    }
+  }
+
+  private removeSupplierFromList(supplierId: string): void {
+    this.suppliers = this.suppliers.filter(cat => cat.id !== supplierId.toString());
   }
 
   navigateToAddSupplierPage(): void {

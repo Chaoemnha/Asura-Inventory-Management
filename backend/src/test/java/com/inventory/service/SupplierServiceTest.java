@@ -1,5 +1,6 @@
 package com.inventory.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.inventory.dto.Response;
 import com.inventory.dto.SupplierDTO;
 import com.inventory.entity.Supplier;
@@ -49,7 +50,7 @@ public class SupplierServiceTest {
 
     @DisplayName("Testcase: kiem thu phuong thuc addSupplier")
     @Test
-    public void testAddSupplier() {
+    public void testAddSupplier() throws JsonProcessingException {
         //Given phuong thuc will return: chi dinh kq tra ve
         BDDMockito.given(supplierRepository.findByName(supplierDTO.getName())).willReturn(Optional.empty());
         BDDMockito.given(supplierRepository.findByEmail(supplierDTO.getEmail())).willReturn(Optional.empty());
@@ -84,7 +85,7 @@ public class SupplierServiceTest {
 
     @DisplayName("Testcase: kiem thu phuong thuc update")
     @Test
-    public void testUpdateSupplier() {
+    public void testUpdateSupplier() throws JsonProcessingException {
         supplierDTO.setName("NCC Cau Giay");
         BDDMockito.given(supplierRepository.findById(1L)).willReturn(Optional.of(supplier));
         BDDMockito.given(supplierRepository.save(supplier)).willReturn(supplier);
@@ -94,7 +95,7 @@ public class SupplierServiceTest {
 
     @DisplayName("Testcase: kiem thu phuong thuc delete")
     @Test
-    public void testDeleteSupplier() {
+    public void testDeleteSupplier() throws JsonProcessingException {
         BDDMockito.given(supplierRepository.findById(1L)).willReturn(Optional.of(supplier));
         Response response = supplierService.deleteSupplier(1L);
         assertThat(response.getStatus()).isEqualTo(200);

@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../service/api.service';
 import { NotificationService } from '../service/notification.service';
+import { Subscription } from 'rxjs';
+import { WebSocketService } from '../service/websocket.service';
 
 interface Category{
   id: string,
@@ -15,19 +17,80 @@ interface Category{
   templateUrl: './category.component.html',
   styleUrl: './category.component.css'
 })
-export class CategoryComponent {
+export class CategoryComponent implements OnInit, OnDestroy{
   categories: Category[] = [];
   categoryName: string = '';
   isEditing: boolean = false;
   editingCategoryId: string | null = null;
+  private wsSubscription!: Subscription;
 
   constructor(
     private apiService: ApiService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private webSocketService: WebSocketService
   ){};
 
   ngOnInit(){
     this.getCategories();
+
+    //ket noi ws
+    this.wsSubscription = this.webSocketService.getMessages().subscribe({
+      next: (message:any)=>{
+        this.handleWebSocketMessage(message);
+      },
+      error: (error:any)=>{
+        console.error('Ws ms err: ',error);
+      }
+    })
+  }
+
+  ngOnDestroy(){
+    if(this.wsSubscription){
+      this.wsSubscription.unsubscribe();
+    }
+    this.webSocketService.disconnect();
+  }
+
+  //Xu ly tin nhan tu ws
+  private handleWebSocketMessage(message: any): void{
+    switch (message.type) {
+      case "CATEGORY_UPDATED":
+        this.updateCategoryInList(message.data);
+        break;
+        
+      case 'CATEGORY_ADDED':
+        this.addCategoryToList(message.data);
+        break;
+        
+      case 'CATEGORY_DELETED':
+        this.removeCategoryFromList(message.categoryId);
+        // Reset form nếu đang edit category bị xóa
+        if (this.editingCategoryId === message.categoryId) {
+          this.cancel();
+        }
+        break;
+    }
+  }
+
+  private updateCategoryInList(updatedCategory: Category): void{
+    const index = this.categories.findIndex(cat=>cat.id.toString()===updatedCategory.id)
+    if(index!=-1){
+      this.categories[index] = updatedCategory;
+      if(this.editingCategoryId===updatedCategory.id){
+        this.categoryName = updatedCategory.name;
+      }
+    }
+  }
+  
+  private addCategoryToList(newCategory: Category): void {
+    const exists = this.categories.some(cat => cat.id.toString() === newCategory.id);
+    if (!exists) {
+      this.categories.push(newCategory);
+    }
+  }
+
+  private removeCategoryFromList(categoryId: string): void {
+    this.categories = this.categories.filter(cat => cat.id !== categoryId);
   }
 
   getCategories():void{
@@ -53,7 +116,6 @@ export class CategoryComponent {
         if(res.status==200){
           this.notificationService.showSuccess('Success', "Category add successfully");
           this.categoryName='';
-          this.getCategories();
         }
       },
       error:(error:any)=>{
@@ -78,7 +140,6 @@ export class CategoryComponent {
           this.notificationService.showSuccess('Success', "Category updated successfully");
           this.categoryName='';
           this.isEditing=false;
-          this.getCategories();
         }
       },
       error: (error: any)=>{
@@ -100,7 +161,6 @@ export class CategoryComponent {
         next: (res:any)=>{
           if(res.status==200){
            this.notificationService.showSuccess('Success', "Category deleted successfully!");
-           this.getCategories(); 
           }
         },
         error: (error:any)=>{
