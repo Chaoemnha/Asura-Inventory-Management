@@ -1,0 +1,16 @@
+package com.inventory.config;
+import com.inventory.utils.WebSocketHandler;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.socket.config.annotation.*;
+
+@Configuration
+@EnableWebSocket
+public class WebSocketConfig implements WebSocketConfigurer {
+
+    @Override
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        registry.addHandler(new WebSocketHandler(), "/changes")
+                .setAllowedOrigins("http://localhost:4200") // Angular URL
+                .setAllowedOriginPatterns("*");
+    }
+}
