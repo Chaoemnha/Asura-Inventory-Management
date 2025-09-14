@@ -53,6 +53,7 @@
             background-color: #fff;
             border-radius: 5px;
             opacity: 0;
+            pointer-events: none;
             transition: all 0.4s;
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
             z-index: 999;
@@ -60,6 +61,7 @@
         
         #check:checked ~ .wrapper {
             opacity: 1;
+            pointer-events: auto;
         }
         
         .header {

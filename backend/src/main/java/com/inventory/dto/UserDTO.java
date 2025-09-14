@@ -37,6 +37,8 @@ public class UserDTO implements EmbeddableText {
 
     private List<TransactionDTO> transactions;
 
+    private SupplierDTO supplier;
+
     @Override
     public String getTextForEmbedding() {
         return String.format("User: %s, Email: %s, PhoneNumber: %s, Role: %s", this.getName(),

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import {
   Router,
   RouterLink,
@@ -8,9 +8,10 @@ import {
   ActivatedRoute,
 } from '@angular/router';
 import { ApiService } from './service/api.service';
-import { filter } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { sha256 } from 'js-sha256';
 import { ChatAssistantComponent } from './chat-assistant/chat-assistant.component';
+import { WebSocketService } from './service/websocket.service';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,7 @@ import { ChatAssistantComponent } from './chat-assistant/chat-assistant.componen
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'Inventory Management';
   activeRoute: string = '';
   user: any = {
@@ -31,12 +32,14 @@ export class AppComponent implements OnInit {
   categories: any[] = [];
   showProductSubmenu: boolean = false;
   isCategory:boolean=false;
+  private wsSubscription!: Subscription;
 
   constructor(
     private apiService: ApiService,
     private router: Router,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private webSocketService:WebSocketService
   ) {
     // Cu, tu dong getLogged, moi, kiem tra auth roi moi get
     if (this.apiService.isAuthenticated()) {
@@ -64,6 +67,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    //Ket noi websocket tổng
+    this.webSocketService.connect();
     // Kiem tra su thay doi cua route de cap nhat menu theo
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
@@ -92,6 +97,13 @@ export class AppComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(){
+    if(this.wsSubscription){
+      this.wsSubscription.unsubscribe();
+    }
+    this.webSocketService.disconnect();
+  }
+  
   private loadCategories(): void {
     if (this.apiService.isAdmin()) {
       this.apiService.getAllCategory().subscribe({

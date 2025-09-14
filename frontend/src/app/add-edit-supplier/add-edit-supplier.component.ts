@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../service/api.service';
 import { NotificationService } from '../service/notification.service';
+import { WebSocketService } from '../service/websocket.service';
 
 @Component({
   selector: 'app-add-edit-supplier',
@@ -13,7 +14,7 @@ import { NotificationService } from '../service/notification.service';
   styleUrl: './add-edit-supplier.component.css',
 })
 export class AddEditSupplierComponent implements OnInit {
-  constructor(private apiService: ApiService, private router: Router, private notificationService: NotificationService) {}
+  constructor(private apiService: ApiService, private router: Router, private notificationService: NotificationService, private webSocketService: WebSocketService) {}
   message: string = '';
   isEditing: boolean = false;
   supplierId: string | null = null;
@@ -32,7 +33,7 @@ export class AddEditSupplierComponent implements OnInit {
       this.fetchSupplier();
     }
   }
-
+    
   fetchSupplier(): void {
     this.apiService.getSupplierById(this.supplierId!).subscribe({
       next: (res: any) => {

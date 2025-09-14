@@ -1,5 +1,6 @@
 package com.inventory.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.inventory.dto.Response;
 import com.inventory.dto.SupplierDTO;
 import com.inventory.service.SupplierService;
@@ -19,7 +20,7 @@ public class SupplierController {
 
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Response> addSupplier(@RequestBody @Valid SupplierDTO supplierDTO) {
+    public ResponseEntity<Response> addSupplier(@RequestBody @Valid SupplierDTO supplierDTO) throws JsonProcessingException {
         return ResponseEntity.ok(supplierService.addSupplier(supplierDTO));
     }
 
@@ -33,13 +34,13 @@ public class SupplierController {
     }
     @PutMapping("/update/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Response> updateSupplier(@PathVariable Long id, @RequestBody @Valid SupplierDTO supplierDTO) {
+    public ResponseEntity<Response> updateSupplier(@PathVariable Long id, @RequestBody @Valid SupplierDTO supplierDTO) throws JsonProcessingException {
         return ResponseEntity.ok(supplierService.updateSupplier(id, supplierDTO));
     }
 
     @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<Response> deleteSupplier(@PathVariable Long id) {
+    public ResponseEntity<Response> deleteSupplier(@PathVariable Long id) throws JsonProcessingException {
         return ResponseEntity.ok(supplierService.deleteSupplier(id));
     }
 

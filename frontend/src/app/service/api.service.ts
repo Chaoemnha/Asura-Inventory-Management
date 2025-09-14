@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, withJsonpSupport } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import CryptoJS from 'crypto-js';
 
@@ -7,6 +7,11 @@ import CryptoJS from 'crypto-js';
   providedIn: 'root',
 })
 export class ApiService {
+  getAllProductsByCategoryName(categoryName: string): Observable<any> {
+    return this.http.get(`${ApiService.BASE_URL}/products/all/${categoryName}`, {
+      headers: this.getHeader(),
+    });
+  }
   authStatuschanged = new EventEmitter<void>();
   private static BASE_URL = 'http://localhost:8080/api';
   private static ENCRYPTION_KEY = 'luannguyen';
@@ -73,7 +78,9 @@ export class ApiService {
   }
   
   getLoggedInUserInfo(): Observable<any> {
-    return this.http.get(`${ApiService.BASE_URL}/users/current`, {
+    const url = new URL(`${ApiService.BASE_URL}/users/current`);
+    url.searchParams.append("onSession", "true");
+    return this.http.get(url.toString(), {
       headers: this.getHeader(),
     });
   }
@@ -281,6 +288,47 @@ export class ApiService {
 
   logged(){
     this.authStatuschanged.emit();
+  }
+
+  exportInvoiceWithQR(id: any, status: any) {
+    const token = this.getFromStorageAndDecrypt('token');
+    const url = new URL(`${ApiService.BASE_URL}/transactions/export-invoice-qr`);
+    url.searchParams.append('transactionId', id);
+    url.searchParams.append('transactionStatus', status);
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.blob();
+    }).then(blob => {
+      const fileName = 'invoiceQR';
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.download = `${fileName}.pdf`;
+      
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+    })
+    .catch(error => {
+      console.error('Export error:', error);
+    });
+  }
+  
+  goToQRLink(input: any): Observable<any> {
+    return this.http.get(input, {
+      headers: this.getHeader(),
+    });
   }
 
 }

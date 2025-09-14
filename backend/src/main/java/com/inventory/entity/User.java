@@ -54,6 +54,13 @@ public class User {
     @Column(name = "resetToken_created_date")
     private Date rsTokenCrDate;
 
+    @Column(name = "address")
+    private String address;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id")
+    private Supplier supplier;
+
     @Override
     public String toString() {
         return "User{" +

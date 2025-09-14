@@ -22,6 +22,7 @@ public class UserMapperConfig {
             @Override
             protected void configure() {
                 skip(destination.getTransactions());
+                skip(destination.getSupplier());
             }
         });
         return modelMapper;

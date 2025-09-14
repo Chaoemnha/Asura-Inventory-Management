@@ -38,7 +38,7 @@ public class SecurityFilter {
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
                 )
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/auth/**", "/api/auth/fogot-password", "/api/auth/reset-password").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/auth/fogot-password", "/api/auth/reset-password", "/changes/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -1,5 +1,6 @@
 package com.inventory.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.inventory.dto.CategoryDTO;
 import com.inventory.dto.Response;
 import com.inventory.entity.Category;
@@ -49,7 +50,7 @@ public class CategoryServiceTest {
 
     @DisplayName("Testcase: kiem thu phuong thuc createCategory")
     @Test
-    public void testCreateCategory() {
+    public void testCreateCategory() throws JsonProcessingException {
         //Given phuong thuc will return: chi dinh kq tra ve
         BDDMockito.given(categoryRepository.findByName(categoryDTO.getName())).willReturn(Optional.empty());
         //Không cần test modelMapper
@@ -82,7 +83,7 @@ public class CategoryServiceTest {
 
     @DisplayName("Testcase: kiem thu phuong thuc update")
     @Test
-    public void testUpdateCategory() {
+    public void testUpdateCategory() throws JsonProcessingException {
         categoryDTO.setName("laptop");
         BDDMockito.given(categoryRepository.findById(1L)).willReturn(Optional.of(category));
         BDDMockito.given(categoryRepository.save(category)).willReturn(category);
@@ -92,7 +93,7 @@ public class CategoryServiceTest {
 
     @DisplayName("Testcase: kiem thu phuong thuc delete")
     @Test
-    public void testDeleteCategory() {
+    public void testDeleteCategory() throws JsonProcessingException {
         BDDMockito.given(categoryRepository.findById(1L)).willReturn(Optional.of(category));
         Response response = categoryService.deleteCategory(1L);
         assertThat(response.getStatus()).isEqualTo(200);
