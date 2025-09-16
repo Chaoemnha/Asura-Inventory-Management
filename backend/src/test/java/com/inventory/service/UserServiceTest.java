@@ -43,9 +43,6 @@ public class UserServiceTest {
     @Qualifier("modelMapper")
     private ModelMapper modelMapper;
 
-    @Qualifier("userMapper")
-    private ModelMapper userMapper;
-
     @Mock
     private PasswordEncoder passwordEncoder;
 
@@ -115,7 +112,7 @@ public class UserServiceTest {
         BDDMockito.given(securityContext.getAuthentication()).willReturn(authentication);
         SecurityContextHolder.setContext(securityContext);
         BDDMockito.given(userRepository.findByEmail("luuanz@yahoo.com")).willReturn(Optional.of(user));
-        User user = userService.getCurrentLoggedInUser();
+        UserDTO user = userService.getCurrentLoggedInUser();
         assertThat(user.getId()).isEqualTo(1L);
     }
 
@@ -135,18 +132,5 @@ public class UserServiceTest {
         BDDMockito.given(userRepository.findById(1L)).willReturn(Optional.of(user));
         Response response = userService.deleteUser(1L);
         assertThat(response.getStatus()).isEqualTo(200);
-    }
-
-    @DisplayName("Testcase: kiem thu phuong thuc extract")
-    @Test
-    public void extractTextForEmbedding() throws NoSuchFieldException, IllegalAccessException {
-        BDDMockito.given(userRepository.findAll(Sort.by(Sort.Direction.DESC, "id"))).willReturn(List.of(user));
-        // Phan nay cung la setup nhung chi before moi testcase nay thoi, nen ko can cho vao setUp@BeforeEach
-        userMapper = new ModelMapper();
-        Field field = UserServiceImpl.class.getDeclaredField("userMapper");
-        field.setAccessible(true);
-        field.set(userService, userMapper);
-        List<String> res = userService.extractTextForEmbedding();
-        assertThat(res.size()).isEqualTo(1);
     }
 }
