@@ -7,10 +7,25 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p " +
-            "LEFT JOIN p.category c WHERE c.name = :categoryName")
-    List<Product> findAllByCategory_Name(@Param("categoryName") String categoryName, Sort sort);
+            "LEFT JOIN p.category c " +
+            "WHERE c.name = :categoryName " +
+            "AND (" +
+            ":searchText IS NULL OR " +
+            "LOWER(p.name) LIKE LOWER(CONCAT('%', :searchText, '%')) OR " +
+            "LOWER(p.sku) LIKE LOWER(CONCAT('%', :searchText, '%')) OR " +
+            "CAST(p.stockQuantity AS string) = :searchText" +
+            ")")
+    List<Product> findAllByCategory_Name(@Param("categoryName") String categoryName, @Param("searchText") String searchText, Sort sort);
+
+    @Query("SELECT p FROM Product p " +
+            "WHERE (" +
+            ":searchText IS NULL OR " +
+            "LOWER(p.name) LIKE LOWER(CONCAT('%', :searchText, '%')) OR " +
+            "LOWER(p.sku) LIKE LOWER(CONCAT('%', :searchText, '%')) OR " +
+            "CAST(p.stockQuantity AS string) = :searchText" +
+            ")")
+    List<Product> findAll(@Param("searchText") String searchText, Sort sort);
 }

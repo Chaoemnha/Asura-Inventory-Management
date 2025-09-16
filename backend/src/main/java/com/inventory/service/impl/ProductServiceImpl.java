@@ -122,9 +122,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Response getAllProducts() {
+    public Response getAllProducts(String searchText) {
 
-        List<Product> products = productRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        List<Product> products = productRepository.findAll(searchText, Sort.by(Sort.Direction.DESC, "id"));
 
         List<ProductDTO> productDTOS = modelMapper.map(products, new TypeToken<List<ProductDTO>>() {}.getType());
 
@@ -164,16 +164,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<String> extractTextForEmbedding() {
-        List<Product> products = productRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-        List<ProductDTO> productDTOS = modelMapper.map(products, new TypeToken<List<ProductDTO>>() {}.getType());
-        return productDTOS.stream().map(ProductDTO::getTextForEmbedding).collect(Collectors.toList());
-    }
-
-    @Override
-    public Response getAllProductsByCategoryName(String categoryName) {
+    public Response getAllProductsByCategoryName(String categoryName, String searchText) {
         Category category = categoryRepository.findByName(categoryName).orElseThrow(()-> new NotFoundException("Category Not Found"));
-        List<Product> products = productRepository.findAllByCategory_Name(categoryName, Sort.by(Sort.Direction.DESC, "id"));
+        List<Product> products = productRepository.findAllByCategory_Name(categoryName, searchText, Sort.by(Sort.Direction.DESC, "id"));
         List<ProductDTO> productDTOS = modelMapper.map(products, new TypeToken<List<ProductDTO>>() {}.getType());
 
         return Response.builder()
