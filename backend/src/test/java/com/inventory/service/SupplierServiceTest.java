@@ -100,12 +100,4 @@ public class SupplierServiceTest {
         Response response = supplierService.deleteSupplier(1L);
         assertThat(response.getStatus()).isEqualTo(200);
     }
-
-    @DisplayName("Testcase: kiem thu phuong thuc extract")
-    @Test
-    public void extractTextForEmbedding() {
-        BDDMockito.given(supplierRepository.findAll(Sort.by(Sort.Direction.DESC, "id"))).willReturn(List.of(supplier));
-        List<String> res = supplierService.extractTextForEmbedding();
-        assertThat(res.size()).isEqualTo(1);
-    }
 }

@@ -102,7 +102,7 @@ public class ProductServiceTest {
 
         given(productRepository.findAll(Sort.by(Sort.Direction.DESC, "id"))).willReturn(List.of(product));
         //Test return kem productDTOS
-        Response response = productService.getAllProducts();
+        Response response = productService.getAllProducts("a");
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response
                 .getProducts()
@@ -128,13 +128,5 @@ public class ProductServiceTest {
         given(productRepository.findById(1L)).willReturn(Optional.of(product));
         Response response = productService.deleteProduct(1L);
         assertThat(response.getStatus()).isEqualTo(200);
-    }
-
-    @DisplayName("Testcase: kiem thu phuong thuc extract")
-    @Test
-    public void extractTextForEmbedding() {
-        given(productRepository.findAll(Sort.by(Sort.Direction.DESC, "id"))).willReturn(List.of(product));
-        List<String> res = productService.extractTextForEmbedding();
-        assertThat(res.size()).isEqualTo(1);
     }
 }
