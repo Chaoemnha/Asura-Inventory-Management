@@ -43,7 +43,7 @@
                       <i class="fa fa-tags"></i> Category
                     </a>
                   </li>
-                  <li *ngIf="isAdmin()" [class.active]="isActiveRoute('/product')">
+                  <li *ngIf="isAuth()" [class.active]="isActiveRoute('/product')">
                     <a (click)="toggleProductSubmenu($event)">
                       <i class="fa fa-cube"></i> Product 
                       <span class="fa" [class.fa-chevron-down]="!showProductSubmenu" [class.fa-chevron-up]="showProductSubmenu"></span>
@@ -62,12 +62,12 @@
                       <i class="fa fa-truck"></i> Supplier
                     </a>
                   </li>
-                  <li *ngIf="isAuth()" [class.active]="isActiveRoute('/purchase')">
+                  <li *ngIf="isStaff()||isAdmin()" [class.active]="isActiveRoute('/purchase')">
                     <a [routerLink]="['/purchase']" routerLinkActive="active">
                       <i class="fa fa-shopping-cart"></i> Purchase
                     </a>
                   </li>
-                  <li *ngIf="isAuth()" [class.active]="isActiveRoute('/sell')">
+                  <li *ngIf="isCustomer()||isAdmin()" [class.active]="isActiveRoute('/sell')">
                     <a [routerLink]="['/sell']" routerLinkActive="active">
                       <i class="fa fa-money"></i> Sell
                     </a>

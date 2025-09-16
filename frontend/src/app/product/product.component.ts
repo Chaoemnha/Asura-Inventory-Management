@@ -38,10 +38,14 @@ export class ProductComponent implements OnInit {
     });
   }
 
+  isAdmin(): boolean {
+    return this.apiService.isAdmin();
+  }
+
   //FETCH PRODUCTS
   fetchProducts(): void {
-    if(this.selectedCategory!=''){
-      this.apiService.getAllProductsByCategoryName(this.selectedCategory).subscribe({
+    if(this.selectedCategory!){
+      this.apiService.getAllProductsByCategoryName(this.selectedCategory, this.searchInput).subscribe({
       next: (res: any) => {
         this.allProducts = res.products || [];
         if (this.valueToSearch) {
@@ -69,7 +73,7 @@ export class ProductComponent implements OnInit {
     });
     }
     else
-    this.apiService.getAllProducts().subscribe({
+    this.apiService.getAllProducts(this.searchInput).subscribe({
       next: (res: any) => {
         this.allProducts = res.products || [];
         if (this.valueToSearch) {

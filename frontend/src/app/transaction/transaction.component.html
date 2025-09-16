@@ -19,13 +19,13 @@
         </div>
       </div>
     </div>
-				<button class="btn btn-app" (click)="exportTransactions('purchase')">
+				<button *ngIf="isAdmin()" class="btn btn-app" (click)="exportTransactions('purchase')">
 					<i class="fa fa-cloud-download d-inline"></i><i class="fa fa-shopping-cart d-inline"></i><p> Receipt (Purchase)</p>
 				</button>
-				<button class="btn btn-app" (click)="exportTransactions('sale')">
+				<button *ngIf="isAdmin()" class="btn btn-app" (click)="exportTransactions('sale')">
 					<i class="fa fa-cloud-download d-inline"></i><i class="fa fa-money d-inline"></i><p>Export Issue (Sale)</p>
 				</button>
-				<button class="btn btn-app" (click)="exportTransactions('all')">
+				<button *ngIf="isAdmin()" class="btn btn-app" (click)="exportTransactions('all')">
 					<i class="fa fa-cloud-download d-inline"></i><i class="fa fa-exchange d-inline"></i><p>Export All Transactions</p>
 				</button>
     <div class="clearfix"></div>

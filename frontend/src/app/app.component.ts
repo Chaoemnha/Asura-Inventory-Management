@@ -105,7 +105,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
   
   private loadCategories(): void {
-    if (this.apiService.isAdmin()) {
       this.apiService.getAllCategory().subscribe({
         next: (res: any) => {
           this.categories = res.categories || [];
@@ -114,7 +113,6 @@ export class AppComponent implements OnInit, OnDestroy {
           console.log('Failed to load categories:', error);
         }
       });
-    }
   }
 
   toggleProductSubmenu(event: Event): void {
@@ -128,6 +126,18 @@ export class AppComponent implements OnInit, OnDestroy {
 
   isAdmin(): boolean {
     return this.apiService.isAdmin();
+  }
+
+  isSupplier(): boolean {
+    return this.apiService.isSupplier();
+  }
+
+  isStaff(): boolean {
+    return this.apiService.isStockStaff();
+  }
+
+  isCustomer(): boolean {
+    return this.apiService.isCustomer();
   }
 
   logout() {
