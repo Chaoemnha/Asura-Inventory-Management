@@ -44,9 +44,18 @@
                     </a>
                   </li>
                   <li *ngIf="isAdmin()" [class.active]="isActiveRoute('/product')">
-                    <a [routerLink]="['/product']" routerLinkActive="active">
-                      <i class="fa fa-cube"></i> Product
+                    <a (click)="toggleProductSubmenu($event)">
+                      <i class="fa fa-cube"></i> Product 
+                      <span class="fa" [class.fa-chevron-down]="!showProductSubmenu" [class.fa-chevron-up]="showProductSubmenu"></span>
                     </a>
+                    <ul class="nav child_menu" [style.display]="showProductSubmenu ? 'block' : 'none'">
+                      <li [class.current-page]="isActiveRoute('/product') && !hasQueryParams()">
+                        <a [routerLink]="['/product']" routerLinkActive="active">All</a>
+                      </li>
+                      <li *ngFor="let category of categories" [class.current-page]="isActiveCategoryRoute(category.name)">
+                        <a [routerLink]="['/product']" [queryParams]="{category: category.name}" routerLinkActive = "active">{{category.name}}</a>
+                      </li>
+                    </ul>
                   </li>
                   <li *ngIf="isAdmin()" [class.active]="isActiveRoute('/supplier')">
                     <a [routerLink]="['/supplier']" routerLinkActive="active">

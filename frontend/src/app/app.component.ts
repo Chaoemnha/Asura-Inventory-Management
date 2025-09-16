@@ -5,6 +5,7 @@ import {
   RouterLink,
   RouterOutlet,
   NavigationEnd,
+  ActivatedRoute,
 } from '@angular/router';
 import { ApiService } from './service/api.service';
 import { filter } from 'rxjs';
@@ -27,15 +28,20 @@ export class AppComponent implements OnInit {
     role: '',
   };
   hashEmail = '';
+  categories: any[] = [];
+  showProductSubmenu: boolean = false;
+  isCategory:boolean=false;
 
   constructor(
     private apiService: ApiService,
     private router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
   ) {
     // Cu, tu dong getLogged, moi, kiem tra auth roi moi get
     if (this.apiService.isAuthenticated()) {
       this.loadUserInfo();
+      this.loadCategories();
     }
   }
 
@@ -63,12 +69,17 @@ export class AppComponent implements OnInit {
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.activeRoute = event.url;
+        // Auto open product submenu if on product page
+        if (this.activeRoute.startsWith('/product')) {
+          this.showProductSubmenu = true;
+        }
       });
 
     // Kiem tra trang thai dang nhap
     this.apiService.authStatuschanged.subscribe(() => {
       if (this.apiService.isAuthenticated()) {
         this.loadUserInfo();
+        this.loadCategories();
       } else {
         this.user = {
           name: 'Loading...',
@@ -76,8 +87,27 @@ export class AppComponent implements OnInit {
           role: '',
         };
         this.hashEmail = '';
+        this.categories = [];
       }
     });
+  }
+
+  private loadCategories(): void {
+    if (this.apiService.isAdmin()) {
+      this.apiService.getAllCategory().subscribe({
+        next: (res: any) => {
+          this.categories = res.categories || [];
+        },
+        error: (error: any) => {
+          console.log('Failed to load categories:', error);
+        }
+      });
+    }
+  }
+
+  toggleProductSubmenu(event: Event): void {
+    event.preventDefault();
+    this.showProductSubmenu = !this.showProductSubmenu;
   }
 
   isAuth(): boolean {
@@ -104,7 +134,19 @@ export class AppComponent implements OnInit {
   // Check if route is active
   isActiveRoute(route: string): boolean {
     return (
-      this.activeRoute === route || this.activeRoute.startsWith(route + '/')
+      this.activeRoute === route || this.activeRoute.startsWith(route + '/')||this.activeRoute.includes(route)
     );
+  }
+
+  // Check if current route has query parameters
+  hasQueryParams(): boolean {
+    return this.activeRoute.includes('?');
+  }
+
+  // Check if specific category is active
+  isActiveCategoryRoute(categoryName: string): boolean {
+    const encodedCategoryName = encodeURIComponent(categoryName);
+    return this.activeRoute === `/product?category=${encodedCategoryName}` || 
+           this.activeRoute.includes(`category=${encodedCategoryName}`);
   }
 }
