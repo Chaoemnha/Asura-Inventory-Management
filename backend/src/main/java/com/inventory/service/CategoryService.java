@@ -12,5 +12,4 @@ public interface CategoryService {
     Response getCategoryById(Long id);
     Response updateCategory(Long id, CategoryDTO categoryDTO) throws JsonProcessingException;
     Response deleteCategory(Long id) throws JsonProcessingException;
-    List<String> extractTextForEmbedding();
 }

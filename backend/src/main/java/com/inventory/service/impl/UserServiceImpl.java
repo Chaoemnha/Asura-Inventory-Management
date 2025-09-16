@@ -39,10 +39,6 @@ public class UserServiceImpl implements UserService {
     @Qualifier("modelMapper")
     private final ModelMapper modelMapper;
     private final JwtUtils jwtUtils;
-    @Autowired
-    @Qualifier("userMapper")
-    private ModelMapper userMapper;
-
 
     @Override
     public Response registerUser(RegisterRequest registerRequest) {
@@ -108,7 +104,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO getCurrentLoggedInUser(boolean onSession) {
+    public UserDTO getCurrentLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String email = authentication.getName();
@@ -116,13 +112,8 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()-> new NotFoundException("User Not Found"));
         UserDTO userDTO;
-        if(!onSession) {
-            userDTO = userMapper.map(user, UserDTO.class);
-        }
-        else{
             userDTO = modelMapper.map(user, UserDTO.class);
             userDTO.setTransactions(null);
-        }
         return userDTO;
     }
 
@@ -178,13 +169,4 @@ public class UserServiceImpl implements UserService {
                 .user(userDTO)
                 .build();
     }
-
-    @Override
-    public List<String> extractTextForEmbedding() {
-        List<User> users = userRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-        List<UserDTO> userDTOS = userMapper.map(users, new TypeToken<List<UserDTO>>() {}.getType());
-        return userDTOS.stream().map(UserDTO::getTextForEmbedding).collect(Collectors.toList());
-    }
-
-
 }

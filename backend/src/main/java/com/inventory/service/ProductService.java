@@ -9,9 +9,8 @@ import java.util.List;
 public interface ProductService {
     Response saveProduct(ProductDTO productDTO, MultipartFile imageFile);
     Response updateProduct(ProductDTO productDTO, MultipartFile imageFile);
-    Response getAllProducts();
+    Response getAllProducts(String searchText);
     Response getProductById(Long id);
     Response deleteProduct(Long id);
-    List<String> extractTextForEmbedding();
-    Response getAllProductsByCategoryName(String categoryName);
+    Response getAllProductsByCategoryName(String categoryName, String searchText);
 }

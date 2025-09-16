@@ -143,11 +143,4 @@ public class SupplierServiceImpl implements SupplierService {
                 .message("Supplier Successfully Deleted")
                 .build();
     }
-
-    @Override
-    public List<String> extractTextForEmbedding() {
-        List<Supplier> suppliers = supplierRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-        List<SupplierDTO> supplierDTOS = modelMapper.map(suppliers, new TypeToken<List<SupplierDTO>>() {}.getType());
-        return supplierDTOS.stream().map(SupplierDTO::getTextForEmbedding).collect(Collectors.toList());
-    }
 }

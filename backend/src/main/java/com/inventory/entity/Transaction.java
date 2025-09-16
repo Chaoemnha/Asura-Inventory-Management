@@ -2,7 +2,6 @@ package com.inventory.entity;
 
 import com.inventory.enums.TransactionStatus;
 import com.inventory.enums.TransactionType;
-import com.inventory.service.EmbeddableText;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

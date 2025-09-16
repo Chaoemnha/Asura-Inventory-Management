@@ -131,11 +131,4 @@ public class CategoryServiceImpl implements CategoryService {
                 .message("Category Successfully Deleted")
                 .build();
     }
-
-    @Override
-    public List<String> extractTextForEmbedding() {
-        List<Category> categories = categoryRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-        List<CategoryDTO> categoryDTOS = modelMapper.map(categories, new TypeToken<List<CategoryDTO>>() {}.getType());
-        return categoryDTOS.stream().map(CategoryDTO::getTextForEmbedding).collect(Collectors.toList());
-    }
 }
