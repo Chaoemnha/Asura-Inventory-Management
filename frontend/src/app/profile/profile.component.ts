@@ -28,6 +28,22 @@ export class ProfileComponent implements OnInit {
   ngOnInit(): void {
     this.fetchUserInfo();
   }
+  
+  isAdmin(): boolean {
+    return this.apiService.isAdmin();
+  }
+
+  isSupplier(): boolean {
+    return this.apiService.isSupplier();
+  }
+
+  isStaff(): boolean {
+    return this.apiService.isStockStaff();
+  }
+
+  isCustomer(): boolean {
+    return this.apiService.isCustomer();
+  }
 
   fetchUserInfo():void{
     this.apiService.getLoggedInUserInfo().subscribe({

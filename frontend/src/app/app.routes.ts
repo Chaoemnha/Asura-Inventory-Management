@@ -21,21 +21,31 @@ export const routes: Routes = [
     {path: "forgot-password", component: ForgotPasswordComponent},
     {path: "reset-password", component: ResetPasswordComponent, canActivate: undefined},
     {path: "register", component: RegisterComponent},
-    {path: "category", component: CategoryComponent, canActivate: [GuardService], data: {requiresAdmin: true}},
     
-    {path: "supplier", component: SupplierComponent, canActivate: [GuardService], data: {requiresAdmin: true}},
-    {path: "edit-supplier/:supplierId", component: AddEditSupplierComponent, canActivate: [GuardService], data: {requiresAdmin: true}},
-    {path: "add-supplier", component: AddEditSupplierComponent, canActivate: [GuardService], data: {requiresAdmin: true}},
+    // Category - chỉ ADMIN được truy cập
+    {path: "category", component: CategoryComponent, canActivate: [GuardService]},
     
-    {path: "product", component: ProductComponent, canActivate: [GuardService], data: {requiresAdmin: true}},
-    {path: "edit-product/:productId", component: AddEditProductComponent, canActivate: [GuardService], data: {requiresAdmin: true}},
-    {path: "add-product", component: AddEditProductComponent, canActivate: [GuardService], data: {requiresAdmin: true}},
+    // Supplier routes - STOCKSTAFF, SUPPLIER, CUSTOMER bị cấm
+    {path: "supplier", component: SupplierComponent, canActivate: [GuardService], data: {deniedRoles: ['STOCKSTAFF', 'SUPPLIER', 'CUSTOMER']}},
+    {path: "edit-supplier/:supplierId", component: AddEditSupplierComponent, canActivate: [GuardService], data: {deniedRoles: ['STOCKSTAFF', 'SUPPLIER', 'CUSTOMER']}},
+    {path: "add-supplier", component: AddEditSupplierComponent, canActivate: [GuardService], data: {deniedRoles: ['STOCKSTAFF', 'SUPPLIER', 'CUSTOMER']}},
     
-    {path: "purchase", component: PurchaseComponent, canActivate: [GuardService]},
-    {path: "sell", component: SellComponent, canActivate: [GuardService]},
+    // Product routes - STOCKSTAFF, SUPPLIER, CUSTOMER bị cấm
+    {path: "product", component: ProductComponent, canActivate: [GuardService]},
+    {path: "edit-product/:productId", component: AddEditProductComponent, canActivate: [GuardService], data: {deniedRoles: ['STOCKSTAFF', 'SUPPLIER', 'CUSTOMER']}},
+    {path: "add-product", component: AddEditProductComponent, canActivate: [GuardService], data: {deniedRoles: ['STOCKSTAFF', 'SUPPLIER', 'CUSTOMER']}},
+    
+    // Purchase - CUSTOMER bị cấm
+    {path: "purchase", component: PurchaseComponent, canActivate: [GuardService], data: {deniedRoles: ['CUSTOMER, SUPPLIER']}},
+    
+    // Sell - SUPPLIER bị cấm
+    {path: "sell", component: SellComponent, canActivate: [GuardService], data: {deniedRoles: ['SUPPLIER, STOCKSTAFF']}},
+    
+    // Transaction - tất cả vai trò được phép
     {path: "transaction", component: TransactionComponent, canActivate: [GuardService]},
     {path: "transaction/:transactionId", component: TransactionDetailsComponent, canActivate: [GuardService]},
     
+    // Profile và Dashboard - tất cả vai trò được phép
     {path: "profile", component: ProfileComponent, canActivate: [GuardService]},
     {path: "dashboard", component: DashboardComponent, canActivate: [GuardService]},
     
