@@ -38,7 +38,9 @@ export class TransactionComponent implements OnInit, OnDestroy {
   currentPage: number = 1;
   totalPages: number = 0;
   itemsPerPage: number = 10;
-    private wsSubscription!: Subscription;
+  userId: number = -1;
+  supplierId: number = -1;
+  private wsSubscription!: Subscription;
 
   ngOnInit(): void {
     this.loadTransactions();
@@ -50,6 +52,10 @@ export class TransactionComponent implements OnInit, OnDestroy {
         console.error('WebSocket error in SupplierComponent:', error);
       }
     });
+  }
+
+  isAdmin(): boolean {
+    return this.apiService.isAdmin();
   }
 
   private handleWebSocketMessage(message: any): void {    
@@ -96,29 +102,40 @@ export class TransactionComponent implements OnInit, OnDestroy {
   //FETCH Transactions
 
   loadTransactions(): void {
-    this.apiService.getAllTransactions(this.valueToSearch).subscribe({
-      next: (res: any) => {
-        const transactions = res.transactions || [];
+    this.apiService.getLoggedInUserInfo().subscribe({
+          next:(res)=>{
+            if(this.isAdmin()) this.userId = -1;
+            else this.userId = res.id;
+            this.supplierId = res.supplier?res.supplier.id:-1;
+            this.apiService.getAllTransactions(this.valueToSearch, this.userId, this.supplierId).subscribe({
+              next: (res: any) => {
+                const transactions = res.transactions || [];
 
-        this.totalPages = Math.ceil(transactions.length / this.itemsPerPage);
+                this.totalPages = Math.ceil(transactions.length / this.itemsPerPage);
 
-        this.transactions = transactions.slice(
-          (this.currentPage - 1) * this.itemsPerPage,
-          this.currentPage * this.itemsPerPage
-        );
-        
-      },
-      error: (error) => {
-        this.notificationService.showError('Error',
-          error?.error?.message ||
-            error?.message ||
-            'Unable to Get all Transactions: ' + error
-        );
-      },
-    });
+                this.transactions = transactions.slice(
+                  (this.currentPage - 1) * this.itemsPerPage,
+                  this.currentPage * this.itemsPerPage
+                );
+              },
+              error: (error) => {
+                this.notificationService.showError('Error',
+                  error?.error?.message ||
+                    error?.message ||
+                    'Unable to Get all Transactions: ' + error
+                );
+              },
+            });
+          },
+          error: (error) => {
+            this.notificationService.showError('Error',
+              error?.error?.message ||
+                error?.message ||
+                'Unable to Get Profile Info: ' + error
+            );
+          }
+        })
   }
-
-
 
   //HANDLE SEARCH
   handleSearch():void{
