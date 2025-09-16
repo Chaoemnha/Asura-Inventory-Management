@@ -102,7 +102,7 @@ var RagChatWidget = (function($) {
     }
 
     $.ajax({
-        url: config.apiBaseUrl + '/chat',
+        url: 'http://localhost:8080/api/rag' + '/chat',
         method: 'POST',
         contentType: 'application/json',
         headers: {
