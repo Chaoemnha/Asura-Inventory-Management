@@ -1,7 +1,6 @@
 package com.inventory.entity;
 
 import com.inventory.enums.UserRole;
-import com.inventory.service.EmbeddableText;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

@@ -39,6 +39,7 @@ public class SecurityFilter {
                 )
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/api/auth/**", "/api/auth/fogot-password", "/api/auth/reset-password", "/changes/**").permitAll()
+                        .requestMatchers("/api/rag/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

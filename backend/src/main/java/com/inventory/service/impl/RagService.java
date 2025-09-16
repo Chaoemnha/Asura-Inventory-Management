@@ -1,99 +1,149 @@
 package com.inventory.service.impl;
 
-import com.inventory.service.ProductService;
-import dev.langchain4j.data.embedding.Embedding;
-import dev.langchain4j.data.segment.TextSegment;
-import dev.langchain4j.model.ollama.OllamaChatModel;
+import com.inventory.enums.UserRole;
+import dev.langchain4j.experimental.rag.content.retriever.sql.SqlDatabaseContentRetriever;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
+import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
-import dev.langchain4j.rag.DefaultRetrievalAugmentor;
-import dev.langchain4j.rag.RetrievalAugmentor;
-import dev.langchain4j.rag.content.injector.DefaultContentInjector;
-import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.service.AiServices;
-import dev.langchain4j.store.embedding.EmbeddingSearchRequest;
-import dev.langchain4j.store.embedding.EmbeddingSearchResult;
-import dev.langchain4j.store.embedding.EmbeddingStore;
-import dev.langchain4j.store.embedding.inmemory.InMemoryEmbeddingStore;
-import dev.langchain4j.store.embedding.pinecone.PineconeEmbeddingStore;
-import dev.langchain4j.store.embedding.pinecone.PineconeServerlessIndexConfig;
 import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static dev.langchain4j.internal.Utils.randomUUID;
+import javax.sql.DataSource;
 
 @Service
 @Slf4j
 public class RagService {
-    private final RagDataExtractionService ragDataExtractionService;
-    private final EmbeddingService  embeddingService;
-    private final PineconeEmbeddingStore embeddingStore;
-    private final Assistant assistant;
+    private final DataSource dataSource;
+    private Assistant adminAssistant;
+    private Assistant staffAssistant;
+    private Assistant customerAssistant;
+    private Assistant supplierAssistant;
+
     Dotenv dotenv = Dotenv.configure().load();
 
-    public RagService(RagDataExtractionService  ragDataExtractionService, EmbeddingService embeddingService) {
-        this.ragDataExtractionService = ragDataExtractionService;
-        this.embeddingService = embeddingService;
+    @Autowired
+    public RagService(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
-        //Su dung InMemEmbed de thu nghiem
-        this.embeddingStore = PineconeEmbeddingStore.builder()
-                .apiKey(dotenv.get("PINECONE_API_KEY"))
-                .index("test")
-                .nameSpace(randomUUID())
-                .createIndex(PineconeServerlessIndexConfig.builder()
-                        .cloud("AWS")
-                        .region("us-east-1")
-                        .dimension(embeddingService.getEmbeddingModel().dimension())
-                        .build())
-                .build();
+    @PostConstruct
+    public void initializeRAG() {
+        log.info("Initializing RagService with role-based SQL Database Content Retrievers");
 
-        //Tich hop llaMa qua Ollama
-        OpenAiChatModel chatModel = OpenAiChatModel.builder()
+        // Tich hop OpenAI GPT model
+        ChatModel chatModel = OpenAiChatModel.builder()
                 .apiKey(dotenv.get("OPENAI_API_KEY"))
                 .modelName("gpt-4o-mini")
                 .build();
 
-        RetrievalAugmentor retrievalAugmentor = DefaultRetrievalAugmentor.builder()
-                .contentRetriever(EmbeddingStoreContentRetriever.builder()
-                        .embeddingStore(embeddingStore)
-                        .embeddingModel(embeddingService.getEmbeddingModel())
-                        .maxResults(5)
-                        .minScore(0.7)
-                        .build())
-                .contentInjector(DefaultContentInjector.builder()
-                        .metadataKeysToInclude(Arrays.asList("source", "title"))
-                        .build())
+        // Tao cac ContentRetriever khac nhau cho tung role
+        this.adminAssistant = createAssistantForRole(chatModel, UserRole.ADMIN);
+        this.staffAssistant = createAssistantForRole(chatModel, UserRole.STOCKSTAFF);
+        this.customerAssistant = createAssistantForRole(chatModel, UserRole.CUSTOMER);
+        this.supplierAssistant = createAssistantForRole(chatModel, UserRole.SUPPLIER);
+    }
+
+    private Assistant createAssistantForRole(ChatModel chatModel, UserRole role) {
+        // Tao system message khac nhau cho tung role
+        String systemMessage = createSystemMessageForRole(role);
+
+        ContentRetriever contentRetriever = SqlDatabaseContentRetriever.builder()
+                .dataSource(dataSource)
+                .chatModel(chatModel)
                 .build();
 
-        //Build AiServices voi retrievalAugmentor
-        this.assistant = AiServices.builder(Assistant.class)
+        return AiServices.builder(Assistant.class)
                 .chatModel(chatModel)
-                .retrievalAugmentor(retrievalAugmentor)
+                .contentRetriever(contentRetriever)
+                .systemMessageProvider(chatMemoryId -> systemMessage)
+                .chatMemory(MessageWindowChatMemory.withMaxMessages(3))
                 .build();
     }
-    //Khoi tao du lieu RAG (chay khi ung dung khoi dong)
-    @PostConstruct
-    public void initializeRAG() {
-        List<String> texts = ragDataExtractionService.extractAllDataForEmbedding();
-        List<Embedding> embeddings = embeddingService.embedTexts(texts);
-        List<TextSegment> segments = texts.stream()
-                .map(TextSegment::from)
-                .collect(Collectors.toList());
-        embeddingStore.addAll(embeddings, segments);
+
+    private String createSystemMessageForRole(UserRole role) {
+        String baseMessage = "Ban la mot AI assistant cho he thong quan ly kho hang. ";
+
+        switch (role) {
+            case ADMIN:
+                return baseMessage + "Ban co quyen truy cap tat ca du lieu trong database bao gom: users, products, categories, suppliers, transactions. " +
+                        "Ban co the thuc hien tat ca cac truy van SELECT tren cac bang nay.";
+
+            case STOCKSTAFF:
+                return baseMessage + "Ban chi co quyen truy cap du lieu: products, categories, transactions lien quan den nhap/xuat kho/tra hang ve supplier. " +
+                        "Ban KHONG duoc truy cap thong tin users hoac suppliers. " +
+                        "Chi duoc truy van SELECT tren cac bang: products, categories, transactions";
+
+            case SUPPLIER:
+                return baseMessage + "Ban chi co quyen truy cap du lieu: products, categories, transactions lien quan den xuat kho/tra hang ve supplier. " +
+                        "Ban KHONG duoc truy cap thong tin users hoac suppliers. " +
+                        "Chi duoc truy van SELECT tren cac bang: products, categories, transaction";
+
+            case CUSTOMER:
+                return baseMessage + "Ban chi co quyen xem thong tin co ban ve san pham va danh muc. " +
+                        "Ban chi duoc SELECT cac truong: products.id, products.name, products.description, products.price, categories.name tu cac bang products va categories. " +
+                        "Ban KHONG duoc truy cap bat ky thong tin nao khac.";
+
+            default:
+                return baseMessage + "Ban chi co quyen xem thong tin co ban ve san pham va danh muc. " +
+                        "Ban chi duoc SELECT cac truong: products.id, products.name, products.description, products.price, categories.name tu cac bang products va categories. " +
+                        "Ban KHONG duoc truy cap bat ky thong tin nao khac.";
+        }
     }
-    //Truy van RAG
+
+    // Truy van RAG voi phan quyen
     public String query(String question) {
+        UserRole currentUserRole = getCurrentUserRole();
+        log.info("User with role {} is making query: {}", currentUserRole, question);
+
+        Assistant assistant = getAssistantForRole(currentUserRole);
         return assistant.answer(question);
     }
-    //Interface cho langchain4j
-    interface Assistant{
+
+    private UserRole getCurrentUserRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            log.warn("No authenticated user found, defaulting to CUSTOMER role");
+            return UserRole.CUSTOMER;
+        }
+
+        // Lay role tu authentication (gia su role duoc luu trong authorities)
+        return authentication.getAuthorities().stream()
+                .map(authority -> {
+                    try {
+                        return UserRole.valueOf(authority.getAuthority().replace("ROLE_", ""));
+                    } catch (IllegalArgumentException e) {
+                        log.warn("Invalid role found: {}", authority.getAuthority());
+                        return UserRole.CUSTOMER;
+                    }
+                })
+                .findFirst()
+                .orElse(UserRole.CUSTOMER);
+    }
+
+    private Assistant getAssistantForRole(UserRole role) {
+        switch (role) {
+            case ADMIN:
+                return adminAssistant;
+            case SUPPLIER:
+                return supplierAssistant;
+            case STOCKSTAFF:
+                return staffAssistant;
+            case CUSTOMER:
+            default:
+                return customerAssistant;
+        }
+    }
+
+    // Interface cho langchain4j
+    interface Assistant {
         String answer(String query);
     }
 }

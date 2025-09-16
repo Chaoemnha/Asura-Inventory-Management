@@ -12,5 +12,4 @@ public interface SupplierService {
     Response getAllSuppliers();
     Response getSupplierById(Long id);
     Response deleteSupplier(Long id) throws JsonProcessingException;
-    List<String> extractTextForEmbedding();
 }
