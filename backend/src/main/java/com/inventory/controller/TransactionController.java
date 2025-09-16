@@ -50,9 +50,11 @@ public class TransactionController {
     public ResponseEntity<Response> getAllTransactions(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "1000") int size,
-            @RequestParam(required = false) String searchText
+            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) Long supplierId
     ) {
-        return ResponseEntity.ok(transactionService.getAllTransactions(page, size, searchText));
+        return ResponseEntity.ok(transactionService.getAllTransactions(page, size, searchText, userId, supplierId));
     }
 
     @GetMapping("/{id}")
@@ -125,37 +127,4 @@ public class TransactionController {
                 .contentLength(pdfFile.length())
                 .body(resource);
     }
-
-//    @PostMapping("/decode-qr-external")
-//    public ResponseEntity<Response> decodeQrExternal(@RequestParam("file") MultipartFile file) {
-//        try {
-//            // Gửi file tới zxing.org
-//            WebClient webClient = WebClient.builder().baseUrl("https://zxing.org").build();
-//            MultipartBodyBuilder builder = new MultipartBodyBuilder();
-//            builder.part("f", file.getResource());
-//
-//            String html = webClient.post()
-//                    .uri("/w/decode")
-//                    .contentType(MediaType.MULTIPART_FORM_DATA)
-//                    .bodyValue(builder.build())
-//                    .retrieve()
-//                    .bodyToMono(String.class)
-//                    .block();
-//
-//            // Parse HTML để lấy "Parsed Result"
-//            Document doc = Jsoup.parse(html);
-//            Element parsedResult = doc.selectFirst("td:contains(Parsed Result) + td pre");
-//            String qrResult = parsedResult != null ? parsedResult.text() : null;
-//
-//            if (qrResult == null || qrResult.isEmpty()) {
-//                return ResponseEntity.badRequest().body(Response.builder().status(400).message("Không nhận diện được QR code!").build());
-//            }
-//
-//            // Có thể xử lý thêm nếu muốn tự động update transaction ở đây
-//
-//            return ResponseEntity.ok(Response.builder().status(200).message("QR decode thành công!").data(qrResult).build());
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(Response.builder().status(400).message("Lỗi giải mã QR code!").build());
-//        }
-//    }
 }

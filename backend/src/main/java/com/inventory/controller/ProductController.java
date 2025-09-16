@@ -71,14 +71,14 @@ public class ProductController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Response> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    public ResponseEntity<Response> getAllProducts(@RequestParam(value = "searchText", required = false)  String searchText) {
+        return ResponseEntity.ok(productService.getAllProducts(searchText));
     }
 
     @GetMapping("/all/{categoryName}")
-    public ResponseEntity<Response> getAllProductsByCategoryName(@PathVariable String categoryName) {
+    public ResponseEntity<Response> getAllProductsByCategoryName(@PathVariable String categoryName, @RequestParam(value = "searchText", required = false ) String  searchText) {
 
-        return ResponseEntity.ok(productService.getAllProductsByCategoryName(categoryName));
+        return ResponseEntity.ok(productService.getAllProductsByCategoryName(categoryName,  searchText));
     }
 
     @GetMapping("/{id}")
