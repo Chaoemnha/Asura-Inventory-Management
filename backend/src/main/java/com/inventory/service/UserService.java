@@ -12,7 +12,7 @@ public interface UserService {
     Response registerUser(RegisterRequest registerRequest);
     Response loginUser(LoginRequest loginRequest);
     Response getAllUsers();
-    User getCurrentLoggedInUser();
+    UserDTO getCurrentLoggedInUser(boolean onSession);
     Response updateUser(Long id, UserDTO userDTO);
     Response deleteUser(Long id);
     Response getUserTransactions(Long id);

@@ -108,17 +108,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getCurrentLoggedInUser() {
+    public UserDTO getCurrentLoggedInUser(boolean onSession) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String email = authentication.getName();
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()-> new NotFoundException("User Not Found"));
-
-        user.setTransactions(null);
-
-        return user;
+        UserDTO userDTO;
+        if(!onSession) {
+            userDTO = userMapper.map(user, UserDTO.class);
+        }
+        else{
+            userDTO = modelMapper.map(user, UserDTO.class);
+            userDTO.setTransactions(null);
+        }
+        return userDTO;
     }
 
     @Override

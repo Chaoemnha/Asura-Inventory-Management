@@ -4,6 +4,7 @@ import com.inventory.service.ProductService;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.model.ollama.OllamaChatModel;
+import dev.langchain4j.model.openai.OpenAiChatModel;
 import dev.langchain4j.rag.DefaultRetrievalAugmentor;
 import dev.langchain4j.rag.RetrievalAugmentor;
 import dev.langchain4j.rag.content.injector.DefaultContentInjector;
@@ -54,7 +55,10 @@ public class RagService {
                 .build();
 
         //Tich hop llaMa qua Ollama
-        OllamaChatModel chatModel = OllamaChatModel.builder().baseUrl("http://localhost:11434").modelName("llama3.1:8b").temperature(0.0).build();
+        OpenAiChatModel chatModel = OpenAiChatModel.builder()
+                .apiKey(dotenv.get("OPENAI_API_KEY"))
+                .modelName("gpt-4o-mini")
+                .build();
 
         RetrievalAugmentor retrievalAugmentor = DefaultRetrievalAugmentor.builder()
                 .contentRetriever(EmbeddingStoreContentRetriever.builder()
