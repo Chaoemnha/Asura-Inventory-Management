@@ -1,0 +1,141 @@
+<div class="x_panel">
+  <div class="x_title">
+    <div class="page-title row">
+      <div class="col-sm-6 col-12 text-left">
+        <h1>Danh sách người dùng <small>{{filteredUsers.length}} người</small></h1>
+      </div>
+      <div class="col-sm-6 col-12 text-right">
+        <button *ngIf="isAdmin()" class="btn btn-app" (click)="navigateToAddUser()">
+          <i class="fa fa-plus"></i> Thêm mới
+        </button>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="x_content">
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="searchText">Tìm kiếm</label>
+          <input 
+            type="text" 
+            id="searchText"
+            [(ngModel)]="searchText" 
+            (input)="onSearchChange()"
+            placeholder="Nhập tên, email, số điện thoại, vai trò..." 
+            class="form-control"
+          />
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-group">
+          <label for="roleFilter">Lọc theo vai trò</label>
+          <select 
+            id="roleFilter"
+            [(ngModel)]="selectedRole" 
+            (change)="onRoleFilterChange()"
+            class="form-control"
+          >
+            <option *ngFor="let role of roles" [value]="role.value">{{role.label}}</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <button class="btn btn-secondary btn-block" (click)="clearFilters()">
+            <i class="fa fa-refresh"></i> Xóa lọc
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Users Table -->
+  <div class="x_content">
+    <div class="table-responsive">
+      <table class="table table-striped jambo_table bulk_action" *ngIf="filteredUsers.length > 0">
+        <thead>
+          <tr class="headings">
+            <th class="column-title">#</th>
+            <th class="column-title">ID</th>
+            <th class="column-title">Tên</th>
+            <th class="column-title">Email</th>
+            <th class="column-title">Số điện thoại</th>
+            <th class="column-title">Quyền</th>
+            <th class="column-title">Địa chỉ</th>
+            <th *ngIf="isAdmin()" class="column-title no-link last text-center" colspan="2">
+              <span class="nobr">Thao tác</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of filteredUsers; let i = index" 
+              [class.even]="i % 2 === 0" 
+              [class.odd]="i % 2 !== 0"
+              class="pointer">
+            <td>{{i + 1}}</td>
+            <td>{{user.id}}</td>
+            <td>
+              <strong>{{user.name}}</strong>
+            </td>
+            <td>
+              <a href="mailto:{{user.email}}" class="text-info">{{user.email}}</a>
+            </td>
+            <td>
+              <a href="tel:{{user.phoneNumber}}" class="text-info">{{user.phoneNumber}}</a>
+            </td>
+            <td>
+              <span [class]="getRoleBadgeClass(user.role)">{{user.role}}</span>
+            </td>
+            <td>
+              {{user.address || 'Không có'}}
+            </td>
+            <td *ngIf="isAdmin()">
+              <button 
+                (click)="navigateToEditUser(user.id)" 
+                class="btn btn-round btn-primary"
+                title="Sửa"
+              >
+                Sửa
+              </button>
+            </td>
+            <td *ngIf="isAdmin()">
+              <button 
+                (click)="handleDeleteUser(user.id, user.name)" 
+                class="btn btn-round btn-danger"
+                title="Xóa"
+              >
+                 Xóa
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredUsers.length === 0" class="text-center py-5">
+      <div class="empty-state">
+        <i class="fa fa-users" style="font-size: 4rem; color: #ccc; margin-bottom: 1rem;"></i>
+        <h4 class="text-muted">Không có người dùng</h4>
+        <p class="text-muted" *ngIf="searchText || selectedRole">
+          Hãy thay đổi tiêu chí tìm kiếm hoặc bộ lọc
+        </p>
+        <p class="text-muted" *ngIf="!searchText && !selectedRole">
+          Chưa có người dùng trong hệ thống
+        </p>
+        <button 
+          *ngIf="isAdmin() && !searchText && !selectedRole" 
+          class="btn btn-primary mt-2" 
+          (click)="navigateToAddUser()"
+        >
+          <i class="fa fa-plus"></i> Thêm người dùng đầu tiên
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

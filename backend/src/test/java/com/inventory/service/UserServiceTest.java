@@ -60,7 +60,7 @@ public class UserServiceTest {
     @BeforeEach
     void setUp() throws IllegalAccessException, NoSuchFieldException {
         modelMapper = new ModelMapper();
-        userDTO = UserDTO.builder().id(1L).name("Luuanz").email("luuanz@yahoo.com").password("039584728").phoneNumber("0498582").role(UserRole.MANAGER).build();
+        userDTO = UserDTO.builder().id(1L).name("Luuanz").email("luuanz@yahoo.com").password("039584728").phoneNumber("0498582").role(UserRole.STOCKSTAFF).build();
         user = modelMapper.map(userDTO, User.class);
         // Tiem modelMapper vao userService (co phuong thuc ser dung mapper nen p set ko thi null excep)
         Field field = UserServiceImpl.class.getDeclaredField("modelMapper");
@@ -71,7 +71,7 @@ public class UserServiceTest {
     @DisplayName("Testcase: kiem thu phuong thuc registerUser")
     @Test
     public void testRegisterUser() {
-        RegisterRequest registerRequest = new RegisterRequest("luuanz", "luuanz@yahoo.com", "123", "0498582", UserRole.MANAGER);
+        RegisterRequest registerRequest = new RegisterRequest("luuanz", "luuanz@yahoo.com", "123", "0498582", UserRole.STOCKSTAFF);
         //Given phuong thuc will return: chi dinh kq tra ve
         BDDMockito.given(userRepository.findByName(registerRequest.getName())).willReturn(Optional.empty());
         BDDMockito.given(userRepository.findByPhoneNumber(registerRequest.getPhoneNumber())).willReturn(Optional.empty());

@@ -1,0 +1,288 @@
+/* Return Component Styles */
+
+.x_panel {
+  background: #fff;
+  border: 1px solid #E6E9ED;
+  border-radius: 4px;
+  padding: 0;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.x_title {
+  border-bottom: 2px solid #E6E9ED;
+  padding: 15px 20px;
+  margin: 0;
+  background: #f8f9fa;
+}
+
+.x_content {
+  padding: 20px;
+}
+
+.invoice-header h1 {
+  margin: 0;
+  color: #2A3F54;
+  font-weight: 600;
+}
+
+.invoice-header .fa {
+  color: #dc3545;
+  margin-right: 10px;
+}
+
+.lead {
+  font-size: 1.25rem;
+  font-weight: 300;
+  color: #2A3F54;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #E6E9ED;
+  padding-bottom: 10px;
+}
+
+.table {
+  margin-bottom: 20px;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+  color: #2A3F54;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+.invoice-col {
+  margin-bottom: 20px;
+}
+
+.invoice-col b {
+  color: #2A3F54;
+  font-weight: 600;
+}
+
+.product-image {
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  margin-top: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  color: #2A3F54;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.form-control {
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  padding: 10px 15px;
+  font-size: 14px;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+  border-color: #80bdff;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-text {
+  font-size: 0.875rem;
+  margin-top: 5px;
+}
+
+.return-summary {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 4px;
+  border-left: 4px solid #28a745;
+}
+
+.return-summary p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #2A3F54;
+}
+
+.card.no-shadow {
+  box-shadow: none;
+  border: 1px solid #dee2e6;
+}
+
+.card-body.bg-light {
+  background-color: #f8f9fa !important;
+  border-radius: 4px;
+  padding: 15px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.btn {
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-weight: 600;
+  transition: all 0.15s ease-in-out;
+}
+
+.btn-lg {
+  padding: 12px 30px;
+  font-size: 1.1rem;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border-color: #28a745;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+  border-color: #1e7e34;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0069d9;
+  border-color: #0062cc;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.alert {
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.alert-danger {
+  border-left: 4px solid #dc3545;
+}
+
+.alert h4 {
+  color: #721c24;
+  margin-bottom: 15px;
+}
+
+.alert ul {
+  margin-bottom: 15px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-3 {
+  margin-top: 1rem;
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
+}
+
+.mr-3 {
+  margin-right: 1rem;
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}
+
+.fa-spinner.fa-spin {
+  color: #007bff;
+}
+
+.fa-3x {
+  font-size: 3em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .x_content {
+    padding: 15px;
+  }
+  
+  .invoice-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .btn-lg {
+    padding: 10px 20px;
+    font-size: 1rem;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .col-sm-6.invoice-col {
+    margin-bottom: 30px;
+  }
+  
+  .table-responsive {
+    border: none;
+  }
+}
+
+/* Animation for loading spinner */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.fa-spin {
+  animation: spin 1s infinite linear;
+}
+
+/* Custom scrollbar for textarea */
+textarea.form-control {
+  resize: vertical;
+  min-height: 120px;
+}
+
+textarea.form-control::-webkit-scrollbar {
+  width: 6px;
+}
+
+textarea.form-control::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+textarea.form-control::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+textarea.form-control::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

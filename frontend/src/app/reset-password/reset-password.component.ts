@@ -27,7 +27,7 @@ export class ResetPasswordComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       this.formData.token = params['token'] || '';
       if (!this.formData.token) {
-        this.notificationService.showError('Error', 'Token is required!');
+        this.notificationService.showError('Error', 'Yêu cầu token!');
       }
       else{
         this.apiService.validateResetToken(this.formData.token).subscribe({
@@ -38,8 +38,8 @@ export class ResetPasswordComponent implements OnInit {
         },
         error: (err: any) => {
           console.log(err);
-          this.notificationService.showError('Error', 'Api problem');
-            this.router.navigate(["/forgot-password"]);
+          this.notificationService.showError('Error', 'Lỗi kết nối API');
+          this.router.navigate(["/forgot-password"]);
         },
         })
       }
@@ -48,11 +48,11 @@ export class ResetPasswordComponent implements OnInit {
   }
   handleSubmit() {
     if (!this.formData.password || !this.formData.confirmPassword) {
-      this.notificationService.showError('Error', 'All fields are required!');
+      this.notificationService.showError('Error', 'Vui lòng nhập đầy đủ thông tin!');
       return;
     }
     if (this.formData.password !== this.formData.confirmPassword) {
-      this.notificationService.showError('Error', 'Passwords do not match!');
+      this.notificationService.showError('Error', 'Mật khẩu không khớp!');
       return;
     }
     const response = this.apiService

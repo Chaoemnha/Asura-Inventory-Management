@@ -1,10 +1,10 @@
-<div class="body">
+<div class="body" (click)="closeDropdowns()">
     <div class="main_container container-fluid">
       <div class="row">
         <div class="col-lg-2 col-md-2 left_col">
           <div class="left_col">
             <div class="navbar nav_title" style="border: 0; padding: 8px !important">
-              <a href="/dashboard" class="site_title"><i class="fa fa-linkedin"></i> <span> Inventory!</span></a>
+              <a href="/dashboard" class="site_title"><i class="fa fa-linkedin"></i> <span> Asura Inventory</span></a>
             </div>
 
             <div class="clearfix"></div>
@@ -33,24 +33,29 @@
                       <i class="fa fa-dashboard"></i> Dashboard
                     </a>
                   </li>
+                  <li *ngIf="isAdmin() && isStaff()" [class.active]="isActiveRoute('/reports')">
+                    <a [routerLink]="['/reports']" routerLinkActive="active">
+                      <i class="fa fa-bar-chart"></i> Báo cáo
+                    </a>
+                  </li>
                   <li *ngIf="isAuth()" [class.active]="isActiveRoute('/transaction')">
                     <a [routerLink]="['/transaction']" routerLinkActive="active">
-                      <i class="fa fa-exchange"></i> Transactions
+                      <i class="fa fa-exchange"></i> Giao dịch
                     </a>
                   </li>
                   <li *ngIf="isAdmin()" [class.active]="isActiveRoute('/category')">
                     <a [routerLink]="['/category']" routerLinkActive="active">
-                      <i class="fa fa-tags"></i> Category
+                      <i class="fa fa-tags"></i> Phân loại
                     </a>
                   </li>
-                  <li *ngIf="isAuth()" [class.active]="isActiveRoute('/product')">
+                  <li [class.active]="isActiveRoute('/product')">
                     <a (click)="toggleProductSubmenu($event)">
-                      <i class="fa fa-cube"></i> Product 
+                      <i class="fa fa-cube"></i> Sản phẩm 
                       <span class="fa" [class.fa-chevron-down]="!showProductSubmenu" [class.fa-chevron-up]="showProductSubmenu"></span>
                     </a>
                     <ul class="nav child_menu" [style.display]="showProductSubmenu ? 'block' : 'none'">
                       <li [class.current-page]="isActiveRoute('/product') && !hasQueryParams()">
-                        <a [routerLink]="['/product']" routerLinkActive="active">All</a>
+                        <a [routerLink]="['/product']" routerLinkActive="active">Tất cả</a>
                       </li>
                       <li *ngFor="let category of categories" [class.current-page]="isActiveCategoryRoute(category.name)">
                         <a [routerLink]="['/product']" [queryParams]="{category: category.name}" routerLinkActive = "active">{{category.name}}</a>
@@ -59,37 +64,45 @@
                   </li>
                   <li *ngIf="isAdmin()" [class.active]="isActiveRoute('/supplier')">
                     <a [routerLink]="['/supplier']" routerLinkActive="active">
-                      <i class="fa fa-truck"></i> Supplier
+                      <i class="fa fa-truck"></i> Nhà cung cấp
+                    </a>
+                  </li>
+                  <li *ngIf="isAdmin()" [class.active]="isActiveRoute('/users')">
+                    <a [routerLink]="['/users']" routerLinkActive="active">
+                      <i class="fa fa-users"></i> Người dùng
                     </a>
                   </li>
                   <li *ngIf="isStaff()||isAdmin()" [class.active]="isActiveRoute('/purchase')">
                     <a [routerLink]="['/purchase']" routerLinkActive="active">
-                      <i class="fa fa-shopping-cart"></i> Purchase
+                      <i class="fa fa-shopping-cart"></i> Nhập hàng
                     </a>
                   </li>
-                  <li *ngIf="isCustomer()||isAdmin()" [class.active]="isActiveRoute('/sell')">
-                    <a [routerLink]="['/sell']" routerLinkActive="active">
-                      <i class="fa fa-money"></i> Sell
+                  <li *ngIf="isCustomer()||isAdmin()||isStaff()" [class.active]="isActiveRoute('/sell')">
+                    <a *ngIf="isCustomer()" [routerLink]="['/sell']" routerLinkActive="active">
+                      <i class="fa fa-money"></i> Mua hàng
+                    </a>
+                    <a *ngIf="isAdmin()||isStaff()" [routerLink]="['/sell']" routerLinkActive="active">
+                      <i class="fa fa-money"></i> Xuất hàng
                     </a>
                   </li>
                   <li *ngIf="isAuth()" [class.active]="isActiveRoute('/profile')">
                     <a [routerLink]="['/profile']" routerLinkActive="active">
-                      <i class="fa fa-user"></i> Profile
+                      <i class="fa fa-user"></i> Hồ sơ
                     </a>
                   </li>
                   <li *ngIf="!isAuth()" [class.active]="isActiveRoute('/login')">
                     <a [routerLink]="['/login']" routerLinkActive="active">
-                      <i class="fa fa-sign-in"></i> Login
+                      <i class="fa fa-sign-in"></i> Đăng nhập
                     </a>
                   </li>
                   <li *ngIf="!isAuth()" [class.active]="isActiveRoute('/register')">
                     <a [routerLink]="['/register']" routerLinkActive="active">
-                      <i class="fa fa-user-plus"></i> Register
+                      <i class="fa fa-user-plus"></i> Đăng ký
                     </a>
                   </li>
                   <li *ngIf="isAuth()">
                     <a (click)="logout()">
-                      <i class="fa fa-sign-out"></i> Logout
+                      <i class="fa fa-sign-out"></i> Đăng xuất
                     </a>
                   </li>
                 </ul>
@@ -100,13 +113,13 @@
 
             <!-- /menu footer buttons -->
             <div class="sidebar-footer col-lg-2 hidden-small">
-              <a data-toggle="tooltip" data-placement="top" title="Toggle sidebar">
+              <a data-toggle="tooltip" data-placement="top" title="Thu nhỏ menu">
                 <span class="fa fa-arrows-alt" aria-hidden="true"></span>
-              </a> <a data-toggle="tooltip" data-placement="top" title="Profile"  href="/profile">
+              </a> <a data-toggle="tooltip" data-placement="top" title="Hồ sơ"  href="/profile">
                 <span class="fa fa-user" aria-hidden="true"></span>
-              </a> <a data-toggle="tooltip" data-placement="top" title="Dashboard" href="/dashboard">
+              </a> <a data-toggle="tooltip" data-placement="top" title="Trang chủ" href="/dashboard">
                 <span class="fa fa-home" aria-hidden="true"></span>
-              </a> <a data-toggle="tooltip" data-placement="top" title="Logout" (click)="logout()"> <span
+              </a> <a data-toggle="tooltip" data-placement="top" title="Đăng xuất" (click)="logout()"> <span
                   class="fa fa-power-off" aria-hidden="true"></span>
               </a>
             </div>
@@ -119,21 +132,17 @@
             <div class="col-lg-12 top_nav">
               <div class="nav_menu">
                 <nav>
-                  <div class="nav toggle">
-                    <a id="menu_toggle"><i class="fa fa-bars"></i></a>
-                  </div>
-
                   <ul class="nav navbar-nav navbar-right">
-                    <li class="">
-                      <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
-                        aria-expanded="false">
+                    <li class="dropdown" [class.open]="showUserDropdown" (click)="$event.stopPropagation()">
+                      <a href="javascript:;" class="user-profile dropdown-toggle" 
+                         (click)="toggleUserDropdown($event)"
+                         [attr.aria-expanded]="showUserDropdown">
                         <img [src]="'https://gravatar.com/avatar/' + (hashEmail)" [alt]="user.name">{{user.name}}
-                        <span class=" fa fa-angle-down"></span>
+                        <span class="fa" [class.fa-angle-down]="!showUserDropdown" [class.fa-angle-up]="showUserDropdown"></span>
                       </a>
-                      <ul class="dropdown-menu dropdown-usermenu pull-right">
-                        <li><a href="/profile"> Profile</a></li>
-                        <li><a (click)="logout()"><i class="fa fa-sign-out pull-right"></i> Log
-                          Out</a></li>
+                      <ul class="dropdown-menu dropdown-usermenu pull-right" [class.show]="showUserDropdown">
+                        <li><a [routerLink]="['/profile']" (click)="closeDropdowns()"> Hồ sơ</a></li>
+                        <li><a (click)="logout()"><i class="fa fa-sign-out pull-right"></i> Đăng xuất</a></li>
                       </ul>
                     </li>
 
@@ -154,7 +163,7 @@
             <!-- footer content -->
             <footer class="col-lg-12">
               <div class="pull-right">
-                Inventory Management Copyright Asura
+                © Asura Inventory
               </div>
               <div class="clearfix"></div>
             </footer>

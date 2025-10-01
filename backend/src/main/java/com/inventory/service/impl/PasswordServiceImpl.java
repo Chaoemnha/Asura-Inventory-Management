@@ -41,7 +41,7 @@ public class PasswordServiceImpl implements PasswordResetService {
 
     @Override
     public void updateResetPasswordToken(String email, String token) {
-        User existingUser = userRepository.findByEmail(email).orElseThrow(()-> new NotFoundException("User Not Found"));
+        User existingUser = userRepository.findByEmail(email).orElseThrow(()-> new NotFoundException("Không tìm thấy người dùng"));
         existingUser.setResetPasswordToken(token);
         existingUser.setRsTokenCrDate(new Date());
         userRepository.save(existingUser);

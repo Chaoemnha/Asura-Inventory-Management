@@ -25,12 +25,13 @@ export class RegisterComponent {
     email: '',
     name: '',
     phoneNumber: '',
-    password: ''
+    password: '',
+    address: ''
   };
 
   async handleSubmit(){
     if(!this.formData.email || !this.formData.name || !this.formData.phoneNumber || !this.formData.password){
-      this.notificationService.showError('Error', "All fields are required");
+      this.notificationService.showError('Error', "Vui lòng điền đầy đủ thông tin bắt buộc");
       return;
     }
 
@@ -42,7 +43,7 @@ export class RegisterComponent {
       }
     } catch (error: any) {
       console.log(error);
-      this.notificationService.showError('Error', error?.error?.message || error?.message || "Unable to register user: " + error);
+      this.notificationService.showError('Error', error?.error?.message || error?.message || "Không thể đăng ký tài khoản: " + error);
     }
   }
 }

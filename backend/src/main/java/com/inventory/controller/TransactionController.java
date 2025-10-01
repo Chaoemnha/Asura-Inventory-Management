@@ -4,9 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.inventory.dto.Response;
 import com.inventory.dto.TransactionDTO;
 import com.inventory.dto.TransactionRequest;
-import com.inventory.entity.Transaction;
+import com.inventory.dto.TransactionUpdateRequest;
 import com.inventory.enums.TransactionStatus;
-import com.inventory.enums.TransactionType;
 import com.inventory.service.InvoiceReport;
 import com.inventory.service.TransactionService;
 import jakarta.validation.Valid;
@@ -22,7 +21,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -50,11 +48,16 @@ public class TransactionController {
     public ResponseEntity<Response> getAllTransactions(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "1000") int size,
-            @RequestParam(required = false) String searchText,
+            @RequestParam(required = false) String searchType,
+            @RequestParam(required = false) String searchStatus,
+            @RequestParam(required = false) String searchProductName,
             @RequestParam(required = false) Long userId,
-            @RequestParam(required = false) Long supplierId
+            @RequestParam(required = false) String searchFromDate,
+            @RequestParam(required = false) String searchToDate
     ) {
-        return ResponseEntity.ok(transactionService.getAllTransactions(page, size, searchText, userId, supplierId));
+        return ResponseEntity.ok(transactionService.getAllTransactions(
+                page, size, searchType, searchStatus, searchProductName,
+                userId, searchFromDate, searchToDate));
     }
 
     @GetMapping("/{id}")
@@ -71,7 +74,6 @@ public class TransactionController {
     }
 
     @PutMapping("/update/{transactionId}")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Response> updateTransactionStatus(
             @PathVariable Long transactionId,
             @RequestBody @Valid TransactionStatus status) throws JsonProcessingException {
@@ -88,27 +90,17 @@ public class TransactionController {
     }
 
     @GetMapping("/export")
-    public ModelAndView exportReport(@RequestParam String type) {
+    public ModelAndView exportReport(@RequestParam String type,
+                                     @RequestParam(required = false) String searchType,
+                                     @RequestParam(required = false) String searchStatus,
+                                     @RequestParam(required = false) String searchProductName,
+                                     @RequestParam(required = false) String searchFromDate,
+                                     @RequestParam(required = false) String searchToDate) {
         ModelAndView mav = new ModelAndView("export");
-        if(type.equals("purchase")){
-            List<TransactionType> transactionTypes = Arrays.asList(TransactionType.PURCHASE);
-            List<TransactionDTO> transactionDTOList = transactionService.getAllTransactionByType(transactionTypes);
+            List<TransactionDTO> transactionDTOList = transactionService.getAllTransactionByCondition(searchType, searchStatus, searchProductName, searchFromDate, searchToDate);
             mav.addObject("report", transactionDTOList);
             mav.addObject("type", type);
             mav.setView(new InvoiceReport());
-        } else if (type.equals("sale")) {
-            List<TransactionType> transactionTypes = Arrays.asList(TransactionType.SALE);
-            List<TransactionDTO> transactionDTOList = transactionService.getAllTransactionByType(transactionTypes);
-            mav.addObject("report", transactionDTOList);
-            mav.addObject("type", type);
-            mav.setView(new InvoiceReport());
-        } else {
-            List<TransactionType> transactionTypes = Arrays.asList(TransactionType.PURCHASE,  TransactionType.SALE);
-            List<TransactionDTO> transactionDTOList = transactionService.getAllTransactionByType(transactionTypes);
-            mav.addObject("report", transactionDTOList);
-            mav.addObject("type", type);
-            mav.setView(new InvoiceReport());
-        }
         return mav;
     }
 
@@ -126,5 +118,27 @@ public class TransactionController {
                 .headers(headers)
                 .contentLength(pdfFile.length())
                 .body(resource);
+    }
+
+    @GetMapping("/activity-report")
+    public ResponseEntity<Response> getActivityReport(@RequestParam Long staffId, @RequestParam(required = false) String fromDate, @RequestParam(required = false) String toDate) {
+        return ResponseEntity.ok(transactionService.getActivityReport(staffId, fromDate, toDate));
+    }
+
+    @GetMapping("/reports/best-selling")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STOCKSTAFF')")
+    public ResponseEntity<Response> getBestSellingProducts(
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(required = false) String fromDate,
+            @RequestParam(required = false) String toDate) {
+        return ResponseEntity.ok(transactionService.getBestSellingProducts(limit, fromDate, toDate));
+    }
+
+    @PutMapping("/admin-update/{transactionId}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Response> updateTransactionByAdmin(
+            @PathVariable Long transactionId,
+            @RequestBody @Valid TransactionUpdateRequest request) throws JsonProcessingException {
+        return ResponseEntity.ok(transactionService.updateTransaction(transactionId, request));
     }
 }

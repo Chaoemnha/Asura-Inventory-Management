@@ -1,54 +1,148 @@
 <div class="x_panel">
 <div class="purchase-form-page">
-  <h1>Receive Inventory</h1>
+  <h1>Nhập hàng vào kho</h1>
 
   <!-- PRODUCT PURCHASE? INVENTORY RECEIVING PAGE -->
   <form (ngSubmit)="handleSubmit()">
 
-    <div class="form-group">
-      <label for="">Select Product</label>
-      <select
-        name="productId"
-        class="form-control"
-        [(ngModel)]="productId"
-        id=""
-      >
-        <option value="">Select a product</option>
-        <option *ngFor="let product of products" [value]="product.id">
-          {{ product.name }}
-        </option>
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <label for="">Select Supplier</label>
-      <select
-        name="supplierId"
-        class="form-control"
-        [(ngModel)]="supplierId"
-        id=""
-      >
-        <option value="">Select a Supplier</option>
-        <option *ngFor="let supplier of suppliers" [value]="supplier.id">
-          {{ supplier.name }}
-        </option>
-      </select>
-    </div>
+<div class="form-group">
+        <div class="row">
+          <label class="control-label col-md-3 col-sm-3 col-12"> Chọn sản phẩm<span class="required">*</span></label>
+          <div class="col-md-6 col-sm-6 col-12">
+            <select name="productId" class="form-control" [(ngModel)]="productId" (change)="onProductChange()" id="">
+              <option value="">Chọn sản phẩm</option>
+              <option *ngFor="let product of products" [value]="product.id">
+                {{ product.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Product Information Display -->
+      <div class="form-group" *ngIf="selectedProduct">
+        <div class="row">
+          <label class="control-label col-md-3 col-sm-3 col-12">Thông tin sản phẩm</label>
+          <div class="col-md-6 col-sm-6 col-12">
+            <div class="alert alert-info">
+              <p><strong>Tên:</strong> {{ selectedProduct.name }}</p>
+              <p><strong>SKU:</strong> {{ selectedProduct.sku }}</p>
+              <p><strong>Giá:</strong> {{ selectedProduct.price | number:'1.0-0' }}₫</p>
+              <p><strong>Tồn kho:</strong> {{ selectedProduct.stockQuantity }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="row">
+          <label class="control-label col-md-3 col-sm-3 col-12"> Chọn nhà cung cấp<span class="required">*</span></label>
+          <div class="col-md-6 col-sm-6 col-12">
+            <select name="supplierId" class="form-control" [(ngModel)]="supplierId" (change)="onSupplierChange()" id="">
+              <option value="">Chọn nhà cung cấp</option>
+              <option *ngFor="let supplier of suppliers" [value]="supplier.id">
+                {{ supplier.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sender Selection for Admin -->
+      <div class="form-group" *ngIf="isAdmin() && supplierId && availableSenders.length > 0">
+        <div class="row">
+          <label class="control-label col-md-3 col-sm-3 col-12">Chọn người gửi</label>
+          <div class="col-md-6 col-sm-6 col-12">
+            <select name="senderId" class="form-control" [(ngModel)]="senderId" id="">
+              <option value="">Chọn người gửi</option>
+              <option *ngFor="let sender of availableSenders" [value]="sender.id">
+                {{ sender.name }} - {{ sender.email }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Price Input -->
+      <div class="form-group" *ngIf="selectedProduct">
+        <div class="row">
+          <label class="control-label col-md-3 col-sm-3 col-12">Giá nhập<span class="required">*</span></label>
+          <div class="col-md-6 col-sm-6 col-12">
+            <input type="number" [(ngModel)]="price" name="price" class="form-control col-md-7 col-12" 
+                   [max]="maxPrice" min="0" step="0.01"
+                   placeholder="Tối đa: {{maxPrice | number:'1.0-0'}}">
+            <small class="form-text text-muted">
+              Giá sản phẩm: {{selectedProduct.price | number:'1.0-0'}} | Tối đa: {{maxPrice | number:'1.0-0'}}
+            </small>
+          </div>
+        </div>
+      </div>
 
     <div class="form-group">
-        <label for="">Description</label>
-        <input type="text" [(ngModel)]="description" name="description" class="form-control"/>
+        <div class="row">
+          <label class="control-label col-md-3 col-sm-3 col-12">Mô tả</label>
+          <div class="col-md-6 col-sm-6 col-12">
+            <textarea [(ngModel)]="description" name="description" class="form-control" rows="3" placeholder="Mô tả..."></textarea>
+          </div>
+        </div>
       </div>
 
 
     <div class="form-group">
-        <label for="">Quantity</label>
-        <input type="number" [(ngModel)]="quantity" name="quantity" class="form-control"/>
+        <div class="row">
+          <label class="control-label col-md-3 col-sm-3 col-12">Số lượng<span class="required">*</span>
+          </label>
+          <div class="col-md-6 col-sm-6 col-12">
+            <input type="number" [(ngModel)]="quantity" name="quantity" class="form-control col-md-7 col-12">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Total Price Display -->
+      <div class="form-group" *ngIf="selectedProduct && quantity">
+        <div class="row">
+          <label class="control-label col-md-3 col-sm-3 col-12">Tổng giá</label>
+          <div class="col-md-6 col-sm-6 col-12">
+            <div class="alert alert-success">
+              <h4><strong>{{ totalPrice | number:'1.0-0' }}₫</strong></h4>
+              <p><small>{{ quantity }} × {{ price | number:'1.0-0' }}₫</small></p>
+            </div>
+          </div>
+        </div>
       </div>
 
+      <!-- Admin Only Fields -->
+      <div *ngIf="isAdmin()">
+        <div class="form-group">
+          <div class="row">
+            <label class="control-label col-md-3 col-sm-3 col-12">Ngày tạo</label>
+            <div class="col-md-6 col-sm-6 col-12">
+              <input type="datetime-local" [(ngModel)]="createdAt" name="createdAt" class="form-control">
+              <small class="form-text text-muted">Để trống sẽ sử dụng thời gian hiện tại</small>
+            </div>
+          </div>
+        </div>
 
-      <button type="submit" class="btn btn-primary mr-1">Purchase Product</button>
-      <button class="btn btn-primary" type="reset">Reset</button>
+        <div class="form-group">
+          <div class="row">
+            <label class="control-label col-md-3 col-sm-3 col-12">Trạng thái</label>
+            <div class="col-md-6 col-sm-6 col-12">
+              <select name="status" class="form-control" [(ngModel)]="status">
+                <option value="">Mặc định</option>
+                <option value="PENDING">PENDING</option>
+                <option value="COMPLETED">COMPLETED</option>
+                <option value="CANCELED">CANCELED</option>
+                <option value="SENDER_DECIDING">SENDER_DECIDING</option>
+                <option value="ADMIN_DECIDING">ADMIN_DECIDING</option>
+                <option value="SENDER_DECLINED">SENDER_DECLINED</option>
+              </select>
+              <small class="form-text text-muted">Để trống sẽ sử dụng trạng thái mặc định</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary mr-1">Nhập hàng</button>
+      <button class="btn btn-primary" type="reset">Đặt lại</button>
   </form>
 </div>
 </div>

@@ -42,7 +42,7 @@ public class SupplierServiceImpl implements SupplierService {
         Optional<Supplier> supplier2 = supplierRepository.findByPhone(supplierDTO.getPhone());
         Optional<Supplier> supplier3 = supplierRepository.findByEmail(supplierDTO.getEmail());
         if (supplier1.isPresent()||supplier2.isPresent()||supplier3.isPresent()) {
-            throw new InvalidCredentialsException("Supplier already exists");
+            throw new InvalidCredentialsException("Nhà cung cấp đã tồn tại");
         }
         Supplier supplierToSave = modelMapper.map(supplierDTO, Supplier.class);
         Supplier result = supplierRepository.save(supplierToSave);
@@ -61,7 +61,7 @@ public class SupplierServiceImpl implements SupplierService {
         WebSocketHandler.broadcastChanges(jsonString);
         return Response.builder()
                 .status(200)
-                .message("Supplier added successfully")
+                .message("Thêm mới nhà cung cấp thành công")
                 .build();
     }
 
@@ -69,7 +69,7 @@ public class SupplierServiceImpl implements SupplierService {
     public Response updateSupplier(Long id, SupplierDTO supplierDTO) throws JsonProcessingException {
 
         Supplier existingSupplier = supplierRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Supplier Not Found"));
+                .orElseThrow(()-> new NotFoundException("Không tìm thấy nhà cung cấp"));
 
         if (supplierDTO.getName() != null) existingSupplier.setName(supplierDTO.getName());
         if (supplierDTO.getAddress() != null) existingSupplier.setAddress(supplierDTO.getAddress());
@@ -92,7 +92,7 @@ public class SupplierServiceImpl implements SupplierService {
         WebSocketHandler.broadcastChanges(jsonString);
         return Response.builder()
                 .status(200)
-                .message("Supplier Successfully Updated")
+                .message("Nhà cung cấp cập nhật thành công")
                 .build();
     }
 
@@ -114,7 +114,7 @@ public class SupplierServiceImpl implements SupplierService {
     public Response getSupplierById(Long id) {
 
         Supplier supplier = supplierRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Supplier Not Found"));
+                .orElseThrow(()-> new NotFoundException("Không tìm thấy nhà cung cấp"));
 
         SupplierDTO supplierDTO = modelMapper.map(supplier, SupplierDTO.class);
 
@@ -129,7 +129,7 @@ public class SupplierServiceImpl implements SupplierService {
     public Response deleteSupplier(Long id) throws JsonProcessingException {
 
         supplierRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Supplier Not Found"));
+                .orElseThrow(()-> new NotFoundException("Không tìm thấy nhà cung cấp"));
 
         supplierRepository.deleteById(id);
         Map<String, Object> message = new HashMap<>();
@@ -140,7 +140,7 @@ public class SupplierServiceImpl implements SupplierService {
         WebSocketHandler.broadcastChanges(jsonString);
         return Response.builder()
                 .status(200)
-                .message("Supplier Successfully Deleted")
+                .message("Xóa nhà cung cấp thành công")
                 .build();
     }
 }

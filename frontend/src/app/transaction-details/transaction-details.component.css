@@ -1,0 +1,14 @@
+.badge {
+    font-size: 125%;
+}
+
+.staff-link {
+    color: #007bff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.staff-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}

@@ -25,6 +25,7 @@ public class RagService {
     private Assistant staffAssistant;
     private Assistant customerAssistant;
     private Assistant supplierAssistant;
+    private Assistant guestAssistant;
 
     Dotenv dotenv = Dotenv.configure().load();
 
@@ -48,6 +49,7 @@ public class RagService {
         this.staffAssistant = createAssistantForRole(chatModel, UserRole.STOCKSTAFF);
         this.customerAssistant = createAssistantForRole(chatModel, UserRole.CUSTOMER);
         this.supplierAssistant = createAssistantForRole(chatModel, UserRole.SUPPLIER);
+        this.guestAssistant = createAssistantForRole(chatModel, UserRole.GUEST);
     }
 
     private Assistant createAssistantForRole(ChatModel chatModel, UserRole role) {
@@ -63,37 +65,43 @@ public class RagService {
                 .chatModel(chatModel)
                 .contentRetriever(contentRetriever)
                 .systemMessageProvider(chatMemoryId -> systemMessage)
-                .chatMemory(MessageWindowChatMemory.withMaxMessages(3))
+                .chatMemory(MessageWindowChatMemory.withMaxMessages(2))
                 .build();
     }
 
     private String createSystemMessageForRole(UserRole role) {
-        String baseMessage = "Ban la mot AI assistant cho he thong quan ly kho hang. ";
+        String baseMessage = "Bạn là AI trợ lý quản lý kho hàng. Trả lời bằng tiếng Việt có dấu. Thêm <br> mỗi khi câu trả lời của bạn có xuống dòng" +
+                "Nếu không tìm thấy dữ liệu thì nói 'Tôi không tìm thấy thông tin này'. Nếu dữ liệu tìm được có thông tin ảnh, loại bỏ thông tin ảnh ra khỏi dữ liệu" +
+                "Để điều hướng hoặc dẫn người dùng: trả về JSON {\"action\": \"navigate\", \"url\": \"/path\", \"message\": \"Đang chuyển trang...\"}. " +
+                "Nếu không có URL phù hợp để dẫn hoặc điều hướng thì nói 'Không tìm thấy trang này trong hệ thống'.";
 
         switch (role) {
             case ADMIN:
-                return baseMessage + "Ban co quyen truy cap tat ca du lieu trong database bao gom: users, products, categories, suppliers, transactions. " +
-                        "Ban co the thuc hien tat ca cac truy van SELECT tren cac bang nay.";
-
+                return baseMessage + " Quyền ADMIN: Truy cập tất cả bảng (users, products, categories, suppliers, transactions). " +
+                        "URL được phép: /dashboard, /product, /transaction, /category, /supplier, /users, /purchase, /sell, /profile. " +
+                        "Đến sản phẩm: /product/{id}, Giao dịch: /transaction/{id}.";
             case STOCKSTAFF:
-                return baseMessage + "Ban chi co quyen truy cap du lieu: products, categories, transactions lien quan den nhap/xuat kho/tra hang ve supplier. " +
-                        "Ban KHONG duoc truy cap thong tin users hoac suppliers. " +
-                        "Chi duoc truy van SELECT tren cac bang: products, categories, transactions";
+                return baseMessage + " Quyền NHÂN VIÊN: Chỉ truy cập products, categories, transactions. " +
+                        "KHÔNG được truy cập users, suppliers. " +
+                        "URL được phép: /dashboard, /product, /transaction, /purchase, /sell, /profile."+
+            "Đến sản phẩm: /product/{id}, Giao dịch: /transaction/{id}.";
 
             case SUPPLIER:
-                return baseMessage + "Ban chi co quyen truy cap du lieu: products, categories, transactions lien quan den xuat kho/tra hang ve supplier. " +
-                        "Ban KHONG duoc truy cap thong tin users hoac suppliers. " +
-                        "Chi duoc truy van SELECT tren cac bang: products, categories, transaction";
-
+                return baseMessage + " Quyền NHÀ CUNG CẤP: Chỉ truy cập products, categories, transactions với transactions.transaction_type!='SALE'." +
+                        "KHÔNG được truy cập users, suppliers. " +
+                        "URL được phép: /dashboard, /product, /transaction, /profile."+
+            "Đến sản phẩm: /product/{id}, Giao dịch: /transaction/{id}.";
             case CUSTOMER:
-                return baseMessage + "Ban chi co quyen xem thong tin co ban ve san pham va danh muc. " +
-                        "Ban chi duoc SELECT cac truong: products.id, products.name, products.description, products.price, categories.name tu cac bang products va categories. " +
-                        "Ban KHONG duoc truy cap bat ky thong tin nao khac.";
-
+                return baseMessage + " Quyền KHÁCH HÀNG: Chỉ truy cập products, categories, transactions với transactions.transaction_type!='PURCHASE'." +
+                        "KHÔNG được truy cập thông tin khác. " +
+                        "URL được phép: /dashboard, /product, /transaction, /sell, /profile."+
+            "Đến sản phẩm: /product/{id}, Giao dịch: /transaction/{id}.";
+            case GUEST:
             default:
-                return baseMessage + "Ban chi co quyen xem thong tin co ban ve san pham va danh muc. " +
-                        "Ban chi duoc SELECT cac truong: products.id, products.name, products.description, products.price, categories.name tu cac bang products va categories. " +
-                        "Ban KHONG duoc truy cap bat ky thong tin nao khac.";
+                return baseMessage + " Quyền KHÁCH: Chỉ xem products.id, products.name, products.description, products.price, categories" +
+                        "KHÔNG được truy cập thông tin khác. " +
+                        "URL được phép: /login, /product/, /register. Khuyến khích đăng ký, đăng nhập để sử dụng đầy đủ tính năng."+
+            "Đến sản phẩm: /product/{id}.";
         }
     }
 
@@ -110,8 +118,8 @@ public class RagService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            log.warn("No authenticated user found, defaulting to CUSTOMER role");
-            return UserRole.CUSTOMER;
+            log.warn("No authenticated user found, defaulting to GUEST");
+            return UserRole.GUEST;
         }
 
         // Lay role tu authentication (gia su role duoc luu trong authorities)
@@ -121,11 +129,11 @@ public class RagService {
                         return UserRole.valueOf(authority.getAuthority().replace("ROLE_", ""));
                     } catch (IllegalArgumentException e) {
                         log.warn("Invalid role found: {}", authority.getAuthority());
-                        return UserRole.CUSTOMER;
+                        return UserRole.GUEST;
                     }
                 })
                 .findFirst()
-                .orElse(UserRole.CUSTOMER);
+                .orElse(UserRole.GUEST);
     }
 
     private Assistant getAssistantForRole(UserRole role) {
@@ -137,8 +145,10 @@ public class RagService {
             case STOCKSTAFF:
                 return staffAssistant;
             case CUSTOMER:
-            default:
                 return customerAssistant;
+            case GUEST:
+            default:
+                return guestAssistant;
         }
     }
 

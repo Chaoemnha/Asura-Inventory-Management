@@ -9,8 +9,9 @@
             "request": "launch",
             "type": "msedge",
             "url": "http://localhost:4200",
-            "webRoot": "${workspaceFolder}/angular",
+            "webRoot": "${workspaceFolder}",
             "sourceMaps": true,
+            "trace": true,
             "sourceMapPathOverrides": {
                 "webpack:/*": "${webRoot}/*",
                 "/./*": "${webRoot}/*",
@@ -19,6 +20,7 @@
                 "/./~/*": "${webRoot}/node_modules/*"
             },
             "smartStep": true,
+            "userDataDir": "${workspaceFolder}/.vscode/edge",
             "skipFiles": [
                 "<node_internals>/**",
                 "node_modules/**"

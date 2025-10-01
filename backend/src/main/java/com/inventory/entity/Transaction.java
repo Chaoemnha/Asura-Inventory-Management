@@ -1,5 +1,6 @@
 package com.inventory.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.inventory.enums.TransactionStatus;
 import com.inventory.enums.TransactionType;
 import jakarta.persistence.*;
@@ -37,7 +38,7 @@ public class Transaction {
 
     private LocalDateTime updatedAt;
 
-    private final LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -50,6 +51,16 @@ public class Transaction {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id")
     private Supplier supplier;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id")
+    private User sender;
+
+    @Transient
+    private LocalDateTime fromDate;
+
+    @Transient
+    private LocalDateTime toDate;
 
     @Override
     public String toString() {

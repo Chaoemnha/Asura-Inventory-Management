@@ -38,6 +38,8 @@ public class TransactionDTO {
 
     private UserDTO user;
 
+    private UserDTO sender;
+
     private ProductDTO product;
 
     private SupplierDTO supplier;
