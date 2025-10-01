@@ -60,7 +60,7 @@ export class DashboardComponent {
 
   // Method to fetch all transactions from the API
   loadTransactions(): void {
-    this.apiService.getAllTransactions('').subscribe((data) => {
+    this.apiService.getAllTransactions('', -1, -1).subscribe((data) => {
       this.transactions = data.transactions; // Store transactions data
       this.processChartData(); // Process data to generate charts
     });

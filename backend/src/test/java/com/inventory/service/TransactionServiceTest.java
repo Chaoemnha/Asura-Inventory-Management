@@ -1,5 +1,6 @@
 package com.inventory.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.inventory.dto.*;
 import com.inventory.entity.Product;
 import com.inventory.entity.Supplier;
@@ -57,13 +58,11 @@ public class TransactionServiceTest {
     @Qualifier("modelMapper")
     private ModelMapper modelMapper;
 
-    @Qualifier("transactionMapper")
-    private ModelMapper transactionMapper;
-
     private Transaction transaction;
     private Product product;
     private Supplier supplier;
     private User user;
+    private UserDTO userDTO;
     private TransactionRequest transactionRequest;
     private List<TransactionType>  transactionTypeList;
     private TransactionStatus  transactionStatus;
@@ -74,7 +73,8 @@ public class TransactionServiceTest {
         modelMapper = new ModelMapper();
         product = modelMapper.map(ProductDTO.builder().name("Asus").sku("nl1").price(BigDecimal.valueOf(10000000)).stockQuantity(2).description("A laptop").categoryId(1L).id(1L).build(), Product.class);;
         supplier = modelMapper.map(SupplierDTO.builder().id(2L).name("NCC Thang Long").email("thanglong@yahoo.com").phone("039584728").address("Ha Noi").build(), Supplier.class);
-        user = modelMapper.map(UserDTO.builder().id(3L).name("Luuanz").email("luuanz@yahoo.com").password("039584728").phoneNumber("0498582").role(UserRole.MANAGER).build(), User.class);
+        userDTO = UserDTO.builder().id(3L).name("Luuanz").email("luuanz@yahoo.com").password("039584728").phoneNumber("0498582").role(UserRole.MANAGER).build();
+        user = modelMapper.map(userDTO, User.class);
         transactionRequest = new TransactionRequest(1L, 2, 2L, "buy a router");
         transaction = modelMapper.map(Transaction.builder().id(4L).transactionType(TransactionType.SALE).status(TransactionStatus.COMPLETED).product(product).user(user).totalProducts(transactionRequest.getQuantity()).totalPrice(product.getPrice().multiply(BigDecimal.valueOf(transactionRequest.getQuantity()))).description(transactionRequest.getDescription()).build(), Transaction.class);
         // Tiem modelMapper vao transactionService (co phuong thuc ser dung mapper nen p set ko thi null excep)
@@ -86,11 +86,11 @@ public class TransactionServiceTest {
 
     @DisplayName("Testcase: kiem thu phuong thuc restockInventory (Nhap hang tu ncc)")
     @Test
-    public void testRestockInventory() {
+    public void testRestockInventory() throws JsonProcessingException {
         //Given phuong thuc will return: chi dinh kq tra ve
         BDDMockito.given(supplierRepository.findById(2L)).willReturn(Optional.of(supplier));
         BDDMockito.given(productRepository.findById(1L)).willReturn(Optional.of(product));
-        BDDMockito.given(userService.getCurrentLoggedInUser()).willReturn(user);
+        BDDMockito.given(userService.getCurrentLoggedInUser()).willReturn(userDTO);
         //Sau là test tổng quan - return
         Response response = transactionService.restockInventory(transactionRequest);
         assertThat(response.getStatus()).isEqualTo(200);
@@ -98,10 +98,10 @@ public class TransactionServiceTest {
 
     @DisplayName("Testcase: kiem thu phuong thuc sell (Xuat hang cho user)")
     @Test
-    public void testSell() {
+    public void testSell() throws JsonProcessingException {
         //Given phuong thuc will return: chi dinh kq tra ve
         BDDMockito.given(productRepository.findById(1L)).willReturn(Optional.of(product));
-        BDDMockito.given(userService.getCurrentLoggedInUser()).willReturn(user);
+        BDDMockito.given(userService.getCurrentLoggedInUser()).willReturn(userDTO);
         //Sau là test tổng quan - return
         Response response = transactionService.sell(transactionRequest);
         assertThat(response.getStatus()).isEqualTo(200);
@@ -109,11 +109,11 @@ public class TransactionServiceTest {
 
     @DisplayName("Testcase: kiem thu phuong thuc returnToSupplier (Tra hang ve cho nha cung cap)")
     @Test
-    public void testReturnToSupplier() {
+    public void testReturnToSupplier() throws JsonProcessingException {
         //Given phuong thuc will return: chi dinh kq tra ve
         BDDMockito.given(productRepository.findById(1L)).willReturn(Optional.of(product));
         BDDMockito.given(supplierRepository.findById(2L)).willReturn(Optional.of(supplier));
-        BDDMockito.given(userService.getCurrentLoggedInUser()).willReturn(user);
+        BDDMockito.given(userService.getCurrentLoggedInUser()).willReturn(userDTO);
         //Sau là test tổng quan - return
         Response response = transactionService.returnToSupplier(transactionRequest);
         assertThat(response.getStatus()).isEqualTo(200);
@@ -123,10 +123,10 @@ public class TransactionServiceTest {
     @Test
     public void testGetAllTransactions() {
         //May qua tim duoc cach khoi tao Page<T>
-        BDDMockito.given(transactionRepository.searchTransactions(null, PageRequest.of(1, 1, Sort.by(Sort.Direction.DESC, "id")))).willReturn(new PageImpl<>(List.of(transaction)));
+        BDDMockito.given(transactionRepository.searchTransactions(null, -1L, -1L, PageRequest.of(1, 1, Sort.by(Sort.Direction.DESC, "id")))).willReturn(new PageImpl<>(List.of(transaction)));
         //BDDMockito.given(transactionRepository.searchTransactions(null, PageRequest.of(1, 1, Sort.by(Sort.Direction.DESC, "id")))).willReturn();
         //Test return kem transactionDTOS
-        Response response = transactionService.getAllTransactions(1,1,null);
+        Response response = transactionService.getAllTransactions(1,1,null, null, null);
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getTransactions().getFirst().getId()).isEqualTo(4L);
     }
@@ -160,21 +160,10 @@ public class TransactionServiceTest {
 
     @DisplayName("Testcase: kiem thu phuong thuc updateTransactionStatus (Cap trang thai hoa don)")
     @Test
-    public void updateTransactionStatus() {
+    public void updateTransactionStatus() throws JsonProcessingException {
         transaction.setStatus(TransactionStatus.CANCELED);
         BDDMockito.given(transactionRepository.findById(4L)).willReturn(Optional.of(transaction));
         Response response = transactionService.updateTransactionStatus(transaction.getId(), transaction.getStatus());
         assertThat(response.getStatus()).isEqualTo(200);
-    }
-
-    @DisplayName("Testcase: kiem thu phuong thuc extract")
-    @Test
-    public void extractTextForEmbedding() throws NoSuchFieldException, IllegalAccessException {
-        Field field = TransactionServiceImpl.class.getDeclaredField("transactionMapper");
-        field.setAccessible(true);
-        field.set(transactionService, modelMapper);
-        BDDMockito.given(transactionRepository.findAll(Sort.by(Sort.Direction.DESC, "id"))).willReturn(List.of(transaction));
-        List<String> res = transactionService.extractTextForEmbedding();
-        assertThat(res.size()).isEqualTo(1);
     }
 }

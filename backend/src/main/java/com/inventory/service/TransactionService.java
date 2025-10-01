@@ -14,12 +14,11 @@ public interface TransactionService {
     Response restockInventory(TransactionRequest transactionRequest) throws JsonProcessingException;
     Response sell(TransactionRequest transactionRequest) throws JsonProcessingException;
     Response returnToSupplier(TransactionRequest transactionRequest) throws JsonProcessingException;
-    Response getAllTransactions(int page, int size, String searchText);
+    Response getAllTransactions(int page, int size, String searchText, Long userId, Long supplier);
     Response getTransactionById(Long id);
     List<TransactionDTO> getAllTransactionByType(List<TransactionType> transactionTypes);
     Response getAllTransactionByMonthAndYear(int month, int year);
     Response updateTransactionStatus(Long transactionId, TransactionStatus transactionStatus) throws JsonProcessingException;
-    List<String> extractTextForEmbedding();
     Response updateTransactionStatusViaQR(Long transactionId, TransactionStatus status) throws JsonProcessingException;
     File generateInvoicePdfWithQR(Long transactionId, TransactionStatus transactionStatus) throws Exception;
 }

@@ -2,7 +2,6 @@ package com.inventory.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.inventory.service.EmbeddableText;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,16 +15,11 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
-public class CategoryDTO implements EmbeddableText {
+public class CategoryDTO {
 
     private Long id;
 
     @NotBlank(message = "Name is required")
     private String name;
-
-    @Override
-    public String getTextForEmbedding() {
-        return String.format("Category: %s", this.getName());
-    }
 
 }

@@ -7,9 +7,10 @@ import CryptoJS from 'crypto-js';
   providedIn: 'root',
 })
 export class ApiService {
-  getAllProductsByCategoryName(categoryName: string): Observable<any> {
+  getAllProductsByCategoryName(categoryName: string, searchInput: string): Observable<any> {
     return this.http.get(`${ApiService.BASE_URL}/products/all/${categoryName}`, {
       headers: this.getHeader(),
+      params: {searchText: searchInput},
     });
   }
   authStatuschanged = new EventEmitter<void>();
@@ -171,9 +172,10 @@ export class ApiService {
     });
   }
 
-  getAllProducts(): Observable<any> {
+  getAllProducts(searchInput: string): Observable<any> {
     return this.http.get(`${ApiService.BASE_URL}/products/all`, {
       headers: this.getHeader(),
+      params: {searchText: searchInput},
     });
   }
 
@@ -205,9 +207,9 @@ export class ApiService {
     });
   }
 
-  getAllTransactions(searchText: string): Observable<any> {
+  getAllTransactions(searchText: string, userId: number, supplierId: number): Observable<any> {
     return this.http.get(`${ApiService.BASE_URL}/transactions/all`, {
-      params: { searchText: searchText },
+      params: { searchText: searchText, userId: userId, supplierId: supplierId },
       headers: this.getHeader(),
     });
   }
@@ -284,6 +286,30 @@ export class ApiService {
   isAdmin(): boolean {
     const role = this.getFromStorageAndDecrypt('role');
     return role === 'ADMIN';
+  }
+
+  getUserRole(): string | null {
+    return this.getFromStorageAndDecrypt('role');
+  }
+
+  isStockStaff(): boolean {
+    const role = this.getFromStorageAndDecrypt('role');
+    return role === 'STOCKSTAFF';
+  }
+
+  isSupplier(): boolean {
+    const role = this.getFromStorageAndDecrypt('role');
+    return role === 'SUPPLIER';
+  }
+
+  isCustomer(): boolean {
+    const role = this.getFromStorageAndDecrypt('role');
+    return role === 'CUSTOMER';
+  }
+
+  hasRole(requiredRoles: string[]): boolean {
+    const userRole = this.getUserRole();
+    return userRole ? requiredRoles.includes(userRole) : false;
   }
 
   logged(){

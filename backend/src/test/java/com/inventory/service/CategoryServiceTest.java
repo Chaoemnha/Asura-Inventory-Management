@@ -98,12 +98,4 @@ public class CategoryServiceTest {
         Response response = categoryService.deleteCategory(1L);
         assertThat(response.getStatus()).isEqualTo(200);
     }
-
-    @DisplayName("Testcase: kiem thu phuong thuc extract")
-    @Test
-    public void extractTextForEmbedding() {
-        BDDMockito.given(categoryRepository.findAll(Sort.by(Sort.Direction.DESC, "id"))).willReturn(List.of(category));
-        List<String> res = categoryService.extractTextForEmbedding();
-        assertThat(res.size()).isEqualTo(1);
-    }
 }

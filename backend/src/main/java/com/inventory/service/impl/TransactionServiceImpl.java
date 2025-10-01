@@ -50,10 +50,6 @@ public class TransactionServiceImpl implements TransactionService {
     private final SupplierRepository supplierRepository;
     private final UserService userService;
     private final ProductRepository productRepository;
-    @Autowired
-    @Qualifier("transactionMapper")
-    private final ModelMapper transactionMapper;
-
     private final DocxTemplateService docxTemplateService;
 
     @Value("${app.qr.base-url:http://localhost:8080/api/transactions/{transaction_id}/{status}}")
@@ -74,7 +70,7 @@ public class TransactionServiceImpl implements TransactionService {
         Supplier supplier = supplierRepository.findById(supplierId)
                 .orElseThrow(()-> new NotFoundException("Supplier Not Found"));
 
-        UserDTO user1 = userService.getCurrentLoggedInUser(true);
+        UserDTO user1 = userService.getCurrentLoggedInUser();
         User user = modelMapper.map(user1, User.class);
         //update the stock quantity and re-save
         product.setStockQuantity(product.getStockQuantity() + quantity);
@@ -123,7 +119,7 @@ public class TransactionServiceImpl implements TransactionService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(()-> new NotFoundException("Product Not Found"));
 
-        UserDTO user1 = userService.getCurrentLoggedInUser(true);
+        UserDTO user1 = userService.getCurrentLoggedInUser();
         User user = modelMapper.map(user1, User.class);
         //update the stock quantity and re-save
         product.setStockQuantity(product.getStockQuantity() - quantity);
@@ -177,7 +173,7 @@ public class TransactionServiceImpl implements TransactionService {
         Supplier supplier = supplierRepository.findById(supplierId)
                 .orElseThrow(()-> new NotFoundException("Supplier Not Found"));
 
-        UserDTO user1 = userService.getCurrentLoggedInUser(true);
+        UserDTO user1 = userService.getCurrentLoggedInUser();
         User user = modelMapper.map(user1, User.class);
         //update the stock quantity and re-save
         product.setStockQuantity(product.getStockQuantity() - quantity);
@@ -218,16 +214,18 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Response getAllTransactions(int page, int size, String searchText) {
+    public Response getAllTransactions(int page, int size, String searchText, Long userId, Long supplierId) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        Page<Transaction> transactionPage = transactionRepository.searchTransactions(searchText, pageable);
+        if(userId==-1) userId=null;
+        if(supplierId==-1) supplierId=null;
+        Page<Transaction> transactionPage = transactionRepository.searchTransactions(searchText, userId, supplierId, pageable);
         List<TransactionDTO> transactionDTOS = modelMapper
                 .map(transactionPage.getContent(), new TypeToken<List<TransactionDTO>>() {}.getType());
         transactionDTOS.forEach(transactionDTOItem -> {
-            transactionDTOItem.setUser(null);
+            transactionDTOItem.getUser().setTransactions(null);
+            transactionDTOItem.getUser().setSupplier(null);
             transactionDTOItem.setProduct(null);
-            transactionDTOItem.setSupplier(null);
         });
         return Response.builder()
                 .status(200)
@@ -312,17 +310,10 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<String> extractTextForEmbedding() {
-        List<Transaction> transactions = transactionRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-        List<TransactionDTO> transactionDTOS = transactionMapper.map(transactions, new TypeToken<List<TransactionDTO>>() {}.getType());
-        return transactionDTOS.stream().map(TransactionDTO::getTextForEmbedding).collect(Collectors.toList());
-    }
-
-    @Override
     public Response updateTransactionStatusViaQR(Long transactionId, TransactionStatus status)  throws JsonProcessingException{
         Transaction existingTransaction = transactionRepository.findById(transactionId)
                 .orElseThrow(()-> new NotFoundException("Transaction Not Found"));
-        UserDTO user = userService.getCurrentLoggedInUser(true);
+        UserDTO user = userService.getCurrentLoggedInUser();
         if(existingTransaction.getStatus() == TransactionStatus.PENDING) {
             if(existingTransaction.getUser()!=null&&existingTransaction.getUser().getRole()!= UserRole.STOCKSTAFF) {
                 if(existingTransaction.getUser().getId()==user.getId()) {
