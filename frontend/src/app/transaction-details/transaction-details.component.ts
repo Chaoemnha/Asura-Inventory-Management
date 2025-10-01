@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../service/api.service';
 import { NotificationService } from '../service/notification.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QrScannerComponent } from '../qr-scanner/qr-scanner.component';
+import { WebSocketService } from '../service/websocket.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-transaction-details',
@@ -13,13 +15,14 @@ import { QrScannerComponent } from '../qr-scanner/qr-scanner.component';
   templateUrl: './transaction-details.component.html',
   styleUrl: './transaction-details.component.css',
 })
-export class TransactionDetailsComponent implements OnInit {
+export class TransactionDetailsComponent implements OnInit, OnDestroy {
  
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
     private router: Router,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private webSocketService: WebSocketService
   ) {}
 
   transactionId:string | null = '';
@@ -27,12 +30,15 @@ export class TransactionDetailsComponent implements OnInit {
   status:string = '';
   user:any=null;
   supplierId=-1;
-  isCustomer=false;
   type:string='';
+  isCustomer=false;
   isAdmin=false;
+  isStockstaff=false;
   showQrScanner: boolean = false;
   canGenQR:boolean=false;
   canScanQR:boolean=false;
+  canReturn:boolean=false;
+  private wsSubscription!: Subscription;
 
   ngOnInit(): void {
     //extract transaction id from routes
@@ -47,14 +53,27 @@ export class TransactionDetailsComponent implements OnInit {
             this.notificationService.showError('Error',
               error?.error?.message ||
                 error?.message ||
-                'Unable to Get Profile Info: ' + error
+                'Không thể lấy thông tin người dùng: ' + error
             );
           }
         });
     });
+
+    // Subscribe to WebSocket messages
+    this.wsSubscription = this.webSocketService.getMessages().subscribe({
+      next: (message: any) => {
+        this.handleWebSocketMessage(message);
+      },
+      error: (error: any) => {
+        console.error('WebSocket error in TransactionDetailsComponent:', error);
+      }
+    });
   }
 
   getTransactionDetails():void{
+    this.canGenQR=false;
+  this.canScanQR=false;
+  this.canReturn=false;
     if (this.transactionId) {
       this.apiService.getTransactionById(this.transactionId).subscribe({
         next:(transactionData: any) =>{
@@ -62,19 +81,26 @@ export class TransactionDetailsComponent implements OnInit {
             this.transaction = transactionData.transaction;
             this.status = this.transaction.status;
             this.type = this.transaction.transactionType;
-            this.isAdmin = (this.transaction.user)?(this.transaction.user.role=="ADMIN"?true:false):false;
-            this.isCustomer = (this.transaction.user)?(this.transaction.user.role=="CUSTOMER"?true:false):false;
-            if(this.transaction.transactionType!="RETURN_TO_SUPPLIER"&&this.transaction.supplier.id==this.user.supplier.id&&this.transaction.status=='PENDING'){
+            this.isAdmin = this.user.role=="ADMIN"?true:false;
+            this.isCustomer = this.user.role=="CUSTOMER"?true:false;
+            this.isStockstaff = this.user.role=="STOCKSTAFF"?true:false;
+            if(this.transaction.transactionType!="RETURN_TO_SUPPLIER"&&this.transaction.supplier.id==this.user.supplier?.id&&this.transaction.status=='PENDING'){
               this.canGenQR=true;
             }
-            if(this.transaction.transactionType=="RETURN_TO_SUPPLIER"&&this.transaction.user.id==this.user.id&&this.transaction.status=='PENDING'){
+            if(this.transaction.transactionType=="RETURN_TO_SUPPLIER"&&(this.transaction.user.id==this.user.id||this.isAdmin)&&this.transaction.status=='PENDING'){
               this.canGenQR=true;
             }
-            if(!this.isCustomer&&this.transaction.user.supplier.id==this.user.supplier.id&&this.transaction.status!="COMPLETED"){
+            if(!this.isCustomer&&((this.transaction.supplier.id==this.user.supplier.id&&this.transaction.transactionType=="RETURN_TO_SUPPLIER")||(this.transaction.user.id==this.user.id&&this.transaction.transactionType!="RETURN_TO_SUPPLIER"))&&this.transaction.status=="PENDING"){
               this.canScanQR=true;
             }
-            if(this.isCustomer&&this.transaction.user.id==this.user.id){
+            if(this.isCustomer&&this.transaction.transactionType=="SALE"&&this.transaction.user.id==this.user.id&&this.transaction.status=="PENDING"){
               this.canScanQR=true;
+            }
+            if((this.isAdmin||(this.isStockstaff&&this.user.id==this.transaction.user.id))&&this.transaction.transactionType=="PURCHASE"&&this.transaction.status=="COMPLETED"){
+              this.canReturn=true;
+            }
+            if(this.isCustomer&&this.transaction.transactionType=="SALE"&&this.transaction.status=="COMPLETED"&&this.transaction.user.id==this.user.id){
+              this.canReturn=true;
             }
           }
         },
@@ -82,7 +108,7 @@ export class TransactionDetailsComponent implements OnInit {
           this.notificationService.showError('Error',
             error?.error?.message ||
               error?.message ||
-              'Unable to Get Transaction by id: ' + error
+              'Không thể lấy giao dịch: ' + error
           );
         }
       })
@@ -94,14 +120,14 @@ export class TransactionDetailsComponent implements OnInit {
     if (this.transactionId && this.status) {
       this.apiService.updateTransactionStatus(this.transactionId, this.status).subscribe({
         next:(result)=>{
-          this.notificationService.showSuccess('Success', 'Transaction status updated successfully');
+          this.notificationService.showSuccess('Success', 'Cập nhật trạng thái giao dịch thành công');
           this.router.navigate(['/transaction']);
         },
         error:(error)=>{
           this.notificationService.showError('Error',
             error?.error?.message ||
               error?.message ||
-              'Unable to Update Transaction: ' + error
+              'Không thể cập nhật giao dịch: ' + error
           );
         }
       })
@@ -114,11 +140,6 @@ export class TransactionDetailsComponent implements OnInit {
     this.updateTransactionStatus('COMPLETED');
   }
 
-  cancelPayment(): void {
-    this.status = 'CANCELED';
-    this.updateTransactionStatus('CANCELED');
-  }
-
   confirmReturn():void{
     this.status = 'PENDING';
     this.updateTransactionStatus('PENDING');
@@ -127,6 +148,32 @@ export class TransactionDetailsComponent implements OnInit {
   rejectReturn(): void{
     this.status='CANCELED';
     this.updateTransactionStatus('CANCELED');
+  }
+
+  confirmSender(): void {
+    this.status = 'ADMIN_DECIDING';
+    this.updateTransactionStatus('ADMIN_DECIDING');
+  }
+
+  rejectTransaction(): void {
+    this.status = 'CANCELED';
+    this.updateTransactionStatus('CANCELED');
+  }
+
+  confirmTransaction(): void {
+    this.status = 'PENDING';
+    this.updateTransactionStatus('PENDING');
+  }
+
+  // Sender actions for RETURN transactions
+  senderAgree(): void {
+    this.status = 'ADMIN_DECIDING';
+    this.updateTransactionStatus('ADMIN_DECIDING');
+  }
+
+  senderDecline(): void {
+    this.status = 'SENDER_DECLINED';
+    this.updateTransactionStatus('SENDER_DECLINED');
   }
   
   navigateToReturnPage():void{
@@ -137,14 +184,14 @@ export class TransactionDetailsComponent implements OnInit {
     if (this.transactionId) {
       this.apiService.updateTransactionStatus(this.transactionId, newStatus).subscribe({
         next:(result)=>{
-          this.notificationService.showSuccess('Success', `Transaction status updated to ${newStatus}`);
+          this.notificationService.showSuccess('Success', `Đã cập nhật trạng thái: ${newStatus}`);
           this.getTransactionDetails(); // Refresh the transaction data
         },
         error:(error)=>{
           this.notificationService.showError('Error',
             error?.error?.message ||
               error?.message ||
-              'Unable to Update Transaction: ' + error
+              'Không thể cập nhật giao dịch: ' + error
           );
         }
       })
@@ -153,6 +200,7 @@ export class TransactionDetailsComponent implements OnInit {
 
   confirmArrival(): void{
     // Mở QR Scanner để quét mã QR
+    console.log('Mở trình quét QR cho giao dịch:', this.transaction?.id);
     this.showQrScanner = true;
   }
 
@@ -172,7 +220,7 @@ export class TransactionDetailsComponent implements OnInit {
             this.notificationService.showError('Error',
               error?.error?.message ||
                 error?.message ||
-                'Unable to Get Supplier info: ' + error
+                'Không thể lấy thông tin nhà cung cấp: ' + error
             );
           }
         })
@@ -185,5 +233,38 @@ export class TransactionDetailsComponent implements OnInit {
   // Đóng QR Scanner
   onCloseQrScanner(): void {
     this.showQrScanner = false;
+  }
+
+  // Navigate to staff profile
+  navigateToStaffProfile(userId: string): void {
+    this.router.navigate(['/staff-profile', userId]);
+  }
+
+  // Check if user is staff (STOCKSTAFF)
+  isStaffUser(user: any): boolean {
+    return user && user.role === 'STOCKSTAFF';
+  }
+
+  // Handle WebSocket messages
+  private handleWebSocketMessage(message: any): void {
+    // Chỉ xử lý message cho transaction hiện tại
+    if (message.data && message.data.id.toString() === this.transactionId) {
+      switch (message.type) {
+        case "TRANSACTION_UPDATED_RENDER":
+          this.getTransactionDetails(); // Refresh transaction details
+          this.notificationService.showInfo('Cập nhật giao dịch', `Giao dịch ID: ${message.data.id} đã được cập nhật trạng thái`);
+          break;
+          case 'TRANSACTION_DELETED_RENDER':
+        this.router.navigate(['/transation']);
+        this.notificationService.showWarning('Giao dịch đã xóa', `Giao dịch ID: ${message.data.id} đã bị xóa`);
+        break;
+      }
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.wsSubscription) {
+      this.wsSubscription.unsubscribe();
+    }
   }
 }

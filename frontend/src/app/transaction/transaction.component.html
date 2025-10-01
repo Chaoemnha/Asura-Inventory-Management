@@ -2,32 +2,147 @@
   <div class="x_title">
     <div class="page-title row">
       <div class="col-sm-6 col-12 text-left">
-        <h1>Transactions List</h1>
+        <h1>Danh sách giao dịch</h1>
       </div>
-
       <div class="col-sm-6 col-12 text-right">
         <div class="row">
-          <div class="offset-xl-7 col-xl-5 col-lg-12 col-md-12 col-sm-5 col-12 form-group pull-right top_search mt-3">
+          <div class="offset-xl-5 col-xl-7 col-lg-12 col-md-12 col-sm-7 col-12 form-group pull-right top_search mt-3">
             <div class="input-group">
-              <input type="text" [(ngModel)]="searchInput" placeholder="Search.." class="form-control" />
+              <input type="text" [(ngModel)]="searchId" placeholder="Nhập mã giao dịch..." class="form-control" />
               <span class="input-group-btn">
-                <button class="btn btn-light" (click)="handleSearch()">Go!</button>
-
+                <button *ngIf="!isSearching" class="btn btn-light" (click)="handleSearch()">Tìm</button>
+                <button *ngIf="isSearching" class="btn btn-dark" (click)="handleCancel()">Hủy</button>
               </span>
             </div>
           </div>
         </div>
       </div>
     </div>
-				<button *ngIf="isAdmin()" class="btn btn-app" (click)="exportTransactions('purchase')">
-					<i class="fa fa-cloud-download d-inline"></i><i class="fa fa-shopping-cart d-inline"></i><p> Receipt (Purchase)</p>
-				</button>
-				<button *ngIf="isAdmin()" class="btn btn-app" (click)="exportTransactions('sale')">
-					<i class="fa fa-cloud-download d-inline"></i><i class="fa fa-money d-inline"></i><p>Export Issue (Sale)</p>
-				</button>
-				<button *ngIf="isAdmin()" class="btn btn-app" (click)="exportTransactions('all')">
-					<i class="fa fa-cloud-download d-inline"></i><i class="fa fa-exchange d-inline"></i><p>Export All Transactions</p>
-				</button>
+
+    <!-- Advanced Search Toggle -->
+    <div class="row mt-3">
+      <div class="col-12">
+        <button class="btn btn-outline-primary" (click)="toggleAdvancedSearch()">
+          <i class="fa fa-search"></i>
+          {{ showAdvancedSearch ? 'Ẩn tìm kiếm' : 'Hiện tìm kiếm' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Advanced Search Form -->
+    <div class="container mt-3" *ngIf="showAdvancedSearch">
+      <form class="form-horizontal form-label-left" (ngSubmit)="handleAdvancedSearch()">
+
+        <!-- Transaction Type -->
+        <div class="form-group">
+          <div class="row">
+            <label class="control-label col-md-3 col-sm-3 col-12" for="searchType">Transaction Type</label>
+            <div class="col-md-6 col-sm-6 col-12">
+              <select [(ngModel)]="searchType" name="searchType" class="form-control">
+                <option value="">All Types</option>
+                <option value="PURCHASE">Purchase</option>
+                <option value="SALE">Sale</option>
+                <option value="RETURN_TO_SUPPLIER">Return to Supplier</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="form-group">
+          <div class="row">
+            <label class="control-label col-md-3 col-sm-3 col-12" for="searchStatus">Status</label>
+            <div class="col-md-6 col-sm-6 col-12">
+              <select [(ngModel)]="searchStatus" name="searchStatus" class="form-control">
+                <option value="">All Status</option>
+                <option value="PENDING">Pending</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="CANCELED">Canceled</option>
+                <option value="SENDER_DECIDING">Sender deciding</option>
+                <option value="ADMIN_DECIDING">Admin deciding</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Name -->
+        <div class="form-group">
+          <div class="row">
+            <label class="control-label col-md-3 col-sm-3 col-12" for="searchProductName">Product Name</label>
+            <div class="col-md-6 col-sm-6 col-12">
+              <input type="text" [(ngModel)]="searchProductName" name="searchProductName" class="form-control"
+                placeholder="Tên sản phẩm...">
+            </div>
+          </div>
+        </div>
+
+        <!-- From Date -->
+        <div class="form-group">
+          <div class="row">
+            <label class="control-label col-md-3 col-sm-3 col-12" for="searchFromDate">From Date</label>
+            <div class="col-md-6 col-sm-6 col-12">
+              <div class="input-group date">
+                <input type="date" [(ngModel)]="searchFromDate" name="searchFromDate" class="form-control"
+                  id="fromDatePicker">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <i class="fa fa-calendar"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- To Date -->
+        <div class="form-group">
+          <div class="row">
+            <label class="control-label col-md-3 col-sm-3 col-12" for="searchToDate">To Date</label>
+            <div class="col-md-6 col-sm-6 col-12">
+              <div class="input-group date">
+                <input type="date" [(ngModel)]="searchToDate" name="searchToDate" class="form-control"
+                  id="toDatePicker">
+                <div class="input-group-append">
+                  <div class="input-group-text">
+                    <i class="fa fa-calendar"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search Buttons -->
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-6 col-sm-6 col-12 col-md-offset-3">
+              <button type="submit" class="btn btn-success mr-2">
+                <i class="fa fa-search"></i> Tìm
+              </button>
+              <button *ngIf="isAdmin()" type="button" class="btn btn-info mr-2"
+                (click)="exportTransactions('purchase')">
+                <i class="fa fa-cloud-download"></i> Xuất giao dịch
+              </button>
+              <button type="button" class="btn btn-secondary mr-2" (click)="clearAdvancedSearch()">
+                <i class="fa fa-refresh"></i> Xóa
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- Role-based Alert Messages -->
+    <div class="row mt-3" *ngIf="shouldShowAlert()">
+      <div class="col-12">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert" style="margin-bottom: 10px; padding: 8px 15px;">
+          <i class="fa fa-exclamation-triangle"></i>
+          <strong>Chú ý:</strong> {{ getAlertMessage() }}
+        </div>
+      </div>
+    </div>
+
     <div class="clearfix"></div>
   </div>
 
@@ -37,12 +152,14 @@
         <thead>
           <tr class="headings">
             <th class="column-title">#</th>
-            <th class="column-title">TYPE</th>
-            <th class="column-title">STATUS</th>
-            <th class="column-title">TOTAL PRICE</th>
-            <th class="column-title">TOTAL PRODUCTS</th>
-            <th class="column-title">DATE</th>
-            <th class="column-title no-link last text-center"><span class="nobr">ACTION</span>
+            <th class="column-title">ID</th>
+            <th class="column-title">KIỂU</th>
+            <th class="column-title">TRẠNG THÁI</th>
+            <th class="column-title">TÊN SẢN PHẨM</th>
+            <th class="column-title">TỔNG GIÁ</th>
+            <th class="column-title">TỔNG SỐ SẢN PHẨM</th>
+            <th class="column-title">NGÀY</th>
+            <th class="column-title no-link last text-center"><span class="nobr">HÀNH ĐỘNG</span>
             </th>
           </tr>
         </thead>
@@ -50,20 +167,33 @@
           <tr *ngFor="let transaction of transactions; let i = index" [class.even]="i % 2 === 0"
             [class.odd]="i % 2 !== 0" class="pointer">
             <td class=" ">{{i + 1}}</td>
+            <td>{{ transaction.id }}</td>
             <td>{{ transaction.transactionType }}</td>
             <td>
               <span class="badge" [class.badge-success]="transaction.status === 'COMPLETED'"
                 [class.badge-warning]="transaction.status === 'PENDING'"
-                [class.badge-danger]="transaction.status === 'CANCELLED'">
+                [class.badge-info]="transaction.status === 'ADMIN_DECIDING'"
+                [class.badge-primary]="transaction.status === 'SENDER_DECIDING'"
+                [class.badge-secondary]="transaction.status === 'CANCELED'">
                 {{ transaction.status }}
               </span>
             </td>
+            <td>{{ transaction.product.name || 'N/A' }}</td>
             <td>{{ formatCurrency(transaction.totalPrice) }}</td>
             <td>{{ transaction.totalProducts }}</td>
             <td>{{ transaction.createdAt | date : "short" }}</td>
             <td class="text-center">
-              <button (click)="navigateTOTransactionsDetailsPage(transaction.id)" class="btn btn-round btn-info">View
-                Details</button>
+              <div class="btn-group" role="group">
+                <button (click)="navigateTOTransactionsDetailsPage(transaction.id)" 
+                        class="btn btn-round btn-info">
+                  Xem
+                </button>
+                <button *ngIf="isAdmin()" 
+                        (click)="navigateToEditTransaction(transaction.id)" 
+                        class="btn btn-round btn-warning ">
+                   Sửa
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>

@@ -9,8 +9,9 @@ import java.util.List;
 public interface ProductService {
     Response saveProduct(ProductDTO productDTO, MultipartFile imageFile);
     Response updateProduct(ProductDTO productDTO, MultipartFile imageFile);
-    Response getAllProducts(String searchText);
+    Response getAllProducts(String searchText, String sortBy, String sortDirection);
     Response getProductById(Long id);
     Response deleteProduct(Long id);
-    Response getAllProductsByCategoryName(String categoryName, String searchText);
+    Response getAllProductsByCategoryName(String categoryName, String searchText, String sortBy, String sortDirection);
+    Response getTopInventoryProducts(int limit);
 }

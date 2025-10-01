@@ -24,7 +24,7 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'Inventory Management';
   activeRoute: string = '';
   user: any = {
-    name: 'Loading...',
+    name: 'Guest',
     email: '',
     role: '',
   };
@@ -32,6 +32,7 @@ export class AppComponent implements OnInit, OnDestroy {
   categories: any[] = [];
   showProductSubmenu: boolean = false;
   isCategory:boolean=false;
+  showUserDropdown: boolean = false;
   private wsSubscription!: Subscription;
 
   constructor(
@@ -44,8 +45,8 @@ export class AppComponent implements OnInit, OnDestroy {
     // Cu, tu dong getLogged, moi, kiem tra auth roi moi get
     if (this.apiService.isAuthenticated()) {
       this.loadUserInfo();
-      this.loadCategories();
     }
+      this.loadCategories();
   }
 
   private loadUserInfo(): void {
@@ -87,7 +88,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.loadCategories();
       } else {
         this.user = {
-          name: 'Loading...',
+          name: 'Guest',
           email: '',
           role: '',
         };
@@ -120,6 +121,16 @@ export class AppComponent implements OnInit, OnDestroy {
     this.showProductSubmenu = !this.showProductSubmenu;
   }
 
+  toggleUserDropdown(event: Event): void {
+    event.preventDefault();
+    this.showUserDropdown = !this.showUserDropdown;
+  }
+
+  // Close dropdown when clicking outside
+  closeDropdowns(): void {
+    this.showUserDropdown = false;
+  }
+
   isAuth(): boolean {
     return this.apiService.isAuthenticated();
   }
@@ -142,7 +153,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   logout() {
     this.user = {
-      name: 'Loading...',
+      name: 'Khách',
       email: '',
       role: '',
     };

@@ -30,15 +30,26 @@ export class AddEditProductComponent implements OnInit {
   imageFile:File | null = null
   imageUrl:string = ''
   isEditing:boolean = false
+  isViewing:boolean = false
   categories:any[] = []
 
 
 
   ngOnInit(): void {
     this.productId = this.route.snapshot.paramMap.get('productId');
+    const mode = this.route.snapshot.queryParams['mode'];
+    const currentRoute = this.router.url;
+    
     this.fetchCategories();
     if (this.productId) {
-      this.isEditing = true;
+      // Nếu route là /product/:productId thì mặc định là view mode
+      if (currentRoute.includes('/product/') && !currentRoute.includes('/edit-product/')) {
+        this.isViewing = true;
+      } else if (mode === 'view') {
+        this.isViewing = true;
+      } else {
+        this.isEditing = true;
+      }
       this.fetchProductById(this.productId)
     }
   }
@@ -57,7 +68,21 @@ export class AddEditProductComponent implements OnInit {
       }})
   }
 
+  isAdmin(): boolean {
+    return this.apiService.isAdmin();
+  }
 
+  isAuthenticated(): boolean{
+    return this.apiService.isAuthenticated();
+  }
+
+  isStockstaff(): boolean {
+    return this.apiService.isStockStaff();
+  }
+
+  isCustomer(): boolean {
+    return this.apiService.isCustomer();
+  }
   //GET CATEGORY BY ID
 
   fetchProductById(productId: string):void{
@@ -112,18 +137,18 @@ export class AddEditProductComponent implements OnInit {
       this.apiService.updateProduct(formData).subscribe({
         next:(res:any) =>{
           if (res.status === 200) {
-            this.notificationService.showSuccess('Success', "Product updated successfully");
+            this.notificationService.showSuccess('Success', "Sản phẩm đã cập nhật thành công");
             this.router.navigate(['/product'])
           }
         },
         error:(error) =>{
-          this.notificationService.showError('Error', error?.error?.message || error?.message || "Unable to update product: " + error);
+          this.notificationService.showError('Error', error?.error?.message || error?.message || "Không thể cập nhật product: " + error);
         }})
     }else{
       this.apiService.addProduct(formData).subscribe({
         next:(res:any) =>{
           if (res.status === 200) {
-            this.notificationService.showSuccess('Success', "Product saved successfully");
+            this.notificationService.showSuccess('Success', "Sản phẩm đã thêm mới thành công");
             this.router.navigate(['/product'])
           }
         },
@@ -135,6 +160,21 @@ export class AddEditProductComponent implements OnInit {
 
   cancel(){
     this.router.navigate(['/product']);
+  }
+
+  //NAVIGATE TO SELL PAGE
+  navigateToSell(productId: string): void {
+    this.router.navigate(['/sell'], { queryParams: {productId: productId } });
+  }
+
+  //NAVIGATE TO PURCHASE PAGE
+  navigateToPurchase(productId: string): void {
+    this.router.navigate(['/purchase'], { queryParams: { productId: productId } });
+  }
+
+  //NAVIGATE TO LOGIN PAGE
+  navigateToLogin(): void {
+    this.router.navigate(['/login']);
   }
 
 }

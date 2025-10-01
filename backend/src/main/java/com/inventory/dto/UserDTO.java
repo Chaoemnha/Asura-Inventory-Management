@@ -32,6 +32,8 @@ public class UserDTO {
 
     private UserRole role;
 
+    private String address;
+
     private LocalDateTime createdAt;
 
     private List<TransactionDTO> transactions;

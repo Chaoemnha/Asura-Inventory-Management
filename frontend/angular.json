@@ -13,6 +13,11 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                ""
+              ]
+            },
             "outputPath": "dist/angular",
             "index": "src/index.html",
             "browser": "src/main.ts",
@@ -32,8 +37,37 @@
               }
             ],
             "styles": [
+              "src/assets/vendors/bootstrap/dist/css/bootstrap.min.css",
+              "src/assets/vendors/font-awesome/css/font-awesome.min.css",
+              "src/assets/vendors/nprogress/nprogress.css",
+              "src/assets/vendors/pnotify/dist/pnotify.css",
+              "src/assets/vendors/pnotify/dist/pnotify.buttons.css",
+              "src/assets/vendors/pnotify/dist/pnotify.nonblock.css",
+              "src/assets/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css",
+              "src/assets/vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.min.css",
+              "src/assets/build/css/custom.css",
+              "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "src/assets/js/crypto-js.min.js",
+              "src/assets/vendors/jquery/dist/jquery.js",
+              "src/assets/vendors/popper/popper.min.js",
+              "src/assets/vendors/bootstrap/dist/js/bootstrap.min.js",
+              "src/assets/vendors/fastclick/lib/fastclick.js",
+              "src/assets/vendors/nprogress/nprogress.js",
+              "src/assets/vendors/malihu-custom-scrollbar-plugin/jquery.mCustomScrollbar.concat.min.js",
+              "src/assets/vendors/pnotify/dist/pnotify.nonblock.js",
+              "src/assets/vendors/pnotify/dist/pnotify.js",
+              "src/assets/vendors/pnotify/dist/pnotify.buttons.js",
+              "src/assets/cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js",
+              "src/assets/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js",
+              "src/assets/bootstrap-datetimepicker/js/demo.js",
+              "src/assets/build/js/custom.min.js",
+              "src/assets/vendors/skycons/skycons.js",
+              "src/assets/vendors/raphael/raphael.min.js",
+              "src/assets/vendors/morris.js/morris.min.js",
+              "src/assets/js/chat.js"
+            ]
           },
           "configurations": {
             "production": {

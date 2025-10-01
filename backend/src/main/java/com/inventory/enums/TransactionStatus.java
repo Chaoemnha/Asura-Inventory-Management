@@ -1,6 +1,6 @@
 package com.inventory.enums;
 
 public enum TransactionStatus {
-    PENDING, PROCESSING, COMPLETED, CANCELED
+    PENDING, SENDER_DECIDING, ADMIN_DECIDING, SENDER_DECLINED, COMPLETED, CANCELED
 }
 

@@ -1,6 +1,6 @@
 <div class="page-title">
     <div class="title_left">
-        <h1>{{ isEditing ? "Edit Product" : "Add Product" }}</h1>
+        <h1>{{ isViewing ? "Chi tiết sản phẩm" : (isEditing ? "Sửa sản phẩm" : "Thêm sản phẩm") }}</h1>
     </div>
 </div>
 <div class="clearfix"></div>
@@ -12,57 +12,57 @@
                 <form (ngSubmit)="handleSubmit($event)" class="form-horizontal form-label-left">
                     <div class="form-group">
                         <div class="row">
-                            <label class="control-label col-md-3 col-sm-3 col-12" for="">Product Name <span
+                            <label class="control-label col-md-3 col-sm-3 col-12" for="">Tên <span *ngIf="!isViewing"
                                     class="required">*</span>
                             </label>
                             <div class="col-md-6 col-sm-6 col-12">
                                 <input type="text" [(ngModel)]="name" name="name" placeholder="Enter product name"
-                                    class="form-control" required />
+                                    class="form-control" [class.form-control-plaintext]="isViewing" [readonly]="isViewing" [required]="!isViewing" />
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="row">
-                            <label class="control-label col-md-3 col-sm-3 col-12" for="">SKU <span
+                            <label class="control-label col-md-3 col-sm-3 col-12" for="">SKU <span *ngIf="!isViewing"
                                     class="required">*</span>
                             </label>
                             <div class="col-md-6 col-sm-6 col-12">
                                 <input type="text" [(ngModel)]="sku" name="sku" placeholder="Product SKU"
-                                    class="form-control" required />
+                                    class="form-control" [class.form-control-plaintext]="isViewing" [readonly]="isViewing" [required]="!isViewing" />
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="row">
-                            <label for="" class="control-label col-md-3 col-sm-3 col-12">Price <span
+                            <label for="" class="control-label col-md-3 col-sm-3 col-12">Giá bán <span *ngIf="!isViewing"
                                     class="required">*</span></label>
                             <div class="col-md-6 col-sm-6 col-12">
                                 <input type="number" [(ngModel)]="price" name="price" placeholder="Product price"
-                                    class="form-control" required />
+                                    class="form-control" [class.form-control-plaintext]="isViewing" [readonly]="isViewing" [required]="!isViewing" />
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="row">
-                            <label for="" class="control-label col-md-3 col-sm-3 col-12">Stock Quantity <span
+                            <label for="" class="control-label col-md-3 col-sm-3 col-12">Số lượng trong kho <span *ngIf="!isViewing"
                                     class="required">*</span></label>
                             <div class="col-md-6 col-sm-6 col-12">
                                 <input type="number" [(ngModel)]="stockQuantity" name="stockQuantity"
-                                    placeholder="Stock quantity" class="form-control" required />
+                                    placeholder="Stock quantity" class="form-control" [class.form-control-plaintext]="isViewing" [readonly]="isViewing" [required]="!isViewing" />
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="row">
-                            <label for="" class="control-label col-md-3 col-sm-3 col-12">Category <span
+                            <label for="" class="control-label col-md-3 col-sm-3 col-12">Phân loại <span *ngIf="!isViewing"
                                     class="required">*</span></label>
                             <div class="col-md-6 col-sm-6 col-12">
-                                <select [(ngModel)]="categoryId" name="categoryId" class="form-control" required>
-                                    <option value="">Select a category</option>
+                                <select [(ngModel)]="categoryId" name="categoryId" class="form-control" [class.form-control-plaintext]="isViewing" [disabled]="isViewing" [required]="!isViewing">
+                                    <option value="">Chọn 1 phân loại</option>
                                     <option *ngFor="let category of categories" [value]="category.id"
                                         [selected]="category.id === categoryId">{{category.name}}</option>
                                 </select>
@@ -72,19 +72,19 @@
 
                     <div class="form-group">
                         <div class="row">
-                            <label for="" class="control-label col-md-3 col-sm-3 col-12">Description</label>
+                            <label for="" class="control-label col-md-3 col-sm-3 col-12">Mô tả</label>
                             <div class="col-md-6 col-sm-6 col-12">
                                 <textarea [(ngModel)]="description" name="description" placeholder="Product description"
-                                    class="form-control" rows="3"></textarea>
+                                    class="form-control" [class.form-control-plaintext]="isViewing" [readonly]="isViewing" rows="3"></textarea>
                             </div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="row">
-                            <label for="" class="control-label col-md-3 col-sm-3 col-12">Product Image</label>
+                            <label for="" class="control-label col-md-3 col-sm-3 col-12">Hình ảnh sản phẩm</label>
                             <div class="col-md-6 col-sm-6 col-12">
-                                <input type="file" (change)="handleImageChange($event)" class="form-control"
+                                <input *ngIf="!isViewing" type="file" (change)="handleImageChange($event)" class="form-control"
                                     accept="image/*">
                                 <div *ngIf="imageUrl" class="mt-2">
                                     <img [src]="imageUrl" alt="preview" class="img-thumbnail"
@@ -98,9 +98,34 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-6 col-sm-6 col-12 col-md-offset-3">
-                                <button class="btn btn-primary mr-1" type="button" (click)="cancel()">Cancel</button>
-                                <button class="btn btn-primary mr-1" type="reset">Reset</button>
-                                <button type="submit" class="btn btn-success">Submit</button>
+                                <button class="btn btn-primary mr-1" type="button" (click)="cancel()">
+                                    {{ isViewing ? 'Quay lại' : 'Hủy' }}
+                                </button>
+                                <ng-container *ngIf="!isViewing">
+                                    <button class="btn btn-primary mr-1" type="reset">Đặt lại</button>
+                                    <button type="submit" class="btn btn-success">Submit</button>
+                                </ng-container>
+                                <!-- Nút cho người dùng chưa đăng nhập -->
+                                <ng-container *ngIf="isViewing && productId && !isAuthenticated()">
+                                    <button class="btn btn-warning mr-1" type="button" (click)="navigateToLogin()">
+                                        <i class="fa fa-sign-in"></i> Đăng nhập để mua hàng
+                                    </button>
+                                </ng-container>
+                                <!-- Nút cho khách hàng đã đăng nhập -->
+                                <ng-container *ngIf="isViewing && productId && isCustomer()">
+                                    <button class="btn btn-success mr-1" type="button" (click)="navigateToSell(productId)">
+                                        <i class="fa fa-money"></i> Mua
+                                    </button>
+                                </ng-container>
+                                <!-- Nút cho admin và staff -->
+                                <ng-container *ngIf="isViewing && productId && (isAdmin()||isStockstaff())">
+                                    <button class="btn btn-success mr-1" type="button" (click)="navigateToSell(productId)">
+                                        <i class="fa fa-money"></i> Bán
+                                    </button>
+                                    <button class="btn btn-info mr-1" type="button" (click)="navigateToPurchase(productId)">
+                                        <i class="fa fa-shopping-cart"></i> Nhập
+                                    </button>
+                                </ng-container>
                             </div>
                         </div>
                     </div>

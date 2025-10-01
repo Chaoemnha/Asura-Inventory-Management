@@ -17,7 +17,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/all")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority({'ADMIN', 'STOCKSTAFF'})")
     public ResponseEntity<Response> getAllUsers(){
         return ResponseEntity.ok(userService.getAllUsers());
     }
@@ -43,5 +43,15 @@ public class UserController {
     @GetMapping("/current")
     public ResponseEntity<UserDTO> getCurrentUser(){
         return ResponseEntity.ok(userService.getCurrentLoggedInUser());
+    }
+
+    @GetMapping("/one/{id}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id){
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    @GetMapping("/supplier/{id}")
+    public ResponseEntity<Response> getUsersBySupplierId(@PathVariable("id") Long supplierId) {
+        return ResponseEntity.ok(userService.getUsersBySupplierId(supplierId));
     }
 }

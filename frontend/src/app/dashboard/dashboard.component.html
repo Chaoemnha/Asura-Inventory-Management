@@ -2,56 +2,135 @@
   <div class="dashboard-container">
     <div class="row x_title align-items-center">
       <div class="col">
-        <h3>Transaction Dashboard</h3>
+        <h1>Biểu đồ phân tích</h1>
       </div>
       <div class="col">
-    <!-- Transaction Selection -->
-    <div class="pull-right">
-      <label class="mr-1">Select Month:</label>
-      <select class="mr-1" [(ngModel)]="selectedMonth">
-        <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
-      </select>
+        <!-- Dashboard Controls -->
+        <div *ngIf="isAdmin()||isStockstaff()" class="pull-right">
+          <div class="row align-items-center justify-content-center">
+            <div class="col-4">
+              <label class="form-label mb-0 mr-1">Tháng:</label>
+              <select class="form-control form-control-sm d-inline-block" style="width: auto;"
+                [(ngModel)]="selectedMonth">
+                <option value="">Tất cả</option>
+                <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+              </select>
+            </div>
 
-      <label class="mr-1">Select Year:</label>
-      <select class="mr-1" [(ngModel)]="selectedYear">
-        <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-      </select>
+            <div class="col-4">
+              <label class="form-label mb-0 mr-1">Năm:</label>
+              <select class="form-control form-control-sm d-inline-block" style="width: auto;"
+                [(ngModel)]="selectedYear">
+                <option value="">Tất cả</option>
+                <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+              </select>
+            </div>
 
-      <button class="btn btn-light btn-sm" (click)="loadMonthlyData()">Show Monthly Data</button>
-    </div>
+            <div class="col-4">
+              <label class="form-label mb-0 mr-1">Giới hạn:</label>
+              <select class="form-control form-control-sm d-inline-block" style="width: auto;"
+                [(ngModel)]="selectedLimit">
+                <option value="5">Top 5</option>
+                <option value="10">Top 10</option>
+                <option value="15">Top 15</option>
+                <option value="20">Top 20</option>
+              </select>
+            </div>
+
+            <div class="col-6">
+              <div class="btn-group d-flex justify-content-around" role="group">
+                <button class="btn btn-primary btn-sm" (click)="loadMonthlyData()" title="Áp dụng bộ lọc và hiển thị dữ liệu">
+                  <i class="fa fa-search"></i> Hiển thị
+                </button>
+                <button class="btn btn-secondary btn-sm" (click)="clearFilters()" title="Xóa tất cả bộ lọc">
+                  <i class="fa fa-eraser"></i> Xóa
+                </button>
+                <button class="btn btn-info btn-sm" (click)="refreshDashboard()" title="Làm mới tất cả biểu đồ">
+                  <i class="fa fa-refresh"></i> Làm mới
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-
-
-<div class="row x_title"><div class="col-12"><!-- Transaction Type Count Bar Chart -->
-    <div style="margin-bottom: 30px;">
-      <h5>Transaction Counts by Type</h5>
-      <ngx-charts-bar-vertical [view]="view" [scheme]="'vivid'" [results]="transactionTypeData" [gradient]="false"
-        [xAxis]="true" [yAxis]="true" [legend]="showLegend" [showXAxisLabel]="true" [showYAxisLabel]="true"
-        xAxisLabel="Transaction Type" yAxisLabel="Count" [animations]="animations">
-      </ngx-charts-bar-vertical>
-    </div></div><div class="col-12"><!-- Transaction Amount by Type Pie Chart -->
-    <div style="margin-bottom: 30px;" class="tiles">
-      <h5>Total Transaction Amount by Type</h5>
-      <ngx-charts-pie-chart [view]="view" [scheme]="'cool'" [results]="transactionAmountData" [legend]="showLegend"
-        [labels]="showLabels" [doughnut]="false" [animations]="animations">
-      </ngx-charts-pie-chart>
-    </div></div><div class="col-12"><!-- Monthly Transaction Bar Chart -->
-    <h5 style="margin-bottom: 50px;" class="tiles">Monthly Transaction Chart</h5>
-
-    <div *ngIf="monthlyTransactionData.length">
-      <ngx-charts-bar-vertical [view]="view" [scheme]="'flame'" [results]="monthlyTransactionData" [gradient]="false"
-        [xAxis]="true" [yAxis]="true" [legend]="showLegend" [showXAxisLabel]="true" [showYAxisLabel]="true"
-        xAxisLabel="Day of Month" yAxisLabel="Total Price" [animations]="animations">
-      </ngx-charts-bar-vertical>
-    </div></div></div>
-    
-
-    
-
-
-
-    
+    <div class="row x_title">
+      <!-- Summary Statistics Card -->
+      <div *ngIf="(isAdmin()) && transactions.length > 0" class="col-12">
+        <div class="col-md-12">
+          <div class="alert alert-success">
+            <h6><i class="fa fa-summary"></i> Tổng quan tài chính ({{ getSelectedMonthName() }}):</h6>
+            <div class="row text-center">
+              <div class="col-md-2">
+                <strong style="color: green;">💰 Doanh thu bán</strong><br>
+                <span class="h5">{{ (calculateSummaryStats().totalSales | number:'1.0-0') }} đ</span>
+              </div>
+              <div class="col-md-2">
+                <strong style="color: red;">💸 Chi phí nhập</strong><br>
+                <span class="h5">{{ (calculateSummaryStats().totalPurchases | number:'1.0-0') }} đ</span>
+              </div>
+              <div class="col-md-2">
+                <strong style="color: orange;">🔄 Giá trị hoàn trả</strong><br>
+                <span class="h5">{{ (calculateSummaryStats().totalReturns | number:'1.0-0') }} đ</span>
+              </div>
+              <div class="col-md-3">
+                <strong [style.color]="getNetRevenueColor()">📊 Lợi nhuận ròng</strong><br>
+                <span class="h4" [style.color]="getNetRevenueColor()">
+                  {{ (calculateSummaryStats().netRevenue | number:'1.0-0') }} đ
+                </span>
+              </div>
+              <div class="col-md-3">
+                <strong style="color: blue;">📈 Tổng giao dịch</strong><br>
+                <span class="h5">{{ calculateSummaryStats().totalTransactions }} giao dịch</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="monthlyTransactionData.length&&(isAdmin())">
+      <div class="col-12"><!-- Monthly Transaction Bar Chart -->
+        <h5 *ngIf="isAdmin()||isStockstaff()" style="margin-bottom: 20px;" class="tiles">Biểu đồ giao dịch hàng tháng</h5>
+      </div>
+        <ngx-charts-bar-vertical [view]="view" [scheme]="'flame'" [results]="monthlyTransactionData"
+          [gradient]="false" [xAxis]="true" [yAxis]="true" [legend]="showLegend" [showXAxisLabel]="true"
+          [showYAxisLabel]="true" xAxisLabel="Ngày trong tháng" yAxisLabel="Lợi nhuận ròng (VND)" [animations]="animations">
+        </ngx-charts-bar-vertical>
+      </div>
+      <div class="col-12"><!-- Transaction Type Count Bar Chart -->
+        <div style="margin-bottom: 30px;">
+          <h5>Số lượng giao dịch theo loại</h5>
+          <ngx-charts-bar-vertical [view]="view" [scheme]="'vivid'" [results]="transactionTypeData" [gradient]="false"
+            [xAxis]="true" [yAxis]="true" [legend]="showLegend" [showXAxisLabel]="true" [showYAxisLabel]="true"
+            xAxisLabel="Loại giao dịch" yAxisLabel="Số lượng" [animations]="animations">
+          </ngx-charts-bar-vertical>
+        </div>
+      </div>
+      <div class="col-12"><!-- Transaction Amount by Type Pie Chart -->
+        <div *ngIf="isAdmin()||isStockstaff()" style="margin-bottom: 30px;" class="tiles">
+          <h5>Giá trị giao dịch theo loại</h5>
+          <ngx-charts-pie-chart [view]="view" [scheme]="'cool'" [results]="transactionAmountData" [legend]="showLegend"
+            [labels]="showLabels" [doughnut]="false" [animations]="animations">
+          </ngx-charts-pie-chart>
+        </div>
+      </div>
+      <div class="col-12"><!-- Top Inventory Products Chart -->
+        <div *ngIf="topInventoryProducts.length&&(isAdmin()||isStockstaff())" style="margin-bottom: 30px;" class="tiles">
+          <h5>Top {{ selectedLimit }} sản phẩm - Tồn kho cao nhất</h5>
+          <ngx-charts-bar-horizontal [view]="view" [scheme]="'ocean'" [results]="topInventoryProducts"
+            [gradient]="false" [xAxis]="true" [yAxis]="true" [legend]="showLegend" [showXAxisLabel]="true"
+            [showYAxisLabel]="true" xAxisLabel="Số lượng tồn kho (đơn vị)" yAxisLabel="Sản phẩm" [animations]="animations">
+          </ngx-charts-bar-horizontal>
+        </div>
+      </div>
+      <div class="col-12"><!-- Best Selling Products Chart -->
+        <div *ngIf="bestSellingProducts.length&&(isAdmin()||isStockstaff())" style="margin-bottom: 30px;" class="tiles">
+          <h5>Top {{ selectedLimit }} sản phẩm bán chạy nhất</h5>
+           <ngx-charts-pie-chart [view]="view" [scheme]="'natural'" [results]="bestSellingProducts"
+            [legend]="showLegend" [labels]="showLabels" [doughnut]="true" [animations]="animations">
+          </ngx-charts-pie-chart>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

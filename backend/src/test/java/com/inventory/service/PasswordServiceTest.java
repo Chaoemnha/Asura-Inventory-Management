@@ -36,7 +36,7 @@ public class PasswordServiceTest {
     @BeforeEach
     public void setUp() {
         modelMapper = new ModelMapper();
-        user = modelMapper.map(UserDTO.builder().id(1L).name("Luuanz").email("luuanz@yahoo.com").password("039584728").phoneNumber("0498582").role(UserRole.MANAGER).build(), User.class);
+        user = modelMapper.map(UserDTO.builder().id(1L).name("Luuanz").email("luuanz@yahoo.com").password("039584728").phoneNumber("0498582").role(UserRole.STOCKSTAFF).build(), User.class);
         user.setRsTokenCrDate(new Date(2025-1900, 8,4,21,01));
     }
 

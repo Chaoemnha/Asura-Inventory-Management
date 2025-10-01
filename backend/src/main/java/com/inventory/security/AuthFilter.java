@@ -28,7 +28,7 @@ public class AuthFilter extends OncePerRequestFilter {
 
         String token = getTokenFromRequest(request);
 
-        if(token !=null){
+        if(token !=null&& !token.equals("null")){
             String email = jwtUtils.getUsernameFromToken(token);
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 

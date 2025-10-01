@@ -101,25 +101,25 @@ export class CategoryComponent implements OnInit, OnDestroy{
         }
       },
       error: (error:any)=>{
-        this.notificationService.showError('Error', error?.error?.message||error?.message||"Unable to show categories");
+        this.notificationService.showError('Error', error?.error?.message||error?.message||"Không thể hiển thị phân loại");
       }
     })
   }
 
   addCategory(){
     if(!this.categoryName){
-      this.notificationService.showError('Error', "Category name is required");
+      this.notificationService.showError('Error', "Tên phân loại là bắt buộc");
       return;
     }
     this.apiService.createCategory({name: this.categoryName}).subscribe({
       next: (res: any)=>{
         if(res.status==200){
-          this.notificationService.showSuccess('Success', "Category add successfully");
+          this.notificationService.showSuccess('Success', "Phân loại thêm mới thành công");
           this.categoryName='';
         }
       },
       error:(error:any)=>{
-        this.notificationService.showError('Error', error?.error?.message||error?.error||"Unable to add category: "+error);
+        this.notificationService.showError('Error', error?.error?.message||error?.error||"Không thể thêm mới phân loại: "+error);
       }
     })
   }
@@ -137,13 +137,13 @@ export class CategoryComponent implements OnInit, OnDestroy{
     this.apiService.updateCategory(this.editingCategoryId, {name: this.categoryName}).subscribe({
       next: (res: any)=>{
         if(res.status==200){
-          this.notificationService.showSuccess('Success', "Category updated successfully");
+          this.notificationService.showSuccess('Success', "Phân loại cập nhật thành công");
           this.categoryName='';
           this.isEditing=false;
         }
       },
       error: (error: any)=>{
-        this.notificationService.showError('Error', error?.error?.message||error?.error||"Unable to update category: "+error);
+        this.notificationService.showError('Error', error?.error?.message||error?.error||"Không thể cập nhật phân loại: "+error);
       }
     })
   }
@@ -156,15 +156,15 @@ export class CategoryComponent implements OnInit, OnDestroy{
   }
 
   handleDeleteCategory(categoryId: string){
-    if(window.confirm("Are you sure you want to delete this category?")){
+    if(window.confirm("Bạn phải đến sản phẩm phân loại này trên sidebar rồi thay thế phân loại để xóa. Bạn chắc chắn muốn xóa nó?")){
       this.apiService.deleteCategory(categoryId).subscribe({
         next: (res:any)=>{
           if(res.status==200){
-           this.notificationService.showSuccess('Success', "Category deleted successfully!");
+           this.notificationService.showSuccess('Success', "Phân loại được xóa thành công!");
           }
         },
         error: (error:any)=>{
-          this.notificationService.showError('Error', error?.error?.message||error?.error||"Unable to delete category: "+error);
+          this.notificationService.showError('Error', error?.error?.message||error?.error||"Không thể xóa phân loại: "+error);
         }
       })
     }

@@ -38,8 +38,8 @@ public class SecurityFilter {
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
                 )
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api/auth/**", "/api/auth/fogot-password", "/api/auth/reset-password", "/changes/**").permitAll()
-                        .requestMatchers("/api/rag/**").authenticated()
+                        .requestMatchers("/api/rag/**", "/api/auth/**", "/api/auth/fogot-password", "/api/auth/reset-password", "/changes/**", "/api/products/all", "/api/products/all/**", "/api/products/**", "api/categories/all").permitAll()
+                        .requestMatchers("/api/products/add", "/api/products/update", "/api/products/delete").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

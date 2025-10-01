@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
             throw new InvalidCredentialsException("This user already exists");
         }
 
-        UserRole role = UserRole.MANAGER;
+        UserRole role = UserRole.CUSTOMER;
 
         if (registerRequest.getRole() != null) {
             role=registerRequest.getRole();
@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
         String email = authentication.getName();
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(()-> new NotFoundException("User Not Found"));
+                .orElseThrow(()-> new NotFoundException("Không tìm thấy người dùng"));
         UserDTO userDTO;
             userDTO = modelMapper.map(user, UserDTO.class);
             userDTO.setTransactions(null);
@@ -121,7 +121,7 @@ public class UserServiceImpl implements UserService {
     public Response updateUser(Long id, UserDTO userDTO) {
 
         User existingUser = userRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("User Not Found"));
+                .orElseThrow(()-> new NotFoundException("Không tìm thấy người dùng"));
 
         if (userDTO.getEmail() != null) existingUser.setEmail(userDTO.getEmail());
         if (userDTO.getName() != null) existingUser.setName(userDTO.getName());
@@ -144,7 +144,7 @@ public class UserServiceImpl implements UserService {
     public Response deleteUser(Long id) {
 
          userRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("User Not Found"));
+                .orElseThrow(()-> new NotFoundException("Không tìm thấy người dùng"));
          userRepository.deleteById(id);
 
         return Response.builder()
@@ -156,7 +156,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response getUserTransactions(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("User Not Found"));
+                .orElseThrow(()-> new NotFoundException("Không tìm thấy người dùng"));
 
         UserDTO userDTO = modelMapper.map(user, UserDTO.class);
         userDTO.getTransactions().forEach(transactionDTO -> {
@@ -167,6 +167,27 @@ public class UserServiceImpl implements UserService {
                 .status(200)
                 .message("success")
                 .user(userDTO)
+                .build();
+    }
+
+    @Override
+    public UserDTO getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(()-> new NotFoundException("Không tìm thấy người dùng"));
+        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
+        userDTO.setTransactions(null);
+        return userDTO;
+    }
+
+    @Override
+    public Response getUsersBySupplierId(Long supplierId) {
+        List<User> users = userRepository.findBySupplierId(supplierId);
+        List<UserDTO> userDTOS = modelMapper.map(users, new TypeToken<List<UserDTO>>() {}.getType());
+        userDTOS.forEach(userDTO -> userDTO.setTransactions(null));
+        return Response.builder()
+                .status(200)
+                .message("success")
+                .users(userDTOS)
                 .build();
     }
 }

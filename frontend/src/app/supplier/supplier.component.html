@@ -1,9 +1,9 @@
 <div class="x_panel">
   <div class="x_title">
-    <h1>Suppliers List</h1>
+    <h1>Danh sách nhà cung cấp</h1>
     <div class="clearfix"></div>
     <button class="btn btn-app" (click)="navigateToAddSupplierPage()"><i class="fa fa-plus"></i>
-      Add Product
+      Thêm
     </button>
   </div>
  
@@ -14,11 +14,11 @@
           <tr class="headings">
             <th class="column-title">#</th>
             <th class="column-title">ID</th>
-            <th class="column-title">Name</th>
-            <th class="column-title">Email</th>
-            <th class="column-title">Phone</th>
-            <th class="column-title">Address</th>
-            <th class="column-title no-link last text-center" colspan="2"><span class="nobr">Action</span></th>
+            <th class="column-title">TÊN</th>
+            <th class="column-title">EMAIL</th>
+            <th class="column-title">SĐT</th>
+            <th class="column-title">ĐỊA CHỈ</th>
+            <th class="column-title no-link last text-center" colspan="2"><span class="nobr">HÀNH ĐỘNG</span></th>
           </tr>
         </thead>
         <tbody>
@@ -26,13 +26,13 @@
             class="pointer">
             <td class=" ">{{i + 1}}</td>
             <td class=" ">{{supplier.id}}</td>
-            <td class=" ">{{supplier.name}}</td>
+            <td class=" ">{{supplier.name}}<span *ngIf="supplier.id=='7'" class="badge bg-red">Asura Inventory!</span></td>
             <td class=" ">{{supplier.email}}</td>
             <td class=" ">{{supplier.phone}}</td>
             <td class=" ">{{supplier.address}}</td>
             <td><button (click)="navigateToEditSupplierPage(supplier.id)"
-                class="btn btn-round btn-primary">Edit</button></td>
-            <td><button (click)="handleDeleteSupplier(supplier.id)" class="btn btn-round btn-danger">Delete</button>
+                class="btn btn-round btn-primary">Sửa</button></td>
+            <td><button (click)="handleDeleteSupplier(supplier.id)" class="btn btn-round btn-danger">Xóa</button>
             </td>
           </tr>
         </tbody>

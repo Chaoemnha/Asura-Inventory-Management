@@ -4,10 +4,10 @@
       <div class="animate form login_form">
         <section class="login_content">
           <form (ngSubmit)="handleSubmit()">
-            <h1>Create Account</h1>
+            <h1><b>Đăng ký</b></h1>
              
             <div>
-              <input type="text" class="form-control" placeholder="Name..." 
+              <input type="text" class="form-control" placeholder="Tên..." 
                      [(ngModel)]="formData.name" name="name" required />
             </div>
             <div>
@@ -15,22 +15,26 @@
                      [(ngModel)]="formData.email" name="email" required />
             </div>
             <div>
-              <input type="password" class="form-control" placeholder="Password..." 
+              <input type="password" class="form-control" placeholder="Mật khẩu..." 
                      [(ngModel)]="formData.password" name="password" required />
             </div>
             <div>
-              <input type="tel" class="form-control" placeholder="Phone Number..." 
+              <input type="tel" class="form-control" placeholder="Số điện thoại..." 
                      [(ngModel)]="formData.phoneNumber" name="phoneNumber" required />
             </div>
             <div>
-              <button type="submit" class="btn btn-primary submit">Register</button>
+              <input type="text" class="form-control" placeholder="Địa chỉ..." 
+                     [(ngModel)]="formData.address" name="address" />
+            </div>
+            <div>
+              <button type="submit" class="btn btn-primary submit">Đăng ký</button>
             </div>
 
             <div class="clearfix"></div>
 
             <div class="separator">
-              <p class="change_link">Already a member?
-                <a [routerLink]="['/login']" class="to_register"> Log in </a>
+              <p class="change_link">Đã có tài khoản?
+                <a [routerLink]="['/login']" class="to_register"> Đăng nhập </a>
               </p>
 
               <div class="clearfix"></div>

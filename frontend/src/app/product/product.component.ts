@@ -21,11 +21,12 @@ export class ProductComponent implements OnInit {
     private notificationService: NotificationService
   ) {}
   products: any[] = [];
-  searchInput:string = '';
-  valueToSearch:string = '';
+  searchText: string = '';
+  sortBy: string = 'stockQuantity';
+  sortDirection: string = 'ASC';
   currentPage: number = 1;
   totalPages: number = 0;
-  itemsPerPage: number = 10;
+  itemsPerPage: number = 9;
   selectedCategory: string = '';
   allProducts: any[] = []; // Store all products for filtering
 
@@ -42,87 +43,89 @@ export class ProductComponent implements OnInit {
     return this.apiService.isAdmin();
   }
 
-  //FETCH PRODUCTS
-  fetchProducts(): void {
-    if(this.selectedCategory!){
-      this.apiService.getAllProductsByCategoryName(this.selectedCategory, this.searchInput).subscribe({
-      next: (res: any) => {
-        this.allProducts = res.products || [];
-        if (this.valueToSearch) {
-          this.allProducts = this.allProducts.filter(product =>
-            product.name.toLowerCase().includes(this.valueToSearch.toLowerCase()) ||
-            product.sku.toLowerCase().includes(this.valueToSearch.toLowerCase())
-          );
-        }
-
-        this.totalPages = Math.ceil(this.allProducts.length / this.itemsPerPage);
-
-        this.products = this.allProducts.slice(
-          (this.currentPage - 1) * this.itemsPerPage,
-          this.currentPage * this.itemsPerPage
-        );
-        
-      },
-      error: (error:any) => {
-        this.notificationService.showError('Error',
-          error?.error?.message ||
-            error?.message ||
-            'Unable to fetch products: ' + error
-        );
-      },
-    });
-    }
-    else
-    this.apiService.getAllProducts(this.searchInput).subscribe({
-      next: (res: any) => {
-        this.allProducts = res.products || [];
-        if (this.valueToSearch) {
-          this.allProducts = this.allProducts.filter(product =>
-            product.name.toLowerCase().includes(this.valueToSearch.toLowerCase()) ||
-            product.sku.toLowerCase().includes(this.valueToSearch.toLowerCase())
-          );
-        }
-
-        this.totalPages = Math.ceil(this.allProducts.length / this.itemsPerPage);
-
-        this.products = this.allProducts.slice(
-          (this.currentPage - 1) * this.itemsPerPage,
-          this.currentPage * this.itemsPerPage
-        );
-        
-      },
-      error: (error) => {
-        this.notificationService.showError('Error',
-          error?.error?.message ||
-            error?.message ||
-            'Unable to fetch products: ' + error
-        );
-      },
-    });
+  isAuthenticated(): boolean{
+    return this.apiService.isAuthenticated();
   }
 
-  //HANDLE SEARCH
-  handleSearch():void{
-    this.currentPage = 1; // Reset to first page when searching
-    this.valueToSearch = this.searchInput;
+  //FETCH PRODUCTS
+  fetchProducts(): void {
+    if (this.selectedCategory!) {
+      this.apiService.getAllProductsByCategoryName(this.selectedCategory, this.searchText, this.sortBy, this.sortDirection).subscribe({
+        next: (res: any) => {
+          this.allProducts = res.products || [];
+          this.totalPages = Math.ceil(this.allProducts.length / this.itemsPerPage);
+          this.products = this.allProducts.slice(
+            (this.currentPage - 1) * this.itemsPerPage,
+            this.currentPage * this.itemsPerPage
+          );
+        },
+        error: (error: any) => {
+          this.notificationService.showError('Error',
+            error?.error?.message ||
+            error?.message ||
+            'Không thể tải sản phẩm: ' + error
+          );
+        },
+      });
+    } else {
+      this.apiService.getAllProducts(this.searchText, this.sortBy, this.sortDirection).subscribe({
+        next: (res: any) => {
+          this.allProducts = res.products || [];
+          this.totalPages = Math.ceil(this.allProducts.length / this.itemsPerPage);
+          this.products = this.allProducts.slice(
+            (this.currentPage - 1) * this.itemsPerPage,
+            this.currentPage * this.itemsPerPage
+          );
+        },
+        error: (error) => {
+          this.notificationService.showError('Error',
+            error?.error?.message ||
+            error?.message ||
+            'Không thể tải sản phẩm: ' + error
+          );
+        },
+      });
+    }
+  }
+
+  //APPLY FILTERS AND SEARCH
+  applyFilters(): void {
+    this.currentPage = 1; // Reset to first page
+    this.fetchProducts();
+  }
+
+  //CLEAR SEARCH AND RESET FILTERS
+  clearSearch(): void {
+    this.searchText = '';
+    this.sortBy = 'stockQuantity';
+    this.sortDirection = 'ASC';
+    this.currentPage = 1;
+    this.fetchProducts();
+  }
+
+  //SET SORTING OPTIONS
+  setSorting(field: string, direction: string): void {
+    this.sortBy = field;
+    this.sortDirection = direction;
+    this.currentPage = 1;
     this.fetchProducts();
   }
 
   //DELETE A PRODUCT
   handleProductDelete(productId: string): void {
-    if (window.confirm('Are you sure you want to delete this product?')) {
+    if (window.confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')) {
       this.apiService.deleteProduct(productId).subscribe({
         next: (res: any) => {
           if (res.status === 200) {
-            this.notificationService.showSuccess('Success', 'Product deleted successfully');
+            this.notificationService.showSuccess('Success', 'Xóa sản phẩm thành công');
             this.fetchProducts(); //reload the products
           }
         },
         error: (error) => {
           this.notificationService.showError('Error',
             error?.error?.message ||
-              error?.message ||
-              'Unable to Delete product: ' + error
+            error?.message ||
+            'Không thể xóa sản phẩm: ' + error
           );
         },
       });
@@ -145,4 +148,34 @@ export class ProductComponent implements OnInit {
     this.router.navigate([`/edit-product/${productId}`]);
   }
 
+  //NAVIGATE TO VIEW PRODUCT PAGE
+  navigateToViewProductPage(productId: string): void {
+    this.router.navigate([`/product/${productId}`]);
+  }
+
+  //NAVIGATE TO SELL PAGE
+  navigateToSell(productId: string): void {
+    this.router.navigate(['/sell'], { queryParams: {productId: productId } });
+  }
+
+  //NAVIGATE TO PURCHASE PAGE
+  navigateToPurchase(productId: string): void {
+    this.router.navigate(['/purchase'], { queryParams: { productId: productId } });
+  }
+
+  //CHECK IF USER IS STOCK STAFF
+  isStockStaff(): boolean {
+    return this.apiService.isStockStaff();
+  }
+
+  //CHECK IF USER IS CUSTOMER
+  isCustomer(): boolean {
+    return this.apiService.isCustomer();
+  }
+
+  getRowClass(input: number){
+    if(input<=2&&input>0&&(this.isAdmin()||this.isStockStaff())) return "bg-warning";
+    if(input<=0&&(this.isAdmin()||this.isStockStaff())) return "bg-danger";
+    return "";
+  }
 }
