@@ -75,7 +75,7 @@ public class ProductServiceImpl implements ProductService {
     public Response updateProduct(ProductDTO productDTO, MultipartFile imageFile) {
 
         Product existingProduct = productRepository.findById(productDTO.getId())
-                .orElseThrow(()-> new NotFoundException("Product Not Found"));
+                .orElseThrow(()-> new NotFoundException("Không tìm thấy sản phẩm"));
 
         //check if image is associated with the update request
         if (imageFile != null && !imageFile.isEmpty()){
@@ -122,10 +122,19 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Response getAllProducts(String searchText) {
+    public Response getAllProducts(String searchText, String sortBy, String sortDirection) {
+        // Default values if not provided
+        if (sortBy == null || sortBy.isEmpty()) {
+            sortBy = "stockQuantity";
+        }
+        if (sortDirection == null || sortDirection.isEmpty()) {
+            sortDirection = "ASC";
+        }
 
-        List<Product> products = productRepository.findAll(searchText, Sort.by(Sort.Direction.DESC, "id"));
-
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("DESC") ? 
+            Sort.Direction.DESC : Sort.Direction.ASC;
+        
+        List<Product> products = productRepository.findAll(searchText, Sort.by(direction, sortBy));
         List<ProductDTO> productDTOS = modelMapper.map(products, new TypeToken<List<ProductDTO>>() {}.getType());
 
         return Response.builder()
@@ -139,7 +148,7 @@ public class ProductServiceImpl implements ProductService {
     public Response getProductById(Long id) {
 
         Product product = productRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Product Not Found"));
+                .orElseThrow(()-> new NotFoundException("Không tìm thấy sản phẩm"));
 
 
         return Response.builder()
@@ -153,7 +162,7 @@ public class ProductServiceImpl implements ProductService {
     public Response deleteProduct(Long id) {
 
         productRepository.findById(id)
-                .orElseThrow(()-> new NotFoundException("Product Not Found"));
+                .orElseThrow(()-> new NotFoundException("Không tìm thấy sản phẩm"));
 
         productRepository.deleteById(id);
 
@@ -164,9 +173,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Response getAllProductsByCategoryName(String categoryName, String searchText) {
+    public Response getAllProductsByCategoryName(String categoryName, String searchText, String sortBy, String sortDirection) {
+        // Default values if not provided
+        if (sortBy == null || sortBy.isEmpty()) {
+            sortBy = "stockQuantity";
+        }
+        if (sortDirection == null || sortDirection.isEmpty()) {
+            sortDirection = "ASC";
+        }
+
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("DESC") ?
+            Sort.Direction.DESC : Sort.Direction.ASC;
+
         Category category = categoryRepository.findByName(categoryName).orElseThrow(()-> new NotFoundException("Category Not Found"));
-        List<Product> products = productRepository.findAllByCategory_Name(categoryName, searchText, Sort.by(Sort.Direction.DESC, "id"));
+        List<Product> products = productRepository.findAllByCategory_Name(categoryName, searchText, Sort.by(direction, sortBy));
         List<ProductDTO> productDTOS = modelMapper.map(products, new TypeToken<List<ProductDTO>>() {}.getType());
 
         return Response.builder()
@@ -202,6 +222,18 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return "/images/"+uniqueFileName;
+    }
+
+    @Override
+    public Response getTopInventoryProducts(int limit) {
+        List<Product> topProducts = productRepository.findTopProductsByStockQuantity(limit);
+        List<ProductDTO> productDTOS = modelMapper.map(topProducts, new TypeToken<List<ProductDTO>>() {}.getType());
+        
+        return Response.builder()
+                .status(200)
+                .message("success")
+                .products(productDTOS)
+                .build();
     }
 
 

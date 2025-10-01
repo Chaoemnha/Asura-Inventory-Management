@@ -15,8 +15,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "AND (" +
             ":searchText IS NULL OR " +
             "LOWER(p.name) LIKE LOWER(CONCAT('%', :searchText, '%')) OR " +
-            "LOWER(p.sku) LIKE LOWER(CONCAT('%', :searchText, '%')) OR " +
-            "CAST(p.stockQuantity AS string) = :searchText" +
+            "STR(p.id) LIKE :searchText" +
             ")")
     List<Product> findAllByCategory_Name(@Param("categoryName") String categoryName, @Param("searchText") String searchText, Sort sort);
 
@@ -24,8 +23,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             "WHERE (" +
             ":searchText IS NULL OR " +
             "LOWER(p.name) LIKE LOWER(CONCAT('%', :searchText, '%')) OR " +
-            "LOWER(p.sku) LIKE LOWER(CONCAT('%', :searchText, '%')) OR " +
-            "CAST(p.stockQuantity AS string) = :searchText" +
+            "STR(p.id) LIKE :searchText" +
             ")")
     List<Product> findAll(@Param("searchText") String searchText, Sort sort);
+
+    @Query(value = "SELECT * FROM products ORDER BY stock_quantity DESC LIMIT :limit", nativeQuery = true)
+    List<Product> findTopProductsByStockQuantity(@Param("limit") int limit);
 }

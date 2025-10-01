@@ -1,0 +1,144 @@
+<div class="x_panel" *ngIf="staff">
+    <div class="x_title">
+        <h2>Báo cáo người dùng <small>Báo cáo hoạt động</small></h2>
+        <ul class="nav navbar-right panel_toolbox">
+            <li><a (click)="goBack()"><i class="fa fa-arrow-left"></i>Quay lại giao dịch</a></li>
+        </ul>
+        <div class="clearfix"></div>
+    </div>
+
+    <div class="x_content">
+        <div class="row">
+            <!-- Left Profile Section -->
+            <div class="col-lg-3 col-md-4 col-sm-3 col-12 profile_left">
+                <div class="profile_img">
+                    <div id="crop-avatar">
+                        <img [src]="'https://gravatar.com/avatar/' + (hashEmail)+'?s=178'" [alt]="staff.name"
+                            class="img-responsive avatar-view">
+                    </div>
+                </div>
+                <h3>{{ staff.name }}</h3>
+
+                <ul class="list-unstyled user_data mb-2">
+                    <li>
+                        <i class="fa fa-envelope user-profile-icon"></i>
+                        {{ staff.email }}
+                    </li>
+                    <li>
+                        <i class="fa fa-phone user-profile-icon"></i>
+                        {{ staff.phoneNumber }}
+                    </li>
+                </ul>
+
+                <a class="btn btn-success mb-2">
+                    <i class="fa fa-user m-right-xs"></i>{{ staff.role }}
+                </a>
+                <br />
+
+                <!-- Staff Info -->
+                <h4>Thông tin kho</h4>
+                <ul class="list-unstyled user_data">
+                    <li>
+                        <p><strong>Tên:</strong> {{ staff.supplier.name }}</p>
+                    </li>
+                    <li>
+                        <p><strong>Email:</strong> {{ staff.supplier.email }}</p>
+                    </li>
+                    <li>
+                        <p><strong>Số điện thoại:</strong> {{ staff.supplier.phone }}</p>
+                    </li>
+                    <li>
+                        <p><strong>Địa chỉ:</strong> {{ staff.supplier.address }}</p>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Right Content Section -->
+            <div class="col-lg-9 col-md-8 col-sm-9 col-12">
+                <div class="profile_title row">
+                    <div class="col-md-6 col-6">
+                        <h2>Báo cáo hoạt động</h2>
+                    </div>
+                    <div class="col-md-6 col-6">
+                        <div class="date-filter pull-right">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label class="control-label">Từ:</label>
+                                    <input type="date" [(ngModel)]="fromDate" (change)="onDateRangeChange()"
+                                        class="form-control form-control-sm">
+                                </div>
+                                <div class="col-5">
+                                    <label class="control-label">Đến:</label>
+                                    <input type="date" [(ngModel)]="toDate" (change)="onDateRangeChange()"
+                                        class="form-control form-control-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div mk-morris-js [options]='options' [data]='datas' type='Bar'></div>
+                <!-- Activity Report Table -->
+                 <div class role="tabpanel">
+                    <ul id="myTab" class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="nav-item"><a href="#tab_content1" class="nav-link active show" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true" aria-selected="true">Giao dịch gần đây
+                            </a>
+                        </li>
+                    </ul>
+                    <div id="myTabContent" class="tab-content">
+                        <div role="tabpanel"
+                            class="tab-pane fade active show"
+                            id="tab_content1" aria-labelledby="home-tab">
+                            <div class="table-responsive">
+                                <table class="data table table-striped no-margin">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>LOẠI</th>
+                                            <th>TRẠNG THÁI</th>
+                                            <th>TÊN SẢN PHẨM</th>
+                                            <th>TỔNG TIỀN</th>
+                                            <th>TỔNG SẢN PHẨM</th>
+                                            <th>NGÀY</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let transaction of recentTransactions">
+                                            <td>{{ transaction.id }}</td>
+                                            <td>
+                                                <span>{{ transaction.transactionType }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge"
+                                                    [class.badge-success]="transaction.status === 'COMPLETED'"
+                                                    [class.badge-warning]="transaction.status === 'PENDING'"
+                                                    [class.badge-info]="transaction.status === 'ADMIN_DECIDING'"
+                                                    [class.badge-primary]="transaction.status === 'SENDER_DECIDING'"
+                                                    [class.badge-secondary]="transaction.status === 'CANCELED'">
+                                                    {{ transaction.status }}
+                                                </span>
+                                            </td>
+                                            <td>{{ transaction.product?.name || 'N/A' }}</td>
+                                            <td>{{ transaction.totalPrice | currency:'VND':'symbol':'1.0-0' }}</td>
+                                            <td>{{ transaction.totalProducts }}</td>
+                                            <td>{{ transaction.createdAt | date:'short' }}</td>
+                                        </tr>
+                                        <tr *ngIf="recentTransactions.length === 0">
+                                            <td colspan="8" class="text-center">Không có giao dịch gần đây</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="!staff" class="x_panel">
+    <div class="x_content text-center">
+        <i class="fa fa-spinner fa-spin fa-3x"></i>
+        <p class="mt-3">Đang tải thông tin nhân viên...</p>
+    </div>
+</div>

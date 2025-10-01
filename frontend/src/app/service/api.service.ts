@@ -7,10 +7,14 @@ import CryptoJS from 'crypto-js';
   providedIn: 'root',
 })
 export class ApiService {
-  getAllProductsByCategoryName(categoryName: string, searchInput: string): Observable<any> {
+  getAllProductsByCategoryName(categoryName: string, searchText: string = '', sortBy: string = 'stockQuantity', sortDirection: string = 'ASC'): Observable<any> {
+    let params: any = {};
+    if (searchText) params.searchText = searchText;
+    if (sortBy) params.sortBy = sortBy;
+    if (sortDirection) params.sortDirection = sortDirection;
+
     return this.http.get(`${ApiService.BASE_URL}/products/all/${categoryName}`, {
-      headers: this.getHeader(),
-      params: {searchText: searchInput},
+      params: params,
     });
   }
   authStatuschanged = new EventEmitter<void>();
@@ -19,19 +23,19 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  // Encrypt data and save to localStorage
+  // Encrypt data and save to sessionStorage (per-tab)
   encryptAndSaveToStorage(key: string, value: string): void {
     const encryptedValue = CryptoJS.AES.encrypt(
       value,
       ApiService.ENCRYPTION_KEY
     ).toString();
-    localStorage.setItem(key, encryptedValue);
+    sessionStorage.setItem(key, encryptedValue); // ← Đổi từ localStorage thành sessionStorage
   }
 
-  // Retreive from localStorage and Decrypt
+  // Retreive from sessionStorage and Decrypt
   private getFromStorageAndDecrypt(key: string): any {
     try {
-      const encryptedValue = localStorage.getItem(key);
+      const encryptedValue = sessionStorage.getItem(key); // ← Đổi từ localStorage thành sessionStorage
       if (!encryptedValue) return null;
       return CryptoJS.AES.decrypt(
         encryptedValue,
@@ -43,8 +47,8 @@ export class ApiService {
   }
 
   private clearAuth() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
+    sessionStorage.removeItem('token'); // ← Đổi từ localStorage thành sessionStorage
+    sessionStorage.removeItem('role');  // ← Đổi từ localStorage thành sessionStorage
   }
 
   private getHeader(): HttpHeaders {
@@ -80,11 +84,53 @@ export class ApiService {
   
   getLoggedInUserInfo(): Observable<any> {
     const url = new URL(`${ApiService.BASE_URL}/users/current`);
-    url.searchParams.append("onSession", "true");
     return this.http.get(url.toString(), {
       headers: this.getHeader(),
     });
   }
+
+  getAllUsers(): Observable<any> {
+    return this.http.get(`${ApiService.BASE_URL}/users/all`, {
+      headers: this.getHeader(),
+    });
+  }
+
+  getUserById(id: string): Observable<any> {
+    return this.http.get(`${ApiService.BASE_URL}/users/one/${id}`, {
+      headers: this.getHeader(),
+    });
+  }
+
+  getUserBySupplierId(id: string): Observable<any> {
+    return this.http.get(`${ApiService.BASE_URL}/users/supplier/${id}`, {
+      headers: this.getHeader(),
+    });
+  }
+  
+  updateUser(id: string, body: any): Observable<any> {
+    return this.http.put(`${ApiService.BASE_URL}/users/update/${id}`, body, {
+      headers: this.getHeader(),
+    });
+  }
+
+  deleteUser(id: string): Observable<any> {
+    return this.http.delete(`${ApiService.BASE_URL}/users/delete/${id}`, {
+      headers: this.getHeader(),
+    });
+  }
+
+  getStaffActivityReport(staffId: string, fromDate?: string, toDate?: string): Observable<any> {
+    const params: any = {};
+    params.staffId = staffId;
+    if (fromDate) params.fromDate = fromDate+"T00:00:00";
+    if (toDate) params.toDate = toDate+"T00:00:00";
+    
+    return this.http.get(`${ApiService.BASE_URL}/transactions/activity-report`, {
+      headers: this.getHeader(),
+      params: params
+    });
+  }
+
   /**CATEGOTY ENDPOINTS */
   createCategory(body: any): Observable<any> {
     return this.http.post(`${ApiService.BASE_URL}/categories/add`, body, {
@@ -94,7 +140,6 @@ export class ApiService {
 
   getAllCategory(): Observable<any> {
     return this.http.get(`${ApiService.BASE_URL}/categories/all`, {
-      headers: this.getHeader(),
     });
   }
 
@@ -172,10 +217,14 @@ export class ApiService {
     });
   }
 
-  getAllProducts(searchInput: string): Observable<any> {
+  getAllProducts(searchText: string = '', sortBy: string = 'stockQuantity', sortDirection: string = 'ASC'): Observable<any> {
+    let params: any = {};
+    if (searchText) params.searchText = searchText;
+    if (sortBy) params.sortBy = sortBy;
+    if (sortDirection) params.sortDirection = sortDirection;
+
     return this.http.get(`${ApiService.BASE_URL}/products/all`, {
-      headers: this.getHeader(),
-      params: {searchText: searchInput},
+      params: params,
     });
   }
 
@@ -207,9 +256,29 @@ export class ApiService {
     });
   }
 
-  getAllTransactions(searchText: string, userId: number, supplierId: number): Observable<any> {
+  returnProduct(body: any): Observable<any> {
+    return this.http.post(`${ApiService.BASE_URL}/transactions/return`, body, {
+      headers: this.getHeader(),
+    });
+  }
+
+  getAllTransactions(userId: number, 
+                     searchType?: string, searchStatus?: string, searchProductName?: string, 
+                     searchFromDate?: string, searchToDate?: string, page?: number, size?: number): Observable<any> {
+    const params: any = {
+      userId: userId, 
+    };
+    
+    if (searchType) params.searchType = searchType;
+    if (page) params.page = page;
+    if (size) params.size = size;
+    if (searchStatus) params.searchStatus = searchStatus;
+    if (searchProductName) params.searchProductName = searchProductName;
+    if (searchFromDate) params.searchFromDate = searchFromDate+"T00:00:00";
+    if (searchToDate) params.searchToDate = searchToDate+"T00:00:00";
+    
     return this.http.get(`${ApiService.BASE_URL}/transactions/all`, {
-      params: { searchText: searchText, userId: userId, supplierId: supplierId },
+      params: params,
       headers: this.getHeader(),
     });
   }
@@ -255,7 +324,7 @@ export class ApiService {
       return response.blob();
     })
     .then(blob => {
-      const fileName = type === 'purchase' ? 'issue-report' : type === 'sale' ? 'receipt-report' : 'transaction-report';
+      const fileName = 'transaction-report';
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.style.display = 'none';
@@ -353,6 +422,74 @@ export class ApiService {
   
   goToQRLink(input: any): Observable<any> {
     return this.http.get(input, {
+      headers: this.getHeader(),
+    });
+  }
+
+  /**REPORTS ENDPOINTS */
+  getRevenueReport(startDate: string, endDate: string): Observable<any> {
+    return this.http.get(`${ApiService.BASE_URL}/reports/revenue`, {
+      headers: this.getHeader(),
+      params: {
+        startDate: startDate,
+        endDate: endDate
+      }
+    });
+  }
+
+  getProductProfitReport(startDate: string, endDate: string): Observable<any> {
+    return this.http.get(`${ApiService.BASE_URL}/reports/profit/products`, {
+      headers: this.getHeader(),
+      params: {
+        startDate: startDate,
+        endDate: endDate
+      }
+    });
+  }
+
+  getMonthlyPerformanceReport(): Observable<any> {
+    return this.http.get(`${ApiService.BASE_URL}/reports/performance/monthly`, {
+      headers: this.getHeader(),
+    });
+  }
+
+  getCurrentInventoryValue(): Observable<any> {
+    return this.http.get(`${ApiService.BASE_URL}/reports/inventory/value`, {
+      headers: this.getHeader(),
+    });
+  }
+
+  getTopInventoryProducts(limit?: number): Observable<any> {
+    const params: any = {};
+    if (limit) params.limit = limit;
+    
+    return this.http.get(`${ApiService.BASE_URL}/products/reports/top-inventory`, {
+      headers: this.getHeader(),
+      params: params
+    });
+  }
+
+  getBestSellingProducts(limit?: number, fromDate?: string, toDate?: string): Observable<any> {
+    const params: any = {};
+    if (limit) params.limit = limit;
+    if (fromDate) params.fromDate = fromDate;
+    if (toDate) params.toDate = toDate;
+    
+    return this.http.get(`${ApiService.BASE_URL}/transactions/reports/best-selling`, {
+      headers: this.getHeader(),
+      params: params
+    });
+  }
+
+  updateTransactionByAdmin(transactionId: string, updateData: any): Observable<any> {
+    return this.http.put(`${ApiService.BASE_URL}/transactions/admin-update/${transactionId}`, updateData, {
+      headers: this.getHeader(),
+    });
+  }
+
+  // AI Chat with RAG
+  chatWithAI(question: string): Observable<any> {
+    return this.http.post(`${ApiService.BASE_URL}/rag/chat`, { question }, {
       headers: this.getHeader(),
     });
   }

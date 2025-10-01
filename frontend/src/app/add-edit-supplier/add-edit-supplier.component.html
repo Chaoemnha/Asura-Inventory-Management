@@ -1,6 +1,6 @@
 <div class="page-title">
   <div class="title_left">
-    <h1>{{ isEditing ? "Edit Supplier" : "Add Supplier" }}</h1>
+    <h1>{{ isEditing ? "Sửa nhà cung cấp" : "Thêm nhà cung cấp" }}</h1>
   </div>
 </div>
 <div class="clearfix"></div>
@@ -12,7 +12,7 @@
         <form (ngSubmit)="handleSubmit()" css="form-horizontal form-label-left">
           <div class="form-group">
             <div class="row">
-              <label class="control-label col-md-3 col-sm-3 col-12" for="">Name <span class="required">*</span>
+              <label class="control-label col-md-3 col-sm-3 col-12" for="">Tên <span class="required">*</span>
               </label>
               <div class="col-md-6 col-sm-6 col-12">
                 <input type="text" [(ngModel)]="formData.name" name="name" placeholder="Enter supplier name"
@@ -32,7 +32,7 @@
           </div>
           <div class="form-group">
             <div class="row">
-              <label for="" class="control-label col-md-3 col-sm-3 col-12">Phone<span class="required">*</span></label>
+              <label for="" class="control-label col-md-3 col-sm-3 col-12">Số điện thoại<span class="required">*</span></label>
               <div class="col-md-6 col-sm-6 col-12">
                 <input type="text" [(ngModel)]="formData.phone" name="phone" placeholder="Supplier phone"
                   class="form-control" />
@@ -41,7 +41,7 @@
           </div>
           <div class="form-group">
             <div class="row">
-              <label for="" class="control-label col-md-3 col-sm-3 col-12">Address<span
+              <label for="" class="control-label col-md-3 col-sm-3 col-12">Địa chỉ<span
                   class="required">*</span></label>
               <div class="col-md-6 col-sm-6 col-12">
                 <textarea [(ngModel)]="formData.address" placeholder="Supplier address" name="address"
@@ -53,9 +53,9 @@
           <div class="form-group">
             <div class="row">
               <div class="col-md-6 col-sm-6 col-12 col-md-offset-3">
-                <button class="btn btn-primary mr-1" type="button" (click)="cancel()">Cancel
+                <button class="btn btn-primary mr-1" type="button" (click)="cancel()">Hủy
                 </button>
-                <button class="btn btn-primary mr-1" type="reset">Reset</button>
+                <button class="btn btn-primary mr-1" type="reset">Đặt lại</button>
                 <button type="submit" class="btn btn-success">Submit
                 </button>
               </div>

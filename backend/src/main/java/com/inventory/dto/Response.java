@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -15,6 +16,10 @@ public class Response {
     //generic
     private int status;
     private String message;
+    
+    // Generic data field for any type of data
+    private Object data;
+    
     //for login
     private String token;
     private UserRole role;
@@ -23,6 +28,7 @@ public class Response {
     //for pagination
     private Integer totalPages;
     private Long totalElements;
+    private Integer currentPage;
 
     //data output optional
     private UserDTO user;
@@ -40,13 +46,9 @@ public class Response {
     private TransactionDTO transaction;
     private List<TransactionDTO> transactions;
 
+    private ActivityReport activityReport;
+    
+    private List<Map<String, Object>> bestSellingProducts;
+
     private final LocalDateTime timestamp = LocalDateTime.now();
-
-
-
-
-
-
-
-
 }

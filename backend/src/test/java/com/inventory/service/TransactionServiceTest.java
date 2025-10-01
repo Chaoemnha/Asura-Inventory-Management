@@ -73,9 +73,9 @@ public class TransactionServiceTest {
         modelMapper = new ModelMapper();
         product = modelMapper.map(ProductDTO.builder().name("Asus").sku("nl1").price(BigDecimal.valueOf(10000000)).stockQuantity(2).description("A laptop").categoryId(1L).id(1L).build(), Product.class);;
         supplier = modelMapper.map(SupplierDTO.builder().id(2L).name("NCC Thang Long").email("thanglong@yahoo.com").phone("039584728").address("Ha Noi").build(), Supplier.class);
-        userDTO = UserDTO.builder().id(3L).name("Luuanz").email("luuanz@yahoo.com").password("039584728").phoneNumber("0498582").role(UserRole.MANAGER).build();
+        userDTO = UserDTO.builder().id(3L).name("Luuanz").email("luuanz@yahoo.com").password("039584728").phoneNumber("0498582").role(UserRole.STOCKSTAFF).build();
         user = modelMapper.map(userDTO, User.class);
-        transactionRequest = new TransactionRequest(1L, 2, 2L, "buy a router");
+        transactionRequest = new TransactionRequest(1L, 2, 2L, "buy a router", BigDecimal.valueOf(179000));
         transaction = modelMapper.map(Transaction.builder().id(4L).transactionType(TransactionType.SALE).status(TransactionStatus.COMPLETED).product(product).user(user).totalProducts(transactionRequest.getQuantity()).totalPrice(product.getPrice().multiply(BigDecimal.valueOf(transactionRequest.getQuantity()))).description(transactionRequest.getDescription()).build(), Transaction.class);
         // Tiem modelMapper vao transactionService (co phuong thuc ser dung mapper nen p set ko thi null excep)
         Field field = TransactionServiceImpl.class.getDeclaredField("modelMapper");
@@ -123,10 +123,10 @@ public class TransactionServiceTest {
     @Test
     public void testGetAllTransactions() {
         //May qua tim duoc cach khoi tao Page<T>
-        BDDMockito.given(transactionRepository.searchTransactions(null, -1L, -1L, PageRequest.of(1, 1, Sort.by(Sort.Direction.DESC, "id")))).willReturn(new PageImpl<>(List.of(transaction)));
+        BDDMockito.given(transactionRepository.searchTransactions(TransactionType.SALE, TransactionStatus.COMPLETED, null, -1L, -1L,null, null, PageRequest.of(1, 1, Sort.by(Sort.Direction.DESC, "id")))).willReturn(new PageImpl<>(List.of(transaction)));
         //BDDMockito.given(transactionRepository.searchTransactions(null, PageRequest.of(1, 1, Sort.by(Sort.Direction.DESC, "id")))).willReturn();
         //Test return kem transactionDTOS
-        Response response = transactionService.getAllTransactions(1,1,null, null, null);
+        Response response = transactionService.getAllTransactions(0,2, "SALE", "COMPLETED", null, -1L, null, null);
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getTransactions().getFirst().getId()).isEqualTo(4L);
     }
@@ -144,9 +144,9 @@ public class TransactionServiceTest {
 
     @DisplayName("Testcase: kiem thu phuong thuc getAllTransactionByType (Lay theo nhap, xuat, tra hang, hoac ca 3")
     @Test
-    public void testGetAllTransactionByType() {
-        BDDMockito.given(transactionRepository.findAllByTransactionTypes(List.of(TransactionType.SALE))).willReturn(List.of(transaction));
-        List<TransactionDTO> transactionDTOS = transactionService.getAllTransactionByType(List.of(TransactionType.SALE));
+    public void testGetAllTransactionByConditions() {
+        BDDMockito.given(transactionRepository.findAllByTransactionConditions(TransactionType.SALE, TransactionStatus.COMPLETED, null, null, null)).willReturn(List.of(transaction));
+        List<TransactionDTO> transactionDTOS = transactionService.getAllTransactionByCondition("SALE", "COMPLETED", null, null, null);
         assertThat(transactionDTOS.getFirst().getId()).isEqualTo(4L);
     }
 

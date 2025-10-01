@@ -71,14 +71,22 @@ public class ProductController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Response> getAllProducts(@RequestParam(value = "searchText", required = false)  String searchText) {
-        return ResponseEntity.ok(productService.getAllProducts(searchText));
+    public ResponseEntity<Response> getAllProducts(
+            @RequestParam(value = "searchText", required = false) String searchText,
+            @RequestParam(value = "sortBy", required = false) String sortBy,
+            @RequestParam(value = "sortDirection", required = false) String sortDirection) {
+        
+        return ResponseEntity.ok(productService.getAllProducts(searchText, sortBy, sortDirection));
     }
 
     @GetMapping("/all/{categoryName}")
-    public ResponseEntity<Response> getAllProductsByCategoryName(@PathVariable String categoryName, @RequestParam(value = "searchText", required = false ) String  searchText) {
+    public ResponseEntity<Response> getAllProductsByCategoryName(
+            @PathVariable String categoryName, 
+            @RequestParam(value = "searchText", required = false) String searchText,
+            @RequestParam(value = "sortBy", required = false) String sortBy,
+            @RequestParam(value = "sortDirection", required = false) String sortDirection) {
 
-        return ResponseEntity.ok(productService.getAllProductsByCategoryName(categoryName,  searchText));
+        return ResponseEntity.ok(productService.getAllProductsByCategoryName(categoryName, searchText, sortBy, sortDirection));
     }
 
     @GetMapping("/{id}")
@@ -91,6 +99,12 @@ public class ProductController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<Response> deleteProduct(@PathVariable Long id) {
         return ResponseEntity.ok(productService.deleteProduct(id));
+    }
+
+    @GetMapping("/reports/top-inventory")
+    @PreAuthorize("hasAnyAuthority({'ADMIN', 'STOCKSTAFF'})")
+    public ResponseEntity<Response> getTopInventoryProducts(@RequestParam(defaultValue = "10") int limit) {
+        return ResponseEntity.ok(productService.getTopInventoryProducts(limit));
     }
 
 

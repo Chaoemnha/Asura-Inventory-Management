@@ -1,0 +1,260 @@
+/* Add/Edit User Component Styles */
+
+.x_panel {
+  background: #fff;
+  border: 1px solid #e6e9ed;
+  color: #73879c;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  margin-bottom: 30px;
+}
+
+.x_title {
+  border-bottom: 2px solid #e6e9ed;
+  padding: 1px 5px 6px;
+  margin-bottom: 10px;
+}
+
+.x_content {
+  padding: 0 5px 6px;
+}
+
+/* Form Styles */
+.form-horizontal .control-label {
+  text-align: right;
+  margin-bottom: 0;
+  padding-top: 7px;
+  font-weight: 500;
+  color: #73879c;
+}
+
+.form-control {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  color: #555;
+  background-color: #fff;
+  background-image: none;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}
+
+.form-control:focus {
+  border-color: #26b99a;
+  outline: 0;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(38, 185, 154, .6);
+}
+
+.form-control[readonly] {
+  background-color: #f5f5f5;
+  opacity: 1;
+}
+
+/* Required field asterisk */
+.required {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+/* Button Styles */
+.btn {
+  border-radius: 3px;
+  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);
+  padding: 6px 12px;
+  margin: 2px;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  border: 1px solid transparent;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+}
+
+.btn-success {
+  background-color: #26b99a;
+  border-color: #26b99a;
+  color: #fff;
+}
+
+.btn-success:hover {
+  background-color: #1a8276;
+  border-color: #1a8276;
+}
+
+.btn-secondary {
+  background-color: #73879c;
+  border-color: #73879c;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #586b7d;
+  border-color: #586b7d;
+}
+
+.btn-warning {
+  background-color: #f39c12;
+  border-color: #f39c12;
+  color: #fff;
+}
+
+.btn-warning:hover {
+  background-color: #d68910;
+  border-color: #d68910;
+}
+
+/* Form group spacing */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group .row {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+/* Line separator */
+.ln_solid {
+  border-top: 1px solid #e5e5e5;
+  color: #ffffff;
+  background-color: #ffffff;
+  height: 1px;
+  margin: 20px 0;
+}
+
+/* Badge Styles */
+.badge {
+  display: inline-block;
+  min-width: 10px;
+  padding: 3px 7px;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 10px;
+  margin-right: 5px;
+}
+
+.badge-danger {
+  background-color: #dc3545;
+}
+
+.badge-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.badge-info {
+  background-color: #17a2b8;
+}
+
+.badge-success {
+  background-color: #28a745;
+}
+
+.badge-secondary {
+  background-color: #6c757d;
+}
+
+/* Helper text */
+.text-muted {
+  color: #b3b3b3;
+  font-size: 12px;
+}
+
+/* Page title */
+.page-title h1 {
+  color: #73879c;
+  font-size: 24px;
+  font-weight: 400;
+  margin-bottom: 0;
+}
+
+.title_left {
+  float: left;
+  display: block;
+}
+
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .form-horizontal .control-label {
+    text-align: left;
+    margin-bottom: 5px;
+    padding-top: 0;
+  }
+  
+  .col-md-offset-3 {
+    margin-left: 0;
+  }
+  
+  .btn {
+    margin-bottom: 5px;
+    width: 100%;
+  }
+  
+  .btn:last-child {
+    margin-bottom: 0;
+  }
+  
+  .mr-2 {
+    margin-right: 0 !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .x_content {
+    padding: 0 15px 6px;
+  }
+  
+  .form-control {
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  .page-title h1 {
+    font-size: 20px;
+  }
+}
+
+/* Focus states */
+.form-control:focus {
+  border-color: #26b99a;
+  outline: 0;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(38, 185, 154, .6);
+}
+
+select.form-control:focus {
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(38, 185, 154, .6);
+}
+
+/* Validation styles */
+.form-control:invalid {
+  border-color: #e74c3c;
+}
+
+.form-control:valid {
+  border-color: #27ae60;
+}
+
+/* Utility classes */
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.mb-3 {
+  margin-bottom: 1rem;
+}

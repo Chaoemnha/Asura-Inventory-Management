@@ -134,4 +134,35 @@ p {
     transition: all 0.3s ease-in-out;
 }
 
+/* Edit Profile Styles */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.5rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #ee5a6f;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(238, 90, 111, 0.25);
+}
+
+.btn-group .btn {
+    margin-left: 0.5rem;
+}
+
+.text-danger {
+    color: #dc3545;
+}
+
 

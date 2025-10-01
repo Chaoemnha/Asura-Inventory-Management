@@ -1,65 +1,143 @@
 <div class="x_panel">
   <div class="x_title">
-    <div class="page-title row">
+    <div class="page-title row align-items-center">
       <div class="col-sm-6 col-12 text-left">
-        <h1>Product List 
+        <h1>Danh sách sản phẩm 
           <small *ngIf="selectedCategory" class="text-muted"> - {{selectedCategory}}</small>
-          <small *ngIf="!selectedCategory" class="text-muted"> - All Categories</small>
+          <small *ngIf="!selectedCategory" class="text-muted"> - Tất cả</small>
         </h1>
       </div>
 
       <div class="col-sm-6 col-12 text-right">
         <div class="row">
-          <div class="offset-xl-7 col-xl-5 col-lg-12 col-md-12 col-sm-5 col-12 form-group pull-right top_search mt-3">
-            <div class="input-group">
-              <input type="text" [(ngModel)]="searchInput" placeholder="Search.." class="form-control" />
-              <span class="input-group-btn">
-                <button class="btn btn-light" (click)="handleSearch()">Go!</button>
-              </span>
+          <div class="col-12 form-group">
+            <!-- Search by name -->
+            <div class="input-group mb-2">
+              <div class="input-group-prepend">
+                <span class="input-group-text"><i class="fa fa-search"></i></span>
+              </div>
+              <input type="text" [(ngModel)]="searchText" placeholder="Tìm tên/id sp..." class="form-control" 
+                     (keyup.enter)="applyFilters()" />
+              <div class="input-group-append">
+                <button class="btn btn-primary" (click)="applyFilters()">Tìm</button>
+                <button class="btn btn-secondary" (click)="clearSearch()">Xóa</button>
+              </div>
+            </div>
+            
+            <!-- Sorting buttons -->
+            <div class="btn-group d-flex flex-wrap justify-content-between" role="group">
+              <button type="button" class="btn btn-sm" 
+                      [class.btn-info]="sortBy === 'id' && sortDirection === 'ASC'"
+                      [class.btn-outline-info]="!(sortBy === 'id' && sortDirection === 'ASC')"
+                      (click)="setSorting('id', 'ASC')">
+                ID ↑
+              </button>
+              <button type="button" class="btn btn-sm"
+                      [class.btn-info]="sortBy === 'id' && sortDirection === 'DESC'"
+                      [class.btn-outline-info]="!(sortBy === 'id' && sortDirection === 'DESC')"
+                      (click)="setSorting('id', 'DESC')">
+                ID ↓
+              </button>
+              <button type="button" class="btn btn-sm"
+                      [class.btn-success]="sortBy === 'name' && sortDirection === 'ASC'"
+                      [class.btn-outline-success]="!(sortBy === 'name' && sortDirection === 'ASC')"
+                      (click)="setSorting('name', 'ASC')">
+                Tên ↑
+              </button>
+              <button type="button" class="btn btn-sm"
+                      [class.btn-success]="sortBy === 'name' && sortDirection === 'DESC'"
+                      [class.btn-outline-success]="!(sortBy === 'name' && sortDirection === 'DESC')"
+                      (click)="setSorting('name', 'DESC')">
+                Tên ↓
+              </button>
+              <button type="button" class="btn btn-sm"
+                      [class.btn-warning]="sortBy === 'stockQuantity' && sortDirection === 'ASC'"
+                      [class.btn-outline-warning]="!(sortBy === 'stockQuantity' && sortDirection === 'ASC')"
+                      (click)="setSorting('stockQuantity', 'ASC')">
+                Tồn kho ↑
+              </button>
+              <button type="button" class="btn btn-sm"
+                      [class.btn-warning]="sortBy === 'stockQuantity' && sortDirection === 'DESC'"
+                      [class.btn-outline-warning]="!(sortBy === 'stockQuantity' && sortDirection === 'DESC')"
+                      (click)="setSorting('stockQuantity', 'DESC')">
+                Tồn kho ↓
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="clearfix"></div>
+    <div class="row">
+      <div class="col-3 text-left">
     <button *ngIf="isAdmin()" class="btn btn-app" (click)="navigateToAddProductPage()">
       <i class="fa fa-plus"></i>
-      Add Product
+      Thêm sản phẩm
     </button>
+  </div>
+  
+      <div *ngIf="isAdmin()||isStockStaff()" class="col-9 text-right">
+        <div class="alert alert-dismissible fade show" role="alert" style="margin-bottom: 10px; padding: 8px 15px;">
+            <span class="bg-warning p-2 text-white">Sản phẩm sắp hết (còn 1, 2) </span> 
+            <span class="ml-3 bg-danger p-2 text-white">Sản phẩm hết hàng </span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="x_content">
-    <div class="table-responsive">
-      <table class="table table-striped jambo_table bulk_action" *ngIf="products.length > 0">
-        <thead>
-          <tr class="headings">
-            <th class="column-title">#</th>
-            <th class="column-title">Image</th>
-            <th class="column-title">Name</th>
-            <th class="column-title">SKU</th>
-            <th class="column-title">Price</th>
-            <th class="column-title">Stock</th>
-            <th *ngIf="isAdmin()" class="column-title no-link last text-center" colspan="2"><span class="nobr">Action</span></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let product of products; let i = index" [class.even]="i % 2 === 0" [class.odd]="i % 2 !== 0"
-            class="pointer">
-            <td class=" ">{{i + 1}}</td>
-            <td class=" ">
-              <img [src]='product.imageUrl' [alt]="product.name" class="product-image"
-                style="width: 50px; height: 50px; object-fit: cover;" />
-            </td>
-            <td class=" ">{{product.name}}</td>
-            <td class=" ">{{product.sku}}</td>
-            <td class=" ">${{product.price}}</td>
-            <td class=" ">{{product.stockQuantity}}</td>
-            <td *ngIf="isAdmin()"><button (click)="navigateToEditProductPage(product.id)" class="btn btn-round btn-primary">Edit</button>
-            </td>
-            <td *ngIf="isAdmin()"><button (click)="handleProductDelete(product.id)" class="btn btn-round btn-danger">Delete</button></td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="row roq-eq-height" *ngIf="products.length > 0">
+      <!-- Product Cards -->
+      <div class="col-lg-4 col-md-6 col-sm-4 col-12 profile_details" *ngFor="let product of products; let i = index">
+        <div class="card profile_view d-flex flex-column h-100"  [class]="getRowClass(product.stockQuantity)">
+          <div class="card-body d-flex flex-column flex-grow-1">
+            <div class="col-sm-12 flex-grow-1">
+              <h4><strong>ID: </strong>{{product.id}}</h4>
+              <div class="row">
+                <div class="left col-lg-12 col-xl-7">
+                  <h2>{{product.name}}</h2>
+                  <hr>
+                  <ul class="list-unstyled">
+                    <li><i class="fa fa-barcode"></i> SKU: {{product.sku}}</li>
+                    <li><i class="fa fa-money"></i> Giá: {{product.price}}₫</li>
+                    <li><i class="fa fa-cubes"></i> Tồn kho: {{product.stockQuantity}}</li>
+                  </ul>
+                </div>
+                <div class="right col-xl-5 col-lg-12 text-center">
+                  <img [src]="product.imageUrl" [alt]="product.name" class="img-circle img-responsive"
+                       >
+                </div>
+              </div>
+            </div>
+            <div class="col-12 text-center mt-auto" style="margin-top: -1.7rem !important;">
+              <div class="row">
+                <!-- Actions for all authenticated users -->
+                <div class="col-12 emphasis mb-2 d-flex justify-content-around">
+                  <!-- View button for all users -->
+                  <button type="button" class="btn btn-secondary" (click)="navigateToViewProductPage(product.id)">
+                     Xem
+                  </button>
+                  
+                  <!-- Edit and Delete buttons for Admin only -->
+                  <ng-container *ngIf="isAdmin()">
+                    <button type="button" class="btn btn-primary" (click)="navigateToEditProductPage(product.id)">
+                      Sửa
+                    </button>
+                    <button type="button" class="btn btn-danger" (click)="handleProductDelete(product.id)">
+                       Xóa
+                    </button>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No products message -->
+    <div *ngIf="products.length === 0" class="text-center mt-4">
+      <p class="text-muted">Không tìm thấy sản phẩm nào.</p>
     </div>
 
     <!-- Custom Pagination -->

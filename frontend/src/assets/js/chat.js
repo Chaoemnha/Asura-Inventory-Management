@@ -90,8 +90,8 @@ var RagChatWidget = (function($) {
      * Send message to server
      */
     function sendMessageToServer(message) {
-    // Lấy token từ localStorage và decrypt
-    var encryptedToken = localStorage.getItem('token');
+    // Lấy token từ sessionStorage và decrypt
+    var encryptedToken = sessionStorage.getItem('token');
     var token = '';
     if (encryptedToken) {
         try {
@@ -169,9 +169,26 @@ var RagChatWidget = (function($) {
             minute: '2-digit' 
         });
         
-        var messageHtml = buildMessageHTML(text, type, time);
-        elements.chatMessages.append(messageHtml);
-        scrollToBottom();
+        try {
+        var parsed = JSON.parse(text);
+        text = text.replace(/\n/g, "<br>");
+        if (parsed.message) {
+            text = parsed.message;
+        }
+        if (parsed && parsed.action === 'navigate') {
+          // Use parsed message for navigation
+          const navigateEvent = new CustomEvent('ai-navigate', {
+                detail: { url: parsed.url }
+            });
+            window.dispatchEvent(navigateEvent);
+        }
+    } catch (e) {
+        // Không làm gì nếu không phải JSON
+    }
+
+    var messageHtml = buildMessageHTML(text, type, time);
+    elements.chatMessages.append(messageHtml);
+    scrollToBottom();
     }
     
     /**
@@ -181,7 +198,7 @@ var RagChatWidget = (function($) {
         return [
             '<div class="message ' + type + '">',
                 '<div class="message-bubble">',
-                    escapeHtml(text),
+                    text,
                     '<div class="message-time">' + time + '</div>',
                 '</div>',
             '</div>'

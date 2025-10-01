@@ -89,7 +89,7 @@ export class SupplierComponent implements OnInit, OnDestroy {
         this.notificationService.showError('Error', 
           error?.error?.message ||
             error?.message ||
-            'Unable to get suppliers'
+            'Không thể lấy danh sách nhà cung cấp'
         );
       },
     });
@@ -123,11 +123,11 @@ export class SupplierComponent implements OnInit, OnDestroy {
 
   addSupplier() {
     if (!this.supplierName) {
-      this.notificationService.showError('Error', "Supplier name is required");
+      this.notificationService.showError('Lỗi', 'Tên nhà cung cấp là bắt buộc');
       return;
     }
     if (!this.supplierEmail) {
-      this.notificationService.showError('Error', "Supplier email is required");
+      this.notificationService.showError('Lỗi', 'Email nhà cung cấp là bắt buộc');
       return;
     }
     
@@ -141,13 +141,15 @@ export class SupplierComponent implements OnInit, OnDestroy {
     this.apiService.createSupplier(supplierData).subscribe({
       next: (res: any) => {
         if (res.status == 200) {
-          this.notificationService.showSuccess('Success', "Supplier added successfully");
+          this.notificationService.showSuccess('Success', 'Thêm nhà cung cấp thành công');
           this.clearForm();
           this.getSuppliers();
         }
       },
       error: (error: any) => {
-        this.notificationService.showError('Error', error?.error?.message || error?.error || "Unable to add supplier");
+        this.notificationService.showError('Lỗi', 
+          error?.error?.message || error?.error || 'Không thể thêm nhà cung cấp'
+        );
       }
     });
   }
@@ -167,7 +169,7 @@ export class SupplierComponent implements OnInit, OnDestroy {
     this.apiService.updateSupplier(this.editingSupplierId, supplierData).subscribe({
       next: (res: any) => {
         if (res.status == 200) {
-          this.notificationService.showSuccess('Success', "Supplier updated successfully");
+          this.notificationService.showSuccess('Success', 'Cập nhật nhà cung cấp thành công');
           this.clearForm();
           this.isEditing = false;
           this.editingSupplierId = null;
@@ -175,7 +177,9 @@ export class SupplierComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: any) => {
-        this.notificationService.showError('Error', error?.error?.message || error?.error || "Unable to update supplier");
+        this.notificationService.showError('Lỗi', 
+          error?.error?.message || error?.error || 'Không thể cập nhật nhà cung cấp'
+        );
       }
     });
   }
@@ -204,17 +208,17 @@ export class SupplierComponent implements OnInit, OnDestroy {
 
   //Delete a supplier
   handleDeleteSupplier(supplierId: string): void {
-    if (window.confirm("Are you sure you want to delete this supplier?")) {
+    if (window.confirm("Bạn có chắc chắn muốn xóa nhà cung cấp này?")) {
       this.apiService.deleteSupplier(supplierId).subscribe({
         next: (res: any) => {
           if (res.status === 200) {
-            this.notificationService.showSuccess('Success', "Supplier deleted successfully");
+            this.notificationService.showSuccess('Success', 'Xóa nhà cung cấp thành công');
             this.getSuppliers(); //reload the suppliers
           }
         },
         error: (error) => {
-          this.notificationService.showError('Error', 
-            error?.error?.message || error?.message || "Unable to Delete Supplier"
+          this.notificationService.showError('Lỗi', 
+            error?.error?.message || error?.message || 'Không thể xóa nhà cung cấp'
           );
         }
       });

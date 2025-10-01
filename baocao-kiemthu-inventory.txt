@@ -1,0 +1,139 @@
+3.4. Kiểm thử chức năng của hệ thống
+3.4.1. Mục tiêu kiểm thử
+Cần kiểm tra tính chính xác và hiệu quả của các chức năng chính trong ứng dụng Asura Inventory Management như đăng ký tài khoản, đăng nhập, quản lý sản phẩm, quản lý giao dịch (nhập hàng, bán hàng, trả hàng), quản lý phân loại và quản lý nhà cung cấp. Các chức năng này phải hoạt động đúng theo yêu cầu, đảm bảo mang lại trải nghiệm thuận tiện và an toàn cho người dùng ở các vai trò khác nhau (Admin, Stock Staff, Customer, Supplier). 
+Đồng thời, giao diện ứng dụng cần thân thiện, dễ thao tác và tương thích tốt với nhiều thiết bị khác nhau. Ngoài ra, cần kiểm tra khả năng hiển thị thông tin sản phẩm (tên, SKU, giá, số lượng tồn kho, hình ảnh, phân loại) chính xác và đầy đủ. Tính năng tìm kiếm sản phẩm và giao dịch cũng phải trả về kết quả đúng và phù hợp, hỗ trợ hệ thống báo cáo thống kê real-time và cập nhật qua WebSocket.
+
+3.4.2. Kế hoạch kiểm thử
+Nội dung kiểm thử	Dữ liệu kiểm thử	Thời gian	Cách thức
+Đăng ký tài khoản	Nhập thông tin hợp lệ (tên, số điện thoại, email, mật khẩu, role); Nhập email đã tồn tại	29/09/2025	Thủ công
+Đăng nhập	Tài khoản đúng; Sai mật khẩu; Quên mật khẩu	29/09/2025	Thủ công
+Sửa thông tin người dùng	Cập nhật tên, số điện thoại, email, địa chỉ	29/09/2025	Thủ công
+Quản lý sản phẩm	Thêm, sửa, xóa sản phẩm; Upload hình ảnh; Tìm kiếm theo ID	29/09/2025	Thủ công
+Quản lý phân loại	Thêm, sửa, xóa category; WebSocket real-time update	29/09/2025	Thủ công
+Quản lý nhà cung cấp	Thêm, sửa, xóa supplier; Validation unique fields	29/09/2025	Thủ công
+Nhập hàng (Purchase)	Chọn sản phẩm, nhà cung cấp, người gửi → tạo giao dịch nhập	29/09/2025	Thủ công
+Bán hàng (Sale)	Chọn sản phẩm, nhập số lượng → tạo giao dịch bán	29/09/2025	Thủ công
+Trả hàng (Return)	Chọn giao dịch hoàn thành, nhập lý do → tạo yêu cầu trả hàng	29/09/2025	Thủ công
+Xem chi tiết giao dịch	Hiển thị thông tin đầy đủ, action buttons theo role	29/09/2025	Thủ công
+Cập nhật trạng thái giao dịch	Confirm/Reject giao dịch; QR Code scanning	29/09/2025	Thủ công
+Tìm kiếm giao dịch	Tìm theo ID, type, status, tên sản phẩm, khoảng thời gian	29/09/2025	Thủ công
+Dashboard thống kê	Biểu đồ giao dịch theo loại, theo tháng; Báo cáo doanh thu	29/09/2025	Thủ công
+Chat AI Assistant	Hỏi đáp với AI, điều hướng trang theo yêu cầu	29/09/2025	Thủ công
+Bảng 10. Kế hoạch kiểm thử
+
+3.4.3. Thực hiện kiểm thử
+1. Người dùng chung (Customer/Stock Staff)
+
+Chức năng	Input	Bước thực hiện	Kết quả mong đợi
+Đăng ký thành công	Name: Nguyen Van A
+Email: customer1@mail.com
+Password: 123456
+Phone: 0901234567
+Role: CUSTOMER	Vào Register → nhập thông tin hợp lệ → bấm Đăng ký	Tạo tài khoản mới, điều hướng về trang dashboard
+Đăng ký thất bại	Email: customer1@mail.com (đã tồn tại)	Nhập email đã tồn tại → bấm Đăng ký	Hiện thông báo lỗi "Email đã được sử dụng"
+Đăng nhập thành công	Email: customer1@mail.com
+Password: 123456	Vào login → nhập đúng thông tin	Đăng nhập thành công, điều hướng về dashboard
+Đăng nhập thất bại	Email: customer1@mail.com
+Password: sai	Vào login → nhập sai mật khẩu	Hiện thông báo "Sai tài khoản hoặc mật khẩu"
+Quên mật khẩu	Email: customer1@mail.com	Vào forgot password → nhập email → gửi	Email reset được gửi, hiển thị thông báo thành công
+Reset mật khẩu	Token từ email
+Password mới: newpass123	Click link trong email → nhập mật khẩu mới → xác nhận	Mật khẩu được đặt lại, chuyển về trang login
+Sửa thông tin cá nhân	Name: Nguyen Van B
+Phone: 0987654321
+Address: Ha Noi	Vào profile → chỉnh sửa thông tin → lưu	Thông tin được cập nhật thành công
+Xem danh sách sản phẩm	Category: "Laptop"	Vào trang product → chọn category	Hiện danh sách sản phẩm thuộc category Laptop
+Tìm kiếm sản phẩm	Product ID: "1"	Nhập ID sản phẩm → tìm kiếm	Hiện chi tiết sản phẩm với ID = 1
+Xem chi tiết sản phẩm	Chọn sản phẩm "Laptop Dell"	Click vào sản phẩm	Hiện tên, SKU, giá, tồn kho, hình ảnh, mô tả
+Bán hàng	Product: "Laptop Dell"
+Quantity: 2	Vào sell page → chọn sản phẩm → nhập số lượng → bấm Bán	Tạo giao dịch bán thành công, cập nhật tồn kho
+Xem danh sách giao dịch	Filter: Type = "SALE"	Vào transaction → chọn filter	Hiện danh sách giao dịch bán hàng
+Trả hàng	Transaction ID: 5
+Lý do: "Sản phẩm lỗi"
+Số lượng: 1	Vào transaction details → click Return → nhập thông tin	Tạo yêu cầu trả hàng thành công
+Chat với AI Assistant	Câu hỏi: "Hướng dẫn tôi đến trang sản phẩm"	Mở chat → nhập câu hỏi	AI trả lời và điều hướng đến trang sản phẩm
+Bảng 11. Kiểm thử chức năng phía người dùng chung
+
+2. Quản trị viên (Admin)
+
+Chức năng	Input	Bước thực hiện	Kết quả mong đợi
+Đăng nhập Admin	Email: admin@mail.com
+Password: admin123	Vào login → nhập thông tin admin	Đăng nhập thành công, có quyền truy cập tất cả chức năng
+Quản lý người dùng	Name: Tran Van C
+Email: staff1@mail.com
+Role: STOCKSTAFF	Vào users → Add User → nhập thông tin	Tạo tài khoản staff mới thành công
+Quản lý phân loại	Category name: "Mobile Phone"	Vào category → nhập tên → Add Category	Tạo category mới, real-time update qua WebSocket
+Chỉnh sửa phân loại	Category: "Mobile Phone" → "Smartphone"	Click Edit → thay đổi tên → Save	Cập nhật tên category thành công
+Xóa phân loại	Category: "Smartphone"	Click Delete → Confirm	Xóa category, cập nhật real-time
+Quản lý nhà cung cấp	Name: "ABC Company"
+Email: abc@company.com
+Phone: 0901111111
+Address: "123 ABC Street"	Vào supplier → Add → nhập thông tin	Tạo supplier mới thành công
+Chỉnh sửa nhà cung cấp	Phone: 0901111111 → 0902222222	Click Edit → thay đổi phone → Update	Cập nhật thông tin supplier thành công
+Quản lý sản phẩm	Name: "iPhone 15"
+SKU: "IP15-001"
+Price: 25000000
+Stock: 10
+Category: "Smartphone"
+Image: iphone15.jpg	Vào product → Add Product → nhập thông tin → upload ảnh	Tạo sản phẩm mới với hình ảnh thành công
+Chỉnh sửa sản phẩm	Price: 25000000 → 24000000	Click Edit → thay đổi giá → Update	Cập nhật giá sản phẩm thành công
+Xóa sản phẩm	Product: "iPhone 15"	Click Delete → Confirm	Xóa sản phẩm thành công
+Xem dashboard thống kê	Month: 9, Year: 2025	Vào dashboard → chọn tháng/năm	Hiển thị biểu đồ giao dịch theo tháng
+Xuất báo cáo	Date range: 01/09/2025 - 30/09/2025	Vào reports → chọn khoảng thời gian → Export	Tải file báo cáo Excel/PDF thành công
+Cập nhật trạng thái giao dịch	Transaction ID: 10
+Status: COMPLETED	Vào transaction details → Confirm	Cập nhật trạng thái thành công, gửi WebSocket notification
+Bảng 12. Kiểm thử chức năng phía quản trị viên
+
+3. Nhà cung cấp (Supplier)
+
+Chức năng	Input	Bước thực hiện	Kết quả mong đợi
+Đăng nhập Supplier	Email: supplier1@mail.com
+Password: supplier123	Vào login → nhập thông tin supplier	Đăng nhập thành công, chỉ xem giao dịch liên quan
+Xem giao dịch nhập hàng	Filter: Supplier ID của user	Vào transaction → tự động filter	Chỉ hiện giao dịch từ supplier này
+Xác nhận giao dịch	Transaction ID: 8
+Status: SENDER_DECIDING	Vào transaction details → Confirm	Cập nhật status thành ADMIN_DECIDING
+Từ chối giao dịch	Transaction ID: 9
+Status: SENDER_DECIDING	Vào transaction details → Reject	Cập nhật status thành CANCELED
+Tạo QR Code	Transaction ID: 8
+Status: PENDING	Click Generate QR → tải PDF	Tạo invoice PDF với QR code thành công
+Quét QR Code	QR từ transaction	Dùng app quét QR	Cập nhật trạng thái giao dịch tự động
+Xem thông tin cá nhân	Supplier info	Vào profile	Hiện thông tin supplier và company
+Cập nhật thông tin supplier	Address: "456 New Street"	Edit profile → thay đổi địa chỉ → Save	Cập nhật thông tin supplier thành công
+Bảng 13. Kiểm thử chức năng phía nhà cung cấp
+
+4. Nhân viên kho (Stock Staff)
+
+Chức năng	Input	Bước thực hiện	Kết quả mong đợi
+Đăng nhập Stock Staff	Email: staff1@mail.com
+Password: staff123	Vào login → nhập thông tin staff	Đăng nhập thành công, có quyền nhập/xuất hàng
+Nhập hàng	Product: "Samsung Galaxy S24"
+Supplier: "Samsung VN"
+Quantity: 5
+Price: 18000000
+Sender: chọn từ danh sách	Vào purchase → chọn sản phẩm/supplier → nhập thông tin	Tạo giao dịch nhập hàng thành công
+Xuất hàng (bán)	Product: "Samsung Galaxy S24"
+Quantity: 2	Vào sell → chọn sản phẩm → nhập số lượng	Tạo giao dịch bán, giảm tồn kho
+Kiểm tra tồn kho	Product: "Samsung Galaxy S24"	Vào product → xem stock quantity	Hiển thị số lượng tồn kho chính xác (5-2=3)
+Xử lý trả hàng	Return request từ customer	Vào transaction → filter RETURN_TO_SUPPLIER	Xem danh sách yêu cầu trả hàng
+Xác nhận trả hàng	Return Transaction ID: 15	Vào details → Approve return	Chấp nhận trả hàng, cập nhật tồn kho
+Xem báo cáo hoạt động	Staff ID: của user hiện tại
+Date: 01/09/2025 - 30/09/2025	Vào reports → Activity Report	Hiển thị thống kê hoạt động của staff
+Tìm kiếm giao dịch	Product name: "Samsung"
+Date: tháng 9/2025	Vào transaction → advanced search	Hiển thị giao dịch liên quan đến Samsung trong tháng 9
+Bảng 14. Kiểm thử chức năng phía nhân viên kho
+
+3.4.4. Kết quả kiểm thử
+Tất cả các chức năng đã được kiểm thử đều hoạt động đúng theo yêu cầu:
+- Hệ thống xác thực và phân quyền hoạt động chính xác
+- Các chức năng CRUD (Create, Read, Update, Delete) cho tất cả entities
+- Real-time updates qua WebSocket hoạt động tốt
+- QR Code generation và scanning thành công
+- AI Assistant chat và navigation working properly
+- Responsive design tương thích với nhiều thiết bị
+
+Các lỗi phát hiện và đã sửa:
+- Validation form inputs
+- Role-based access control
+- Image upload optimization
+- Database transaction handling
+
+Hệ thống đã sẵn sàng để triển khai production với độ tin cậy cao.

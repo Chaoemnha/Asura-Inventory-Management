@@ -61,6 +61,14 @@
   <script src="assets/js/chat.js"></script>
   
   <script>
+    $(document).ready(function(){
+		$('#fromDatePicker').datetimepicker({
+			format: 'YYYY-MM-DD HH:mm:ss'
+		});
+		$('#toDatePicker').datetimepicker({
+			format: 'YYYY-MM-DD HH:mm:ss'
+		});
+	});
     const observer = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
         mutation.addedNodes.forEach(node => {

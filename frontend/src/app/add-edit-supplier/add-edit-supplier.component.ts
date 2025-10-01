@@ -59,16 +59,16 @@ export class AddEditSupplierComponent implements OnInit {
   // HANDLE FORM SUBMISSION
   handleSubmit() {
     if (!this.formData.name) {
-      this.notificationService.showWarning('Caution!', "Supplier name is required");
+      this.notificationService.showWarning('Caution!', "Tên nhà cung cấp là bắt buộc");
       return;
     }
     if (!this.formData.phone) {
-      this.notificationService.showWarning('Caution!', "Supplier phone is required");
+      this.notificationService.showWarning('Caution!', "Số điện thoại nhà cung cấp là bắt buộc");
       return;
     }
 
     if (!this.formData.address) {
-      this.notificationService.showWarning('Caution!', "Supplier address is required");
+      this.notificationService.showWarning('Caution!', "Địa chỉ nhà cung cấp là bắt buộc");
       return;
     }
     //prepare data for submission
@@ -84,24 +84,24 @@ export class AddEditSupplierComponent implements OnInit {
       this.apiService.updateSupplier(this.supplierId!, supplierData).subscribe({
         next:(res:any) =>{
           if (res.status === 200) {
-            this.notificationService.showSuccess("Success","Supplier updated successfully");
+            this.notificationService.showSuccess("Success","Nhà cung cấp cập nhật thành công");
             this.router.navigate(['/supplier'])
           }
         },
         error:(error) =>{
-          this.notificationService.showError("Error",error?.error?.message || error?.message || "Unable to edit supplier" + error)
+          this.notificationService.showError("Error",error?.error?.message || error?.message || "Không thể cập nhật" + error)
         }
       })
     } else {
       this.apiService.addSupplier(supplierData).subscribe({
         next:(res:any) =>{
           if (res.status === 200) {
-            this.notificationService.showSuccess("Success","Supplier Added successfully");
+            this.notificationService.showSuccess("Success","Nhà cung cấp thêm mới thành công");
             this.router.navigate(['/supplier'])
           }
         },
         error:(error) =>{
-          this.notificationService.showError("Error",error?.error?.message || error?.message || "Unable to Add supplier" + error)
+          this.notificationService.showError("Error",error?.error?.message || error?.message || "Không thể thêm mới" + error)
         }
       })
     }

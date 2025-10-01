@@ -2,22 +2,22 @@
 	<div class="x_title">
 		<div class="page-title row">
 			<div class="col-sm-6 col-12 text-left">
-				<h1>Category List</h1>
+				<h1>Danh sách phân loại</h1>
 			</div>
 		</div>
 		<div class="clearfix"></div>
 		<div class="add-cat">
-			<h6>Name:</h6> 
-			<input type="text" [(ngModel)]="categoryName" placeholder="Category name" class="form-control" />
+			<h6>Tên:</h6> 
+			<input type="text" [(ngModel)]="categoryName" placeholder="Nhập tên phân loại" class="form-control" />
 			<br>
 			<div class="form-group">
 				<div class="row">
 					<div class="col-md-9 col-sm-9 col-12 col-md-offset-3">
-						<button *ngIf="!isEditing" (click)="addCategory()" class="btn btn-success mr-1">Add
-							Category</button>
-						<button *ngIf="isEditing" (click)="editCategory()" class="btn btn-success mr-1">Edit
-							Category</button>
-						<button (click)="cancel()" class="btn btn-primary">Cancel Editing</button>
+						<button *ngIf="!isEditing" (click)="addCategory()" class="btn btn-success mr-1">Thêm
+							</button>
+						<button *ngIf="isEditing" (click)="editCategory()" class="btn btn-success mr-1">Sửa
+							</button>
+						<button (click)="cancel()" class="btn btn-primary">Hủy</button>
 					</div>
 				</div>
 			</div>
@@ -31,8 +31,8 @@
 					<tr class="headings">
 						<th class="column-title">#</th>
 						<th class="column-title">ID</th>
-						<th class="column-title">Name</th>
-						<th class="column-title no-link last text-center" colspan="2"><span class="nobr">Action</span>
+						<th class="column-title">Tên</th>
+						<th class="column-title no-link last text-center" colspan="2"><span class="nobr">Thao tác</span>
 						</th>
 					</tr>
 				</thead>
@@ -42,10 +42,10 @@
 						<td class=" ">{{i + 1}}</td>
 						<td class=" ">{{category.id}}</td>
 						<td class=" ">{{category.name}}</td>
-						<td><button (click)="handleEditCategory(category)"
-								class="btn btn-round btn-primary">Edit</button></td>
+						<td class="text-right"><button (click)="handleEditCategory(category)"
+								class="btn btn-round btn-primary">Sửa</button></td>
 						<td><button (click)="handleDeleteCategory(category.id)"
-								class="btn btn-round btn-danger">Delete</button></td>
+								class="btn btn-round btn-danger">Xóa</button></td>
 					</tr>
 				</tbody>
 			</table>
