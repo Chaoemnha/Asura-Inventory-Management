@@ -1,22 +1,33 @@
-# Asura Inventory Management 📂
+# Asura Inventory Management
 
-Backend🖥️ dự án này được sinh ra từ [Spring Initializer](https://start.spring.io/index.html) phiên bản 3.5.4.
+### Hệ thống quản lý kho tích hợp trợ lý ảo, đồng bộ thời gian thực Websocket, tạo hóa đơn từ khung docx, ZXing tự động nhận diện QR và xử lý đơn hàng.
 
-Frontend dự án này được sinh ra từ [Angular CLI](https://github.com/angular/angular-cli) version 19.2.15.
+##  Tính năng độc đáo
+Quản lý sản phẩm, Quản lý giao dịch. Theo dõi tồn kho, doanh thu qua số liệu, biểu đồ.
+-  **Trợ lý ảo**: Trợ lý ảo cấu hình với mô hình RAG, phân quyền truy cập dữ liệu theo role.
+-  **Đồng bộ dữ liệu client**: Thông báo WebSocket và đồng bộ tgian thực.
+-  **Xác nhận giao dịch**: Quét QR để hoàn thành 1 giao dịch
+-  **Cấp mật khẩu mới**: Sử dụng JavaMail gửi email reset mật khẩu
+##  Tech Stack
 
-## API server🖥️
+### Backend
+- **Framework**: Spring Boot
+- **Ngôn ngữ**: Java
+- **Database**: MySQL
+- **Build**: Apache Maven
+- **Tích hợp trợ lý ảo**: OpenAI GPT-4o-mini + LangChain4j
+- **Đồng bộ**: WebSocket
+- **Bảo mật**: JWT + Spring Security
 
-Chạy lệnh `mvn spring-boot:run` _(yêu cầu đã cài Apache Maven 3.9.11 với java phiên bản 21)_ trên command prompt để khởi chạy ứng dụng, 
-tôi khuyên bạn nên sử dụng IDE cho Java dev để cài các thư viện và những thứ tôi liệt kê trong .gitignore, 
-sau đó nhấn nút "Run"▶️ Spring Boot Application để khởi chạy API server.
-
-## Angular Development server
-
-Chạy lệnh `cd .\frontend` và `ng serve` _(yêu cầu đã cài npm install -g @angular/cli)_ để chạy server Angular dev. Điều hướng đến `http://localhost:4200/`.
-
-## Debug🪲 Angular
-
-Để chạy được dự án Angular ở chế độ debug trên Visual Studio Code thì nhấn vào tab "Run and Debug"▶️🪲 trên Activity bar ở góc trái, yêu cầu tạo file `launch.json`, rồi dán nội dung sau vào
+### Frontend  
+- **Framework**: Angular
+- **Language**: TypeScript
+- **Styling**: Bootstrap + Custom CSS
+- **Biểu đồ**: ngx-charts
+- **QR Scanner**: ZXing
+- **Build**: Angular CLI
+## Gỡ lỗi Angular
+Gỡ lỗi Angular qua Edge
 ```
 {
     // Use IntelliSense to learn about possible attributes.
@@ -47,24 +58,5 @@ Chạy lệnh `cd .\frontend` và `ng serve` _(yêu cầu đã cài npm install 
     ]
 }
 ```
-Trước khi debug, bạn hãy chạy câu lệnh `cd .\frontend` và `npm start` để chạy dự án.
-Sau đó chọn cấu hình debug Launch Edge ở dropdown để attach debugger!
-
-## Build🏗️
-
-Chạy `ng build` để xây dựng dự án. Các thứ dựng nên sẽ được lưu trữ ở thư mục `dist/`.
-
-## Running unit tests📝
-
-Chạy lệnh `ng test` để kích hoạt unit test qua [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests📝
-
-Chạy lệnh `ng e2e` để thực hiện các end-to-end test thông qua một nền tảng bạn chọn. Để sử dụng lệnh này, trước tiên bạn cần thêm một gói thực hiện các end-to-end testing capability.
-
-## Cần sự giúp đỡ😵‍💫
-
-Nhắn tin/để lại bình luận trong dự án của tôi.
-Để tìm kiếm thêm sự giúp đỡ trên Angular CLI hãy chạy `ng help` hoặc xem xét trang [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli).
-
-## Bạn đã đọc được đến đây thì tôi đoán bạn có ít hứng thú đến dự án này, còn chờ gì nữa mà không để lại 1 star ⭐, tôi rất cảm kích. Bạn có thể bình luận khoe điều đó để tôi cảm tạ 🫠
+Tôi luôn muốn củng cố dự án của mình, để lại issue giúp tôi củng cố dự án ạ, cảm ơn.
+## Hãy cho tôi 1 ⭐ nếu bạn thấy nó hay, cảm ơn.
