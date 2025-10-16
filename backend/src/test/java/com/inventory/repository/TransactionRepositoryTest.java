@@ -88,7 +88,7 @@ public class TransactionRepositoryTest {
         t2.setTransactionType(TransactionType.SALE);
         transactionRepository.save(t2);
 
-        List<Transaction> found = transactionRepository.findAllByTransactionTypes(List.of(TransactionType.PURCHASE));
+        List<Transaction> found = transactionRepository.findAllByTransactionConditions(TransactionType.PURCHASE, null, null, null, null);
         // Testcase: Kiểm tra danh sách giao dịch theo loại PURCHASE có đúng số lượng không
         assertThat(found).hasSize(1);
         // Testcase: Kiểm tra loại giao dịch đầu tiên trong danh sách có khớp với PURCHASE không

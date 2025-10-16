@@ -14,7 +14,7 @@ import java.util.Map;
 @RequestMapping("/api/rag")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200", "*"})
 public class RAGController {
     private final RagService ragService;
 

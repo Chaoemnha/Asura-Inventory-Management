@@ -5,7 +5,7 @@
             <div class="col-12 col-lg-12 invoice-header">
                <h1 class="row">
                   <div class="col-lg-6 text-left col-6">
-                     <i class="fa fa-exchange"></i> Giao dịch.{{transaction.id}}
+                     <i class="fa fa-exchange"></i> Giao dịch.{{transaction?.id||''}}
                   </div>
                </h1>
             </div>
@@ -87,7 +87,7 @@
                       <b>{{ transaction.sender.name }}</b>
                   </span>
                     <span *ngIf="!isStaffUser(transaction.sender)">
-                      <b>{{ transaction.sender.name }}</b>
+                      <b>{{ transaction.sender?.name || '' }}</b>
                     </span>
                     <br>
                   </span>

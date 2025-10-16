@@ -9,8 +9,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new WebSocketHandler(), "/changes")
-                .setAllowedOrigins("http://localhost:4200") // Angular URL
-                .setAllowedOriginPatterns("*");
+    registry.addHandler(new WebSocketHandler(), "/changes")
+        .setAllowedOriginPatterns("*");
     }
 }

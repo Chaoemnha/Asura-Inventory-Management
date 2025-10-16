@@ -24,6 +24,7 @@ public class ProductRepositoryTest {
     void setUp() {
         product = new Product();
         product.setName("MacBook M1");
+        product.setSku("Mac");
     }
 
     @Test
@@ -54,7 +55,6 @@ public class ProductRepositoryTest {
     @DisplayName("Luu va xoa san pham theo ID")
     void testSaveAndDeleteById(){
         Product saved = productRepository.save(product);
-
         productRepository.deleteById(saved.getId());
         Optional<Product> found = productRepository.findById(saved.getId());
         // Testcase: Kiểm tra xem sản phẩm đã bị xóa và không còn tồn tại không

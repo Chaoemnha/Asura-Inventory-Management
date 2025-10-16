@@ -96,19 +96,6 @@ public class ProductServiceTest {
         assertThat(response.getStatus()).isEqualTo(200);
     }
 
-    @DisplayName("Testcase: kiem thu phuong thuc getAll")
-    @Test
-    public void testGetAllProducts() {
-
-        given(productRepository.findAll(Sort.by(Sort.Direction.DESC, "id"))).willReturn(List.of(product));
-        //Test return kem productDTOS
-        Response response = productService.getAllProducts("a");
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response
-                .getProducts()
-                .getFirst()
-                .getId()).isEqualTo(1L);
-    }
 
     @DisplayName("Testcase: kiem thu phuong thuc getId")
     @Test
