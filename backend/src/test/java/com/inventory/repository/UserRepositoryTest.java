@@ -22,8 +22,7 @@ public class UserRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        user = new User();
-        user.setName("Luuanz");
+        user = User.builder().name("Luuanz").phoneNumber("09325875").password("123").email("test@example.com").build();
     }
 
     @Test
@@ -64,9 +63,7 @@ public class UserRepositoryTest {
     @Test
     @DisplayName("Tim nguoi dung theo reset password token")
     void testFindByResetPasswordToken() {
-        User resetUser = new User();
-        resetUser.setName("Reset User");
-        resetUser.setResetPasswordToken("token123");
+        User resetUser = User.builder().name("Reset User").email("test@example.com").resetPasswordToken("token123").password("123").phoneNumber("0394583650").build();
         userRepository.save(resetUser);
 
         User found = userRepository.findByResetPasswordToken("token123");
@@ -79,9 +76,7 @@ public class UserRepositoryTest {
     @Test
     @DisplayName("Tim nguoi dung theo email")
     void testFindByEmail() {
-        User emailUser = new User();
-        emailUser.setName("Test User");
-        emailUser.setEmail("test@example.com");
+        User emailUser = User.builder().name("Test User").email("test@example.com").phoneNumber("049942943").password("123").build();
         userRepository.save(emailUser);
         //Optional<Dtg> chap nhan null va ko co ngoai le null
         Optional<User> found = userRepository.findByEmail("test@example.com");

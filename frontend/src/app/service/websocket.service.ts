@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Observable, Subject } from "rxjs";
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root',
@@ -11,7 +12,10 @@ export class WebSocketService{
     constructor(){}
 
     connect(): void{
-        this.socket = new WebSocket('ws://localhost:8080/changes');
+        if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
+            return;
+        }
+        this.socket = new WebSocket(environment.WS_URL);
         this.socket.onopen = (ws)=>{
                     console.log('-----------------', ws)
         };

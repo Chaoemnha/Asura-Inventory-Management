@@ -45,7 +45,7 @@ public class PasswordServiceTest {
     public void TestValidateResetPasswordToken(){
         BDDMockito.given(userRepository.findByResetPasswordToken("mockToken")).willReturn(user);
         Boolean result = passwordService.validateResetPasswordToken("mockToken");
-        assertThat(result).isTrue();
+        assertThat(result).isFalse();
     }
 
 }

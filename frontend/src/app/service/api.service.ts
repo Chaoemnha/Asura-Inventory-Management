@@ -1,6 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, withJsonpSupport } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 import CryptoJS from 'crypto-js';
 
 @Injectable({
@@ -18,7 +19,7 @@ export class ApiService {
     });
   }
   authStatuschanged = new EventEmitter<void>();
-  private static BASE_URL = 'http://localhost:8080/api';
+  private static BASE_URL = environment.API_BASE_URL;
   private static ENCRYPTION_KEY = 'luannguyen';
 
   constructor(private http: HttpClient) {}
